@@ -1,0 +1,42 @@
+---
+# Configuration to start up a mongodb container containing the riffdata to be analyzed
+
+version: '3.7'
+services:
+  chw-mariadb:
+    image: docker.io/library/mariadb:latest
+    environment:
+      MARIADB_ROOT_PASSWORD: finewine
+      MARIADB_USER: chwuser
+      MARIADB_PASSWORD: cynthiahurley
+      MARIADB_DATABASE: chw
+    ports:
+      - '3306:3306'
+    volumes:
+      - chw-mariadb-retailorders-data:/var/lib/mysql
+
+  chw-mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: finewine
+      MYSQL_USER: chwuser
+      MYSQL_PASSWORD: cynthiahurley
+      MYSQL_DATABASE: chw
+    ports:
+      - '3306:3306'
+    volumes:
+      - chw-mysql-retailorders-data:/var/lib/mysql
+
+  chw-mongo:
+    image: mongo:${MONGO_VER-latest}
+    ports:
+      - '27017:27017'
+    volumes:
+      - chw-mongo-data:/data/db
+      - chw-mongo-configdb:/data/configdb
+
+volumes:
+  chw-mongo-data:
+  chw-mongo-configdb:
+  chw-mysql-retailorders-data:
+  chw-mariadb-retailorders-data:

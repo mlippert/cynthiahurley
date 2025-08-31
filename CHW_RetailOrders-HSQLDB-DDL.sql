@@ -1,14 +1,20 @@
 
+CREATE TABLE LookupCCIssuers (
+                pkCCIssuer IDENTITY NOT NULL,
+                Name VARCHAR(20) NOT NULL,
+                CONSTRAINT pkCCIssuer PRIMARY KEY (pkCCIssuer)
+);
+
 CREATE TABLE LookupCaseUnits (
                 pkCaseUnit TINYINT NOT NULL,
-                Name VARCHAR NOT NULL,
+                Name VARCHAR(30) NOT NULL,
                 CONSTRAINT pkCaseUnit PRIMARY KEY (pkCaseUnit)
 );
 
 CREATE TABLE Producers (
                 pkProducer INTEGER NOT NULL,
-                Name VARCHAR NOT NULL,
-                Region VARCHAR NOT NULL,
+                Name VARCHAR(200) NOT NULL,
+                Region VARCHAR(100) NOT NULL,
                 CONSTRAINT pkProducer PRIMARY KEY (pkProducer)
 );
 
@@ -17,8 +23,8 @@ CREATE TABLE Producers (
 
 CREATE TABLE Distributors (
                 pkDistributor INTEGER NOT NULL,
-                Name VARCHAR NOT NULL,
-                Email VARCHAR NOT NULL,
+                Name VARCHAR(200) NOT NULL,
+                Email VARCHAR(200) NOT NULL,
                 CONSTRAINT pkDistributor PRIMARY KEY (pkDistributor)
 );
 
@@ -27,22 +33,22 @@ CREATE TABLE Distributors (
 
 CREATE TABLE Addresses (
                 pkAddress INTEGER NOT NULL,
-                Street VARCHAR NOT NULL,
-                Street2 VARCHAR,
-                City VARCHAR NOT NULL,
-                State VARCHAR NOT NULL,
-                PostalCode VARCHAR NOT NULL,
+                Street VARCHAR(150) NOT NULL,
+                Street2 VARCHAR(150),
+                City VARCHAR(100) NOT NULL,
+                State VARCHAR(100) NOT NULL,
+                PostalCode VARCHAR(30) NOT NULL,
                 CONSTRAINT pkAddress PRIMARY KEY (pkAddress)
 );
 
 CREATE TABLE Wines (
                 pkWine INTEGER NOT NULL,
-                ItemNo VARCHAR NOT NULL,
-                Name VARCHAR NOT NULL,
+                ItemNo VARCHAR(10) NOT NULL,
+                Name VARCHAR(100) NOT NULL,
                 Vintage SMALLINT NOT NULL,
                 fkProducer INTEGER NOT NULL,
-                Available BIT DEFAULT 1 NOT NULL,
-                SoldOut BIT DEFAULT 0 NOT NULL,
+                Available BOOLEAN NOT NULL,
+                SoldOut BOOLEAN NOT NULL,
                 UnitsPerCase SMALLINT NOT NULL,
                 fkCaseUnit TINYINT NOT NULL,
                 CONSTRAINT pkWine PRIMARY KEY (pkWine)
@@ -51,20 +57,22 @@ CREATE TABLE Wines (
 CREATE TABLE EmailCustomers (
                 pkEmailCustomer INTEGER NOT NULL,
                 Created TIMESTAMP NOT NULL,
-                CreatedBy VARCHAR NOT NULL,
+                CreatedBy VARCHAR(30) NOT NULL,
                 LastModified TIMESTAMP NOT NULL,
-                LastModifiedBy VARCHAR NOT NULL,
-                FirstName VARCHAR NOT NULL,
-                LastName VARCHAR NOT NULL,
-                Email VARCHAR NOT NULL,
+                LastModifiedBy VARCHAR(30) NOT NULL,
+                FirstName VARCHAR(100) NOT NULL,
+                LastName VARCHAR(100) NOT NULL,
+                Email VARCHAR(200) NOT NULL,
                 CONSTRAINT pkEmailCustomer PRIMARY KEY (pkEmailCustomer)
 );
 
 CREATE TABLE EmailCustomerCreditCards (
                 fkEmailCustomer INTEGER NOT NULL,
                 pkN TINYINT NOT NULL,
-                CardNumber VARCHAR NOT NULL,
-                Issuer VARCHAR NOT NULL,
+                fkCCIssuer TINYINT NOT NULL,
+                CardNumber VARCHAR(20) NOT NULL,
+                ExpDate DATE NOT NULL,
+                SecurityCode SMALLINT NOT NULL,
                 CONSTRAINT pkEmailCustomerCreditCard PRIMARY KEY (fkEmailCustomer, pkN)
 );
 
@@ -94,6 +102,12 @@ CREATE TABLE Orders_Wines (
                 fkWine INTEGER NOT NULL,
                 CONSTRAINT pkOrders_Wines PRIMARY KEY (fkOrder, fkWine)
 );
+
+ALTER TABLE EmailCustomerCreditCards ADD CONSTRAINT LookupCCIssuers_EmailCustomerCreditCards_fk
+FOREIGN KEY (fkCCIssuer)
+REFERENCES LookupCCIssuers (pkCCIssuer)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
 
 ALTER TABLE Wines ADD CONSTRAINT LookupUnits_Wines_fk
 FOREIGN KEY (fkCaseUnit)
