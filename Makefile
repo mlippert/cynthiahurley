@@ -11,19 +11,17 @@ SHELL := /bin/bash
 # like $(call ndef,ENV)
 ndef = $(if $(value $(1)),,$(error $(1) not set))
 
-GIT_TAG_VERSION = $(shell git describe)
-export GIT_TAG_VERSION
+# NOTE: we're not using the git tag for anything right now, so disable this so it doesn't HAVE to exist
+#GIT_TAG_VERSION = $(shell git describe)
+#export GIT_TAG_VERSION
 
+CONTAINER_TOOL := podman
 COMPOSE = podman-compose
 
 LINT_LOG := logs/lint.log
 TEST_LOG := logs/test.log
 
-# Add --quiet to only report on errors, not warnings
-ESLINT_OPTIONS = --ext .js --ext .jsx
-ESLINT_FORMAT = stylish
-
-# docker-compose database service names so they can be started individually
+# docker-compose database service names so they can be brought up and down individually
 MARIADB_SERVICE := chw-mariadb
 MYSQL_SERVICE   := chw-mysql
 MONGODB_SERVICE := chw-mongo
@@ -40,8 +38,7 @@ COMPOSE_CONF_DEV := $(patsubst %,-f %,$(CONF_DEV))
 COMPOSE_CONF_PROD := $(patsubst %,-f %,$(CONF_PROD))
 STACK_CONF_DEPLOY := $(patsubst %,-c %,$(CONF_DEPLOY))
 
-# The pull-images target is a helper to update the base docker images used
-# by the edu stack services. This is a list of those base images.
+# The pull-images target is a helper to update the base container images used in this Makefile
 BASE_IMAGES := \
 	mariadb:latest \
 	mysql:latest \
@@ -50,7 +47,7 @@ BASE_IMAGES := \
 
 .DEFAULT_GOAL := help
 .DELETE_ON_ERROR :
-.PHONY : all up down up-mariadb up-mysql up-mongo help
+.PHONY : all up down up-mariadb down-mariadb up-mysql down-mysql up-mongo down-mongo help
 
 run : ## run the main python script
 	$(call ndef,VIRTUAL_ENV)
@@ -102,32 +99,43 @@ upgrade-pip : ## upgrade pip and setuptools
 	$(call ndef,VIRTUAL_ENV)
 	pip install --upgrade pip setuptools
 
-up : up-mariadb ## run $(COMPOSE) up (w/ dev config)
+up : up-mariadb ## run up-mariadb
+
+down : down-mariadb ## run down-mariadb
 
 up-mariadb : ## run $(COMPOSE) up $(MARIADB_SERVICE)
 	$(COMPOSE) up --detach $(OPTS) $(MARIADB_SERVICE)
 
+down-mariadb : ## run $(COMPOSE) down $(MARIADB_SERVICE)
+	$(COMPOSE) down $(OPTS) $(MARIADB_SERVICE)
+
+up-mysql : ## run $(COMPOSE) up $(MYSQL_SERVICE)
+	$(COMPOSE) up --detach $(OPTS) $(MYSQL_SERVICE)
+
+down-mysql : ## run $(COMPOSE) down $(MYSQL_SERVICE)
+	$(COMPOSE) down $(OPTS) $(MYSQL_SERVICE)
+
+up-mongo : ## run $(COMPOSE) up $(MONGODB_SERVICE)
+	$(COMPOSE) up --detach $(OPTS) $(MONGODB_SERVICE)
+
+down-mongo : ## run $(COMPOSE) down $(MONGODB_SERVICE)
+	$(COMPOSE) down $(OPTS) $(MONGODB_SERVICE)
+
 up-prod : ## run docker-compose up (w/ prod config)
 	docker-compose $(COMPOSE_CONF_PROD) up --detach $(OPTS)
 
-down : ## run docker-compose down
-	docker-compose down
+stop : ## run $(COMPOSE) stop $(SERVICE_NAME)
+	$(COMPOSE) stop $(SERVICE_NAME)
 
-stop : ## run docker-compose stop
-	docker-compose stop
-
-logs : ## run docker-compose logs
-	docker-compose logs $(OPTS) $(SERVICE_NAME)
+logs : ## run docker-compose logs $(SERVICE_NAME)
+	$(COMPOSE) logs $(OPTS) $(SERVICE_NAME)
 
 pull-images : ## Update base docker images
-	echo $(BASE_IMAGES) | xargs -n 1 docker pull
-	docker images
-
-clean-dev-images : down ## remove dev docker images
-	docker rmi 127.0.0.1:5000/rifflearning/{pfm-riffrtc:dev,pfm-riffdata:dev,pfm-signalmaster:dev,pfm-web:dev}
+	echo $(BASE_IMAGES) | xargs -n 1 $(CONTAINER_TOOL) pull
+	$(CONTAINER_TOOL) images
 
 show-ps : ## Show all docker containers w/ limited fields
-	docker ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Image}}'
+	$(CONTAINER_TOOL) ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Image}}'
 
 ## Help documentation à la https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 ## if you want the help sorted rather than in the order of occurrence, pipe the grep to sort and pipe that to awk
