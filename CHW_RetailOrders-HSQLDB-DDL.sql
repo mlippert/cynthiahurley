@@ -6,7 +6,7 @@ CREATE TABLE LookupCCIssuers (
 );
 
 CREATE TABLE LookupCaseUnits (
-                pkCaseUnit TINYINT NOT NULL,
+                pkCaseUnit IDENTITY NOT NULL,
                 Name VARCHAR(30) NOT NULL,
                 CONSTRAINT pkCaseUnit PRIMARY KEY (pkCaseUnit)
 );
@@ -22,7 +22,7 @@ CREATE TABLE Producers (
 
 
 CREATE TABLE Distributors (
-                pkDistributor INTEGER NOT NULL,
+                pkDistributor IDENTITY NOT NULL,
                 Name VARCHAR(200) NOT NULL,
                 Email VARCHAR(200) NOT NULL,
                 CONSTRAINT pkDistributor PRIMARY KEY (pkDistributor)
@@ -32,7 +32,7 @@ CREATE TABLE Distributors (
 
 
 CREATE TABLE Addresses (
-                pkAddress INTEGER NOT NULL,
+                pkAddress IDENTITY NOT NULL,
                 Street VARCHAR(150) NOT NULL,
                 Street2 VARCHAR(150),
                 City VARCHAR(100) NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE Addresses (
 );
 
 CREATE TABLE Wines (
-                pkWine INTEGER NOT NULL,
+                pkWine IDENTITY NOT NULL,
                 ItemNo VARCHAR(10) NOT NULL,
                 Name VARCHAR(100) NOT NULL,
                 Vintage SMALLINT NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE Wines (
 );
 
 CREATE TABLE EmailCustomers (
-                pkEmailCustomer INTEGER NOT NULL,
+                pkEmailCustomer IDENTITY NOT NULL,
                 Created TIMESTAMP NOT NULL,
                 CreatedBy VARCHAR(30) NOT NULL,
                 LastModified TIMESTAMP NOT NULL,
@@ -79,6 +79,8 @@ CREATE TABLE EmailCustomerCreditCards (
 CREATE TABLE EmailCustomerPhoneNumbers (
                 fkEmailCustomer INTEGER NOT NULL,
                 pkN TINYINT NOT NULL,
+                PhoneNumber VARCHAR(25) NOT NULL,
+                Type VARCHAR(15) NOT NULL,
                 CONSTRAINT pkEmailCustomerPhoneNumber PRIMARY KEY (fkEmailCustomer, pkN)
 );
 
@@ -89,7 +91,7 @@ CREATE TABLE EmailCustomers_ShippingAddresses (
 );
 
 CREATE TABLE Orders (
-                pkOrder INTEGER NOT NULL,
+                pkOrder IDENTITY NOT NULL,
                 OrderNo INTEGER NOT NULL,
                 fkEmailCustomer INTEGER NOT NULL,
                 fkAddress INTEGER NOT NULL,

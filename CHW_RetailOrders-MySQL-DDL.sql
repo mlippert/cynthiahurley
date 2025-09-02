@@ -9,7 +9,7 @@ ALTER TABLE LookupCCIssuers MODIFY COLUMN Name VARCHAR(20) COMMENT 'Name of Issu
 
 
 CREATE TABLE LookupCaseUnits (
-                pkCaseUnit TINYINT NOT NULL,
+                pkCaseUnit TINYINT AUTO_INCREMENT NOT NULL,
                 Name VARCHAR(30) NOT NULL,
                 PRIMARY KEY (pkCaseUnit)
 );
@@ -28,7 +28,7 @@ ALTER TABLE Producers COMMENT 'A wine producer';
 
 
 CREATE TABLE Distributors (
-                pkDistributor INT NOT NULL,
+                pkDistributor INT AUTO_INCREMENT NOT NULL,
                 Name VARCHAR(200) NOT NULL,
                 Email VARCHAR(200) NOT NULL,
                 PRIMARY KEY (pkDistributor)
@@ -38,7 +38,7 @@ ALTER TABLE Distributors COMMENT 'The distributor is responsible for getting the
 
 
 CREATE TABLE Addresses (
-                pkAddress INT NOT NULL,
+                pkAddress INT AUTO_INCREMENT NOT NULL,
                 Street VARCHAR(150) NOT NULL,
                 Street2 VARCHAR(150),
                 City VARCHAR(100) NOT NULL,
@@ -53,7 +53,7 @@ ALTER TABLE Addresses MODIFY COLUMN PostalCode VARCHAR(30) COMMENT 'zipcode in U
 
 
 CREATE TABLE Wines (
-                pkWine INT NOT NULL,
+                pkWine INT AUTO_INCREMENT NOT NULL,
                 ItemNo VARCHAR(10) NOT NULL,
                 Name VARCHAR(100) NOT NULL,
                 Vintage SMALLINT NOT NULL,
@@ -78,7 +78,7 @@ ALTER TABLE Wines MODIFY COLUMN fkCaseUnit TINYINT COMMENT 'Type of unit in a ca
 
 
 CREATE TABLE EmailCustomers (
-                pkEmailCustomer INT NOT NULL,
+                pkEmailCustomer INT AUTO_INCREMENT NOT NULL,
                 Created DATETIME NOT NULL,
                 CreatedBy VARCHAR(30) NOT NULL,
                 LastModified DATETIME NOT NULL,
@@ -110,10 +110,16 @@ ALTER TABLE EmailCustomerCreditCards MODIFY COLUMN SecurityCode SMALLINT COMMENT
 CREATE TABLE EmailCustomerPhoneNumbers (
                 fkEmailCustomer INT NOT NULL,
                 pkN TINYINT NOT NULL,
+                PhoneNumber VARCHAR(25) NOT NULL,
+                Type VARCHAR(15) NOT NULL,
                 PRIMARY KEY (fkEmailCustomer, pkN)
 );
 
 ALTER TABLE EmailCustomerPhoneNumbers MODIFY COLUMN pkN TINYINT COMMENT 'pkN makes this a unique phone number record pk for the email customer';
+
+ALTER TABLE EmailCustomerPhoneNumbers MODIFY COLUMN PhoneNumber VARCHAR(25) COMMENT 'Free form phone number';
+
+ALTER TABLE EmailCustomerPhoneNumbers MODIFY COLUMN Type VARCHAR(15) COMMENT 'free form type of number, e.g. home, work, mobile, cell, fax, home2, etc.';
 
 
 CREATE TABLE EmailCustomers_ShippingAddresses (
@@ -124,7 +130,7 @@ CREATE TABLE EmailCustomers_ShippingAddresses (
 
 
 CREATE TABLE Orders (
-                pkOrder INT NOT NULL,
+                pkOrder INT AUTO_INCREMENT NOT NULL,
                 OrderNo INT NOT NULL,
                 fkEmailCustomer INT NOT NULL,
                 fkAddress INT NOT NULL,
