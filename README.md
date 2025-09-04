@@ -29,18 +29,23 @@ we've already started.
 
 - Tables: Plural nouns, Pascal Case e.g. ClientCreditCards
     - prefix small lookup tables w/ "Lookup", e.g. LookupCCIssuers
+    - Name association tables by concatinating the 2 associated table names w/ an underscore `_`
+      An exception might be to add a modifier to an association table name to a filtered
+      use case (think Addresses to ShippingAddresses).
 - Columns: Pascal Case, except for type prefixes (such as pk for primary keys)
-    - Primary keys fields use a prefix of "pk" EXCEPT when the primary key field is a foreign key
-    - Foreign keys use a prefix of "fk"
-    - I was thinking of using `index` for the name of a primary key additional column containing an
-      integer to make the foreign key into a unique primary key for an association table. However
-      I'm now thinking of maybe `pkSlot` or `pkEntry`. Maybe just `pkN`. Think of having 0-n where n is
-      typically a small number (but less than 100) of some characteristic, say a Contact's
-      email address(es) or phone number(s). The primary key in the email table would be the
-      Contact's foreign key column PLUS the slot column. `index` is not really the correct meaning
-      for this, AND it's sometimes a SQL keyword.
-      The problem w/ slot or entry is it lends itself to changing the value in the "slot" rather than
-      addind a new "slot" which could be problematic if the row has a relationship to another table.
+    - Primary keys fields use a suffix of "Id" EXCEPT when the primary key is composed of multiple fields
+    - Foreign keys use the same field name(s) as in the table they are a primary key for
+    - Use `N` for the name of a primary key additional column containing an integer to make
+      a foreign key into a unique primary key for an association table.  
+      Think of having 0-n where n is typically a small number (but less than 100) of some
+      characteristic, say a Contact's email address(es) or phone number(s). The primary
+      key in the email table would be the Contact's foreign key column PLUS the `N`
+      column.  
+      A column name of `index` is not really the correct meaning for this, AND it's
+      sometimes a SQL keyword. The problem w/ using `slot` or `entry` as the name of this
+      field is it lends itself to changing the value in the "slot" rather than addind a
+      new "slot" which could be problematic if the row has a relationship to another
+      table.
 
 ## Resources
 

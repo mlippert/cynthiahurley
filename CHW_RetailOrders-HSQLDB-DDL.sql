@@ -1,61 +1,61 @@
 
 CREATE TABLE LookupCCIssuers (
-                pkCCIssuer IDENTITY NOT NULL,
+                CCIssuerId IDENTITY NOT NULL,
                 Name VARCHAR(20) NOT NULL,
-                CONSTRAINT pkCCIssuer PRIMARY KEY (pkCCIssuer)
+                CONSTRAINT pkCCIssuer PRIMARY KEY (CCIssuerId)
 );
 
 CREATE TABLE LookupCaseUnits (
-                pkCaseUnit IDENTITY NOT NULL,
+                CaseUnitId IDENTITY NOT NULL,
                 Name VARCHAR(30) NOT NULL,
-                CONSTRAINT pkCaseUnit PRIMARY KEY (pkCaseUnit)
+                CONSTRAINT pkCaseUnit PRIMARY KEY (CaseUnitId)
 );
 
 CREATE TABLE Producers (
-                pkProducer INTEGER NOT NULL,
+                ProducerId INTEGER NOT NULL,
                 Name VARCHAR(200) NOT NULL,
                 Region VARCHAR(100) NOT NULL,
-                CONSTRAINT pkProducer PRIMARY KEY (pkProducer)
+                CONSTRAINT pkProducer PRIMARY KEY (ProducerId)
 );
 
 -- Comment for table [Producers]: A wine producer;
 
 
 CREATE TABLE Distributors (
-                pkDistributor IDENTITY NOT NULL,
+                DistributorId IDENTITY NOT NULL,
                 Name VARCHAR(200) NOT NULL,
                 Email VARCHAR(200) NOT NULL,
-                CONSTRAINT pkDistributor PRIMARY KEY (pkDistributor)
+                CONSTRAINT pkDistributor PRIMARY KEY (DistributorId)
 );
 
 -- Comment for table [Distributors]: The distributor is responsible for getting the order to the email customer;
 
 
 CREATE TABLE Addresses (
-                pkAddress IDENTITY NOT NULL,
+                AddressId IDENTITY NOT NULL,
                 Street VARCHAR(150) NOT NULL,
                 Street2 VARCHAR(150),
                 City VARCHAR(100) NOT NULL,
                 State VARCHAR(100) NOT NULL,
                 PostalCode VARCHAR(30) NOT NULL,
-                CONSTRAINT pkAddress PRIMARY KEY (pkAddress)
+                CONSTRAINT pkAddress PRIMARY KEY (AddressId)
 );
 
 CREATE TABLE Wines (
-                pkWine IDENTITY NOT NULL,
+                WineId IDENTITY NOT NULL,
                 ItemNo VARCHAR(10) NOT NULL,
                 Name VARCHAR(100) NOT NULL,
                 Vintage SMALLINT NOT NULL,
-                fkProducer INTEGER NOT NULL,
+                ProducerId INTEGER NOT NULL,
                 Available BOOLEAN NOT NULL,
                 SoldOut BOOLEAN NOT NULL,
                 UnitsPerCase SMALLINT NOT NULL,
-                fkCaseUnit TINYINT NOT NULL,
-                CONSTRAINT pkWine PRIMARY KEY (pkWine)
+                CaseUnitId TINYINT NOT NULL,
+                CONSTRAINT pkWine PRIMARY KEY (WineId)
 );
 
 CREATE TABLE EmailCustomers (
-                pkEmailCustomer IDENTITY NOT NULL,
+                EmailCustomerId IDENTITY NOT NULL,
                 Created TIMESTAMP NOT NULL,
                 CreatedBy VARCHAR(30) NOT NULL,
                 LastModified TIMESTAMP NOT NULL,
@@ -63,116 +63,116 @@ CREATE TABLE EmailCustomers (
                 FirstName VARCHAR(100) NOT NULL,
                 LastName VARCHAR(100) NOT NULL,
                 Email VARCHAR(200) NOT NULL,
-                CONSTRAINT pkEmailCustomer PRIMARY KEY (pkEmailCustomer)
+                CONSTRAINT pkEmailCustomer PRIMARY KEY (EmailCustomerId)
 );
 
 CREATE TABLE EmailCustomerCreditCards (
-                fkEmailCustomer INTEGER NOT NULL,
-                pkN TINYINT NOT NULL,
-                fkCCIssuer TINYINT NOT NULL,
+                EmailCustomerId INTEGER NOT NULL,
+                N TINYINT NOT NULL,
+                CCIssuerId TINYINT NOT NULL,
                 CardNumber VARCHAR(20) NOT NULL,
                 ExpDate DATE NOT NULL,
                 SecurityCode SMALLINT NOT NULL,
-                CONSTRAINT pkEmailCustomerCreditCard PRIMARY KEY (fkEmailCustomer, pkN)
+                CONSTRAINT pkEmailCustomerCreditCard PRIMARY KEY (EmailCustomerId, N)
 );
 
 CREATE TABLE EmailCustomerPhoneNumbers (
-                fkEmailCustomer INTEGER NOT NULL,
-                pkN TINYINT NOT NULL,
+                EmailCustomerId INTEGER NOT NULL,
+                N TINYINT NOT NULL,
                 PhoneNumber VARCHAR(25) NOT NULL,
                 Type VARCHAR(15) NOT NULL,
-                CONSTRAINT pkEmailCustomerPhoneNumber PRIMARY KEY (fkEmailCustomer, pkN)
+                CONSTRAINT pkEmailCustomerPhoneNumber PRIMARY KEY (EmailCustomerId, N)
 );
 
 CREATE TABLE EmailCustomers_ShippingAddresses (
-                fkEmailCustomer INTEGER NOT NULL,
-                fkAddress INTEGER NOT NULL,
-                CONSTRAINT pkEmailCustomers_ShippingAddress PRIMARY KEY (fkEmailCustomer, fkAddress)
+                EmailCustomerId INTEGER NOT NULL,
+                AddressId INTEGER NOT NULL,
+                CONSTRAINT pkEmailCustomers_ShippingAddress PRIMARY KEY (EmailCustomerId, AddressId)
 );
 
 CREATE TABLE Orders (
-                pkOrder IDENTITY NOT NULL,
+                OrderId IDENTITY NOT NULL,
                 OrderNo INTEGER NOT NULL,
-                fkEmailCustomer INTEGER NOT NULL,
-                fkAddress INTEGER NOT NULL,
-                fkDistributor INTEGER NOT NULL,
-                CONSTRAINT pkOrder PRIMARY KEY (pkOrder)
+                EmailCustomerId INTEGER NOT NULL,
+                AddressId INTEGER NOT NULL,
+                DistributorId INTEGER NOT NULL,
+                CONSTRAINT pkOrder PRIMARY KEY (OrderId)
 );
 
 CREATE TABLE Orders_Wines (
-                fkOrder INTEGER NOT NULL,
-                fkWine INTEGER NOT NULL,
-                CONSTRAINT pkOrders_Wines PRIMARY KEY (fkOrder, fkWine)
+                OrderId INTEGER NOT NULL,
+                WineId INTEGER NOT NULL,
+                CONSTRAINT pkOrders_Wines PRIMARY KEY (OrderId, WineId)
 );
 
 ALTER TABLE EmailCustomerCreditCards ADD CONSTRAINT LookupCCIssuers_EmailCustomerCreditCards_fk
-FOREIGN KEY (fkCCIssuer)
-REFERENCES LookupCCIssuers (pkCCIssuer)
+FOREIGN KEY (CCIssuerId)
+REFERENCES LookupCCIssuers (CCIssuerId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE Wines ADD CONSTRAINT LookupUnits_Wines_fk
-FOREIGN KEY (fkCaseUnit)
-REFERENCES LookupCaseUnits (pkCaseUnit)
+FOREIGN KEY (CaseUnitId)
+REFERENCES LookupCaseUnits (CaseUnitId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE Wines ADD CONSTRAINT Producers_Wines_fk
-FOREIGN KEY (fkProducer)
-REFERENCES Producers (pkProducer)
+FOREIGN KEY (ProducerId)
+REFERENCES Producers (ProducerId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE Orders ADD CONSTRAINT Distributors_Orders_fk
-FOREIGN KEY (fkDistributor)
-REFERENCES Distributors (pkDistributor)
+FOREIGN KEY (DistributorId)
+REFERENCES Distributors (DistributorId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE EmailCustomers_ShippingAddresses ADD CONSTRAINT Addresses_EmailCustomers_Address_fk
-FOREIGN KEY (fkAddress)
-REFERENCES Addresses (pkAddress)
+FOREIGN KEY (AddressId)
+REFERENCES Addresses (AddressId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE Orders_Wines ADD CONSTRAINT Wines_Orders_Wines_fk
-FOREIGN KEY (fkWine)
-REFERENCES Wines (pkWine)
+FOREIGN KEY (WineId)
+REFERENCES Wines (WineId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE EmailCustomers_ShippingAddresses ADD CONSTRAINT EmailCustomers_EmailCustomers_Address_fk
-FOREIGN KEY (fkEmailCustomer)
-REFERENCES EmailCustomers (pkEmailCustomer)
+FOREIGN KEY (EmailCustomerId)
+REFERENCES EmailCustomers (EmailCustomerId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE EmailCustomerPhoneNumbers ADD CONSTRAINT EmailCustomers_EmailCustomerPhoneNumbers_fk
-FOREIGN KEY (fkEmailCustomer)
-REFERENCES EmailCustomers (pkEmailCustomer)
+FOREIGN KEY (EmailCustomerId)
+REFERENCES EmailCustomers (EmailCustomerId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE EmailCustomerCreditCards ADD CONSTRAINT EmailCustomers_EmailCustomerCreditCards_fk
-FOREIGN KEY (fkEmailCustomer)
-REFERENCES EmailCustomers (pkEmailCustomer)
+FOREIGN KEY (EmailCustomerId)
+REFERENCES EmailCustomers (EmailCustomerId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE Orders ADD CONSTRAINT EmailCustomers_Orders_fk
-FOREIGN KEY (fkEmailCustomer)
-REFERENCES EmailCustomers (pkEmailCustomer)
+FOREIGN KEY (EmailCustomerId)
+REFERENCES EmailCustomers (EmailCustomerId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE Orders ADD CONSTRAINT EmailCustomers_ShippingAddresses_Orders_fk
-FOREIGN KEY (fkEmailCustomer, fkAddress)
-REFERENCES EmailCustomers_ShippingAddresses (fkEmailCustomer, fkAddress)
+FOREIGN KEY (EmailCustomerId, AddressId)
+REFERENCES EmailCustomers_ShippingAddresses (EmailCustomerId, AddressId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE Orders_Wines ADD CONSTRAINT Orders_Orders_Wines_fk
-FOREIGN KEY (fkOrder)
-REFERENCES Orders (pkOrder)
+FOREIGN KEY (OrderId)
+REFERENCES Orders (OrderId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
