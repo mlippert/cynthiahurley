@@ -15,7 +15,7 @@ ndef = $(if $(value $(1)),,$(error $(1) not set))
 #GIT_TAG_VERSION = $(shell git describe)
 #export GIT_TAG_VERSION
 
-CONTAINER_TOOL := podman
+CNTR_CLI := podman
 COMPOSE = podman-compose
 
 LINT_LOG := logs/lint.log
@@ -131,11 +131,11 @@ logs : ## run docker-compose logs $(SERVICE_NAME)
 	$(COMPOSE) logs $(OPTS) $(SERVICE_NAME)
 
 pull-images : ## Update base docker images
-	echo $(BASE_IMAGES) | xargs -n 1 $(CONTAINER_TOOL) pull
-	$(CONTAINER_TOOL) images
+	echo $(BASE_IMAGES) | xargs -n 1 $(CNTR_CLI) pull
+	$(CNTR_CLI) images
 
 show-ps : ## Show all docker containers w/ limited fields
-	$(CONTAINER_TOOL) ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Image}}'
+	$(CNTR_CLI) ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Image}}'
 
 ## Help documentation à la https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 ## if you want the help sorted rather than in the order of occurrence, pipe the grep to sort and pipe that to awk
