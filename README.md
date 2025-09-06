@@ -47,6 +47,25 @@ we've already started.
       new "slot" which could be problematic if the row has a relationship to another
       table.
 
+## Development
+
+### Utilities in the Repository
+
+#### Running various databases in containers
+
+There is a `docker-compose.yml` file which has services set up for running 3 databases
+
+1. mariadb
+2. mysql
+3. mongodb
+
+There is a `Makefile` with targets for starting and stopping those services. The Makefile
+currently is defined to use `podman` and `podman-compose` to do that. The `up` and `down`
+targets will start and stop the `chw-mariadb` service (container).
+
+There is a bash script `bin/chwdb-cli.sh` which will run the mariadb cli in the running
+chw-mariadb service container.
+
 ## Resources
 
 - Database naming conventions article from [SQLShack][SQLShack conventions] proposes singular
