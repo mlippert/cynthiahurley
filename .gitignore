@@ -1,5 +1,7 @@
 # Files we don't want in *this* repository #
 ############################################
+# various existing filemaker databases and filemaker installation files, etc. NOT to be added to the repo
+filemakerData/
 
 # created distribution files (e.g. compiled typescript) #
 #########################################################
