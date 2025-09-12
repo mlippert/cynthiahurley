@@ -13,7 +13,7 @@ services:
     ports:
       - '3306:3306'
     volumes:
-      - chw-mariadb-retailorders-data:/var/lib/mysql
+      - ./data/mariadb:/var/lib/mysql
 
   chw-mysql:
     image: mysql:latest
@@ -25,7 +25,7 @@ services:
     ports:
       - '3306:3306'
     volumes:
-      - chw-mysql-retailorders-data:/var/lib/mysql
+      - ./data/mysql:/var/lib/mysql
 
   chw-mongo:
     image: mongo:${MONGO_VER-latest}
