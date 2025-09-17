@@ -2,6 +2,7 @@
 ############################################
 # various existing filemaker databases and filemaker installation files, etc. NOT to be added to the repo
 filemakerData/
+data/
 
 # created distribution files (e.g. compiled typescript) #
 #########################################################
