@@ -1,58 +1,13 @@
 
-CREATE TABLE LegacyWineMaster (
-                WineId INT AUTO_INCREMENT NOT NULL,
-                AccountingItemNo VARCHAR(11),
-                NYPPItemNo VARCHAR(17),
-                WesternItemNo VARCHAR(11),
-                COLA_TTBID VARCHAR(15),
-                UPC VARCHAR(13),
-                FullName VARCHAR(100) NOT NULL,
-                Vintage SMALLINT,
-                Color VARCHAR(5),
-                StillSparklingFortified VARCHAR(9),
-                CertifiedOrganic VARCHAR(19),
-                Varietals VARCHAR(100),
-                ABV DECIMAL(5,2),
-                Country VARCHAR(6),
-                Region VARCHAR(16),
-                SubRegion VARCHAR(16),
-                Appellation VARCHAR(46),
-                YearEstablished VARCHAR(27),
-                ProducerName VARCHAR(46),
-                ProoducerDescription TEXT(1015),
-                FrontLabelFilename VARCHAR(86),
-                ShelfTalkerText TEXT(824),
-                TastingNotes TEXT(998),
-                Vinification TEXT(917),
-                TerroirVineyardPractices TEXT(1087),
-                PressParagraph TEXT(3728) AUTO_INCREMENT,
-                BottleSize VARCHAR(18),
-                BottlesPerCase TINYINT,
-                BottleColor VARCHAR(6),
-                Excluded VARCHAR(24),
-                SoldOut VARCHAR(1),
-                COLA_PDF_Filename VARCHAR(70),
-                FOBPrice DECIMAL(8,2),
-                CurrentNewYorkPricing VARCHAR(42),
-                CurrentNewJerseyPricing VARCHAR(30),
-                CurrentMassachusettsPricing VARCHAR(29),
-                MABottlePrice DOUBLE PRECISION NOT NULL,
-                PriceListSection VARCHAR(31),
-                PriceListNotes VARCHAR(115),
-                DateCreated DATE,
-                LastUpdated DATETIME,
-                PRIMARY KEY (WineId)
+CREATE TABLE LookupWineTypes (
+                WineTypeId TINYINT AUTO_INCREMENT NOT NULL,
+                WineType VARCHAR(10) NOT NULL,
+                PRIMARY KEY (WineTypeId)
 );
 
-ALTER TABLE LegacyWineMaster MODIFY COLUMN Vintage SMALLINT COMMENT '4 digit year';
+ALTER TABLE LookupWineTypes COMMENT 'Still, Sparkling or Fortified';
 
-ALTER TABLE LegacyWineMaster MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
-
-ALTER TABLE LegacyWineMaster MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volume';
-
-ALTER TABLE LegacyWineMaster MODIFY COLUMN SoldOut VARCHAR(1) COMMENT 'True(1)-sold out, False(0)-in stock';
-
-ALTER TABLE LegacyWineMaster MODIFY COLUMN MABottlePrice DOUBLE COMMENT 'Currently contains a worthless value, s/b DECIMAL(8,2)';
+ALTER TABLE LookupWineTypes MODIFY COLUMN WineType VARCHAR(10) COMMENT 'Still, Sparkling or Fortified';
 
 
 CREATE TABLE LookupCCIssuers (
@@ -70,8 +25,10 @@ ALTER TABLE LookupCCIssuers MODIFY COLUMN ShortName VARCHAR(8) COMMENT 'Abbrevia
 CREATE TABLE LookupCaseUnits (
                 CaseUnitId TINYINT AUTO_INCREMENT NOT NULL,
                 Name VARCHAR(30) NOT NULL,
-                VolumeInMilliliters INT NOT NULL,
-                UnitType VARCHAR(15) NOT NULL,
+                VolumeInMilliliters INT DEFAULT 750 NOT NULL,
+                UnitType VARCHAR(15) DEFAULT bottle NOT NULL,
+                VolumeUnitsOnLabel VARCHAR(15) DEFAULT ml NOT NULL,
+                LabelVolumeConvFactor DOUBLE PRECISION DEFAULT 1.0 NOT NULL,
                 PRIMARY KEY (CaseUnitId)
 );
 
@@ -81,12 +38,17 @@ ALTER TABLE LookupCaseUnits MODIFY COLUMN VolumeInMilliliters INTEGER COMMENT 'V
 
 ALTER TABLE LookupCaseUnits MODIFY COLUMN UnitType VARCHAR(15) COMMENT 'Type of unit: bottle, can, BiB (bag in box)';
 
+ALTER TABLE LookupCaseUnits MODIFY COLUMN VolumeUnitsOnLabel VARCHAR(15) COMMENT 'Volume units name (e.g ml, Liter) shown on label, and in name.';
+
+ALTER TABLE LookupCaseUnits MODIFY COLUMN LabelVolumeConvFactor DOUBLE COMMENT 'Conversion factor to multily VolumeInMilliliters by to get qty of UnitsOnLabel';
+
 
 CREATE TABLE Producers (
                 ProducerId INT NOT NULL,
                 Name VARCHAR(200) NOT NULL,
-                Description TEXT(20000) NOT NULL,
-                YearEstablished SMALLINT NOT NULL,
+                Description TEXT(2000),
+                ProducerCode CHAR(3),
+                YearEstablished SMALLINT,
                 PRIMARY KEY (ProducerId)
 );
 
@@ -135,16 +97,14 @@ CREATE TABLE Wines (
                 SubRegion VARCHAR(100) NOT NULL,
                 Appellation VARCHAR(100) NOT NULL,
                 ProducerId INT NOT NULL,
-                Available BOOLEAN NOT NULL,
-                SoldOut BOOLEAN NOT NULL,
                 UnitsPerCase SMALLINT NOT NULL,
                 CaseUnitId TINYINT NOT NULL,
                 BottleColor VARCHAR(15) NOT NULL,
-                ShelfTalkerText TEXT(20000) NOT NULL,
-                TastingNotes TEXT(20000) NOT NULL,
-                Vinification TEXT(20000) NOT NULL,
-                TerroirVineyardPractices TEXT(20000) NOT NULL,
-                PressParagraph TEXT(20000) NOT NULL,
+                ShelfTalkerText TEXT(2000) NOT NULL,
+                TastingNotes TEXT(2000) NOT NULL,
+                Vinification TEXT(2000) NOT NULL,
+                TerroirVineyardPractices TEXT(2000) NOT NULL,
+                PressParagraph TEXT(6000) NOT NULL,
                 CreationTimestamp DATETIME NOT NULL,
                 CreatedBy VARCHAR(32) NOT NULL,
                 ModificationTimestamp DATETIME NOT NULL,
@@ -158,10 +118,6 @@ ALTER TABLE Wines MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated 
 
 ALTER TABLE Wines MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volume';
 
-ALTER TABLE Wines MODIFY COLUMN Available BOOLEAN COMMENT 'If a wine is not available it should be excluded from the list of wines for sale (True(1)-available, False(0)-excluded)';
-
-ALTER TABLE Wines MODIFY COLUMN SoldOut BOOLEAN COMMENT 'True(1)-sold out, False(0)-in stock';
-
 ALTER TABLE Wines MODIFY COLUMN UnitsPerCase SMALLINT COMMENT 'Units of wine include various size bottles, boxes and cans
 Retail sales are sometimes by case and sometimes by unit';
 
@@ -172,24 +128,117 @@ ALTER TABLE Wines MODIFY COLUMN CreatedBy VARCHAR(32) COMMENT 'User who created 
 ALTER TABLE Wines MODIFY COLUMN ModifiedBy VARCHAR(32) COMMENT 'User who last modified this record';
 
 
+CREATE TABLE NJ_Distribution (
+                WineId INT NOT NULL,
+                NJ_BrandRegNo VARCHAR(6) NOT NULL,
+                NJ_AssignedUPC VARCHAR(13),
+                PRIMARY KEY (WineId)
+);
+
+ALTER TABLE NJ_Distribution COMMENT 'Information for distribution in NJ
+- Compliance info
+  - Brand registration
+  - Price posting
+- pricing in NJ';
+
+ALTER TABLE NJ_Distribution MODIFY COLUMN NJ_AssignedUPC VARCHAR(13) COMMENT 'NJ assigned UPC value if wine doesn''t have one';
+
+
+CREATE TABLE LegacyWineMaster (
+                WineId INT NOT NULL,
+                AccountingItemNo VARCHAR(11),
+                NYPPItemNo VARCHAR(17),
+                WesternItemNo VARCHAR(11),
+                COLA_TTBID VARCHAR(15),
+                UPC VARCHAR(13),
+                FullName VARCHAR(114) NOT NULL,
+                Vintage SMALLINT,
+                Color VARCHAR(5),
+                StillSparklingFortified VARCHAR(9),
+                CertifiedOrganic VARCHAR(19),
+                Varietals VARCHAR(100),
+                ABV DECIMAL(5,2),
+                Country VARCHAR(7),
+                Region VARCHAR(20),
+                SubRegion VARCHAR(20),
+                Appellation VARCHAR(58),
+                YearEstablished VARCHAR(27),
+                ProducerName VARCHAR(58),
+                ProducerDescription TEXT(1269),
+                ProducerCode CHAR(3),
+                FrontLabelFilename VARCHAR(86),
+                BackLabelFilename VARCHAR(53),
+                ShelfTalkerText TEXT(1030),
+                TastingNotes TEXT(1248),
+                Vinification TEXT(1146),
+                TerroirVineyardPractices TEXT(1359),
+                PressParagraph TEXT(4660),
+                BottleSize VARCHAR(18),
+                BottlesPerCase TINYINT,
+                BottleColor VARCHAR(6),
+                Excluded VARCHAR(24),
+                SoldOut CHAR(1),
+                COLA_PDF_Filename VARCHAR(70),
+                FOBPrice DECIMAL(8,2),
+                CurrentNewYorkPricing VARCHAR(42),
+                CurrentNewJerseyPricing VARCHAR(30),
+                CurrentMassachusettsPricing VARCHAR(29),
+                PriceListSection VARCHAR(39),
+                PriceListNotes VARCHAR(144),
+                NJ_AssignedUPC VARCHAR(13),
+                NJ_BrandRegNo VARCHAR(6),
+                DateCreated DATE,
+                LastUpdated DATETIME,
+                PRIMARY KEY (WineId)
+);
+
+ALTER TABLE LegacyWineMaster MODIFY COLUMN Vintage SMALLINT COMMENT '4 digit year';
+
+ALTER TABLE LegacyWineMaster MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
+
+ALTER TABLE LegacyWineMaster MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volume';
+
+ALTER TABLE LegacyWineMaster MODIFY COLUMN SoldOut CHAR(1) COMMENT 'True(1)-sold out, False(0)-in stock';
+
+
 CREATE TABLE WinePricing (
                 WineId INT NOT NULL,
-                NYPPItemNo VARCHAR(20) NOT NULL,
-                WesternItemNo VARCHAR(20) NOT NULL,
-                WesternInventoryBottlesAvailable INT NOT NULL,
+                Available BOOLEAN NOT NULL,
+                SoldOut BOOLEAN NOT NULL,
                 PriceListSection VARCHAR(50) NOT NULL,
-                PriceListNotes VARCHAR(50) NOT NULL,
+                PriceListNotes VARCHAR(80) NOT NULL,
                 FOBPrice DECIMAL(8,2) NOT NULL,
+                NY_Wholesale DECIMAL(8,2),
+                NY_MultiCasePrice DECIMAL(8,2),
+                NY_MultiCaseQty TINYINT,
+                NJ_Wholesale DECIMAL(8,2),
+                NJ_MultiCasePrice DECIMAL(8,2),
+                NJ_MiltiCaseQty TINYINT,
                 CurrentMassachusettsPricing VARCHAR(100) NOT NULL,
                 CurrentNewJerseyPricing VARCHAR(100) NOT NULL,
                 CurrentNewYorkPricing VARCHAR(100) NOT NULL,
-                MABottlePrice DECIMAL(8,2) NOT NULL,
-                WinebowPrice DECIMAL(8,2) NOT NULL,
-                WinebowSpecialPrice BOOLEAN NOT NULL,
                 PRIMARY KEY (WineId)
 );
 
 ALTER TABLE WinePricing COMMENT 'Interim table to gather existing wine pricing fields';
+
+ALTER TABLE WinePricing MODIFY COLUMN Available BOOLEAN COMMENT 'If a wine is not available it should be excluded from the list of wines for sale (True(1)-available, False(0)-excluded)';
+
+ALTER TABLE WinePricing MODIFY COLUMN SoldOut BOOLEAN COMMENT 'True(1)-sold out, False(0)-in stock';
+
+ALTER TABLE WinePricing MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'case price for distributors';
+
+ALTER TABLE WinePricing MODIFY COLUMN NY_Wholesale DECIMAL(8, 2) COMMENT 'NY distributor price for retailers';
+
+ALTER TABLE WinePricing MODIFY COLUMN NY_MultiCasePrice DECIMAL(8, 2) COMMENT 'NY multi case break retailer price';
+
+ALTER TABLE WinePricing MODIFY COLUMN NY_MultiCaseQty TINYINT COMMENT 'NY min # of cases to get multi case price';
+
+ALTER TABLE WinePricing MODIFY COLUMN NJ_Wholesale DECIMAL(8, 2) COMMENT 'NJ distributor price for retailers';
+
+ALTER TABLE WinePricing MODIFY COLUMN NJ_MultiCasePrice DECIMAL(8, 2) COMMENT 'NJ multi case break retailer price';
+
+ALTER TABLE WinePricing MODIFY COLUMN NJ_MiltiCaseQty TINYINT COMMENT 'NJ min # of cases to get multi case price';
 
 
 CREATE TABLE EmailCustomers (
@@ -304,6 +353,18 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE WinePricing ADD CONSTRAINT wines_winepricing_fk
+FOREIGN KEY (WineId)
+REFERENCES Wines (WineId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE LegacyWineMaster ADD CONSTRAINT wines_legacywinemaster_fk
+FOREIGN KEY (WineId)
+REFERENCES Wines (WineId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE NJ_Distribution ADD CONSTRAINT wines_nj_distribution_fk
 FOREIGN KEY (WineId)
 REFERENCES Wines (WineId)
 ON DELETE NO ACTION
