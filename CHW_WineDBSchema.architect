@@ -212,12 +212,12 @@
      <remarks></remarks>
     </column>
     <column id="COL61" populated="true" UUID="c9557440-6f9e-4c7b-84a4-63fa9dcf518b" autoIncrement="false" autoIncrementSequenceName="Wines_ItemNo_seq" defaultValue="" name="AccountingItemNo" nullable="0" physicalName="AccountingItemNo" precision="10" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
-     <remarks></remarks>
+     <remarks>AccountEdge ID</remarks>
     </column>
-    <column id="COL62" populated="true" UUID="aca5501b-4834-478a-9379-0e1952baee74" autoIncrement="false" autoIncrementSequenceName="Wines_COLA_TTBID_seq" defaultValue="" name="COLA_TTBID" nullable="0" physicalName="COLA_TTBID" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
-     <remarks></remarks>
+    <column id="COL62" populated="true" UUID="aca5501b-4834-478a-9379-0e1952baee74" autoIncrement="false" autoIncrementSequenceName="Wines_COLA_TTBID_seq" defaultValue="&apos;Pending&apos;" name="COLA_TTBID" nullable="0" physicalName="COLA_TTBID" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks>Either the TTB ID or &apos;Pending&apos;</remarks>
     </column>
-    <column id="COL63" populated="true" UUID="dd6135bd-4b83-492b-b108-f8460270f861" autoIncrement="false" autoIncrementSequenceName="Wines_UPC_seq" defaultValue="" name="UPC" nullable="0" physicalName="UPC" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+    <column id="COL63" populated="true" UUID="dd6135bd-4b83-492b-b108-f8460270f861" autoIncrement="false" autoIncrementSequenceName="Wines_UPC_seq" defaultValue="" name="UPC" nullable="1" physicalName="UPC" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>
     </column>
     <column id="COL64" populated="true" UUID="04ce5eff-f65a-434b-bbcf-b29f8f5cc7d0" autoIncrement="false" autoIncrementSequenceName="Wines_Name_seq" defaultValue="" name="Name" nullable="0" physicalName="Name" precision="100" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
@@ -229,13 +229,13 @@
     <column id="COL66" populated="true" UUID="1a1b2613-2d65-4b4b-82c4-a4b0df0d1051" autoIncrement="false" autoIncrementSequenceName="Wines_Color_seq" defaultValue="" name="Color" nullable="0" physicalName="Color" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>
     </column>
-    <column id="COL67" populated="true" UUID="3395edf7-dbe2-4900-9963-69cc44af8188" autoIncrement="false" autoIncrementSequenceName="Wines_StillSparklingFortified_seq" defaultValue="" name="StillSparklingFortified" nullable="0" physicalName="StillSparklingFortified" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+    <column id="COL67" populated="true" UUID="ae627117-c05a-4868-87fb-93df78b1ed21" autoIncrement="false" autoIncrementSequenceName="Wines_WineTypeId_seq" defaultValue="" name="WineTypeId" nullable="0" physicalName="WineTypeId" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-6" userDefinedTypeUUID="608a1d2c-c960-44ac-b1f3-503aba0a5b7b" >
      <remarks></remarks>
     </column>
-    <column id="COL68" populated="true" UUID="33b66eed-6474-41a4-b20b-98249c9e8dd0" autoIncrement="false" autoIncrementSequenceName="Wines_CertifiedOrganic_seq" defaultValue="" name="CertifiedOrganic" nullable="0" physicalName="CertifiedOrganic" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="16" userDefinedTypeUUID="a26374aa-3026-4bb8-b564-eb2e186dfa5d" >
+    <column id="COL68" populated="true" UUID="33b66eed-6474-41a4-b20b-98249c9e8dd0" autoIncrement="false" autoIncrementSequenceName="Wines_CertifiedOrganic_seq" defaultValue="0" name="CertifiedOrganic" nullable="0" physicalName="CertifiedOrganic" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="16" userDefinedTypeUUID="a26374aa-3026-4bb8-b564-eb2e186dfa5d" >
      <remarks></remarks>
     </column>
-    <column id="COL69" populated="true" UUID="dbf50357-8d58-426e-aba5-3fd176377803" autoIncrement="false" autoIncrementSequenceName="Wines_Varietals_seq" defaultValue="" name="Varietals" nullable="0" physicalName="Varietals" precision="100" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+    <column id="COL69" populated="true" UUID="dbf50357-8d58-426e-aba5-3fd176377803" autoIncrement="false" autoIncrementSequenceName="Wines_Varietals_seq" defaultValue="" name="Varietals" nullable="1" physicalName="Varietals" precision="100" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks>Comma separated list of the grape varietals in the wine</remarks>
     </column>
     <column id="COL70" populated="true" UUID="09b4b6dd-f1c7-40ad-8de0-aa0da82a219a" autoIncrement="false" autoIncrementSequenceName="Wines_ABV_seq" defaultValue="" name="ABV" nullable="0" physicalName="ABV" precision="5" referenceCount="1" scale="2" sourceDataTypeName="UserDefinedSQLType" type="3" userDefinedTypeUUID="cc1304ea-628a-4fc5-a84a-06ba14759152" >
@@ -244,13 +244,13 @@
     <column id="COL71" populated="true" UUID="c28d264c-9dff-4432-bce0-25209e17add1" autoIncrement="false" autoIncrementSequenceName="Producers_Country_seq" defaultValue="" name="Country" nullable="0" physicalName="Country" precision="100" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>
     </column>
-    <column id="COL72" populated="true" UUID="f12a5ac1-abef-40da-b1df-81e4766e2134" autoIncrement="false" autoIncrementSequenceName="Producers_Region_seq" defaultValue="" name="Region" nullable="0" physicalName="Region" precision="100" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+    <column id="COL72" populated="true" UUID="f12a5ac1-abef-40da-b1df-81e4766e2134" autoIncrement="false" autoIncrementSequenceName="Producers_Region_seq" defaultValue="" name="Region" nullable="1" physicalName="Region" precision="100" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>
     </column>
-    <column id="COL73" populated="true" UUID="e7ac7c9f-49c9-4118-b569-0ee2b53f6d79" autoIncrement="false" autoIncrementSequenceName="Producers_SubRegion_seq" defaultValue="" name="SubRegion" nullable="0" physicalName="SubRegion" precision="100" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+    <column id="COL73" populated="true" UUID="e7ac7c9f-49c9-4118-b569-0ee2b53f6d79" autoIncrement="false" autoIncrementSequenceName="Producers_SubRegion_seq" defaultValue="" name="SubRegion" nullable="1" physicalName="SubRegion" precision="100" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>
     </column>
-    <column id="COL74" populated="true" UUID="766b0358-c043-4d78-998a-fcb814f93189" autoIncrement="false" autoIncrementSequenceName="Producers_Appellation_seq" defaultValue="" name="Appellation" nullable="0" physicalName="Appellation" precision="100" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+    <column id="COL74" populated="true" UUID="766b0358-c043-4d78-998a-fcb814f93189" autoIncrement="false" autoIncrementSequenceName="Producers_Appellation_seq" defaultValue="" name="Appellation" nullable="1" physicalName="Appellation" precision="100" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>
     </column>
     <column id="COL75" populated="true" UUID="c06b1ed6-6f48-45c1-80a5-73ece655acc9" autoIncrement="false" autoIncrementSequenceName="Wines_ProducerId_seq" defaultValue="" name="ProducerId" nullable="0" physicalName="ProducerId" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
@@ -263,22 +263,22 @@ Retail sales are sometimes by case and sometimes by unit</remarks>
     <column id="COL77" populated="true" UUID="be684bdb-03df-4a08-856f-426248c09448" autoIncrement="false" autoIncrementSequenceName="LookupUnits_CaseUnitId_seq" defaultValue="" name="CaseUnitId" nullable="0" physicalName="CaseUnitId" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-6" userDefinedTypeUUID="608a1d2c-c960-44ac-b1f3-503aba0a5b7b" >
      <remarks>Type of unit in a case of this wine</remarks>
     </column>
-    <column id="COL78" populated="true" UUID="ba1f19c0-ee59-4ad3-baf3-494ed0684b18" autoIncrement="false" autoIncrementSequenceName="Wines_BottleColor_seq" defaultValue="" name="BottleColor" nullable="0" physicalName="BottleColor" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+    <column id="COL78" populated="true" UUID="ba1f19c0-ee59-4ad3-baf3-494ed0684b18" autoIncrement="false" autoIncrementSequenceName="Wines_BottleColor_seq" defaultValue="" name="BottleColor" nullable="1" physicalName="BottleColor" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>
     </column>
-    <column id="COL79" populated="true" UUID="d961dd0a-7728-4afd-88cf-8975aaa1cc8e" autoIncrement="false" autoIncrementSequenceName="Wines_ShelfTalkerText_seq" defaultValue="" name="ShelfTalkerText" nullable="0" physicalName="ShelfTalkerText" precision="2000" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
+    <column id="COL79" populated="true" UUID="d961dd0a-7728-4afd-88cf-8975aaa1cc8e" autoIncrement="false" autoIncrementSequenceName="Wines_ShelfTalkerText_seq" defaultValue="" name="ShelfTalkerText" nullable="1" physicalName="ShelfTalkerText" precision="2000" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
      <remarks></remarks>
     </column>
-    <column id="COL80" populated="true" UUID="791dc865-6bc2-486a-8037-e11f9d4b6324" autoIncrement="false" autoIncrementSequenceName="Wines_TastingNotes_seq" defaultValue="" name="TastingNotes" nullable="0" physicalName="TastingNotes" precision="2000" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
+    <column id="COL80" populated="true" UUID="791dc865-6bc2-486a-8037-e11f9d4b6324" autoIncrement="false" autoIncrementSequenceName="Wines_TastingNotes_seq" defaultValue="" name="TastingNotes" nullable="1" physicalName="TastingNotes" precision="2000" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
      <remarks></remarks>
     </column>
-    <column id="COL81" populated="true" UUID="e0b12066-0c0a-4943-a5fa-a73889aa9fa6" autoIncrement="false" autoIncrementSequenceName="Wines_Vinification_seq" defaultValue="" name="Vinification" nullable="0" physicalName="Vinification" precision="2000" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
+    <column id="COL81" populated="true" UUID="e0b12066-0c0a-4943-a5fa-a73889aa9fa6" autoIncrement="false" autoIncrementSequenceName="Wines_Vinification_seq" defaultValue="" name="Vinification" nullable="1" physicalName="Vinification" precision="2000" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
      <remarks></remarks>
     </column>
-    <column id="COL82" populated="true" UUID="4929cff6-e084-4f76-af7e-3f7e450c7ad6" autoIncrement="false" autoIncrementSequenceName="Producers_TerroirVineyardPractices_seq" defaultValue="" name="TerroirVineyardPractices" nullable="0" physicalName="TerroirVineyardPractices" precision="2000" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
+    <column id="COL82" populated="true" UUID="4929cff6-e084-4f76-af7e-3f7e450c7ad6" autoIncrement="false" autoIncrementSequenceName="Producers_TerroirVineyardPractices_seq" defaultValue="" name="TerroirVineyardPractices" nullable="1" physicalName="TerroirVineyardPractices" precision="2000" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
      <remarks></remarks>
     </column>
-    <column id="COL83" populated="true" UUID="39be6f90-5c28-4c4b-822e-ebf45ee557a9" autoIncrement="false" autoIncrementSequenceName="Wines_PressParagraph_seq" defaultValue="" name="PressParagraph" nullable="0" physicalName="PressParagraph" precision="6000" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
+    <column id="COL83" populated="true" UUID="39be6f90-5c28-4c4b-822e-ebf45ee557a9" autoIncrement="false" autoIncrementSequenceName="Wines_PressParagraph_seq" defaultValue="" name="PressParagraph" nullable="1" physicalName="PressParagraph" precision="6000" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
      <remarks></remarks>
     </column>
     <column id="COL84" populated="true" UUID="6b437135-f74e-42fe-8cc8-d3e3e4938e6a" autoIncrement="false" autoIncrementSequenceName="Wines_CreationTimestamp_seq" defaultValue="" name="CreationTimestamp" nullable="0" physicalName="CreationTimestamp" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="93" userDefinedTypeUUID="6497d8de-0e00-40d6-a42e-e2adca83be64" >
@@ -531,10 +531,10 @@ Retail sales are sometimes by case and sometimes by unit</remarks>
     <column id="COL154" populated="true" UUID="7af541d4-0139-483a-9fa3-01c52ac05b9a" autoIncrement="false" autoIncrementSequenceName="LookupCaseUnits_VolumeInMilliliters_seq" defaultValue="750" name="VolumeInMilliliters" nullable="0" physicalName="VolumeInMilliliters" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
      <remarks>Volume in this unit in milliliters</remarks>
     </column>
-    <column id="COL155" populated="true" UUID="d081039c-fd3a-4835-a6b9-6a99f5b89d09" autoIncrement="false" autoIncrementSequenceName="LookupCaseUnits_UnitType_seq" defaultValue="bottle" name="UnitType" nullable="0" physicalName="UnitType" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+    <column id="COL155" populated="true" UUID="d081039c-fd3a-4835-a6b9-6a99f5b89d09" autoIncrement="false" autoIncrementSequenceName="LookupCaseUnits_UnitType_seq" defaultValue="&apos;bottle&apos;" name="UnitType" nullable="0" physicalName="UnitType" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks>Type of unit: bottle, can, BiB (bag in box)</remarks>
     </column>
-    <column id="COL156" populated="true" UUID="89f37aab-acfa-4e1d-a2c7-2c797f7ea13e" autoIncrement="false" autoIncrementSequenceName="LookupCaseUnits_VolumeUnitsOnLabel_seq" defaultValue="ml" name="VolumeUnitsOnLabel" nullable="0" physicalName="VolumeUnitsOnLabel" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+    <column id="COL156" populated="true" UUID="89f37aab-acfa-4e1d-a2c7-2c797f7ea13e" autoIncrement="false" autoIncrementSequenceName="LookupCaseUnits_VolumeUnitsOnLabel_seq" defaultValue="&apos;ml&apos;" name="VolumeUnitsOnLabel" nullable="0" physicalName="VolumeUnitsOnLabel" precision="15" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks>Volume units name (e.g ml, Liter) shown on label, and in name.</remarks>
     </column>
     <column id="COL157" populated="true" UUID="5473b93f-9253-4cae-99d3-662927c27168" autoIncrement="false" autoIncrementSequenceName="LookupCaseUnits_LabelVolumeConvFactor_seq" defaultValue="1.0" name="LabelVolumeConvFactor" nullable="0" physicalName="LabelVolumeConvFactor" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="8" userDefinedTypeUUID="4fc90970-b2e5-41dd-911c-cc605d87e7a8" >
@@ -580,10 +580,10 @@ Retail sales are sometimes by case and sometimes by unit</remarks>
     <column id="COL167" populated="true" UUID="23d35295-0e53-41a2-9ae2-74cc2f63009c" autoIncrement="false" autoIncrementSequenceName="WinePricing_WineId_seq" defaultValue="" name="WineId" nullable="0" physicalName="WineId" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL60" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
      <remarks></remarks>
     </column>
-    <column id="COL168" populated="true" UUID="9dc76133-dca2-442d-8319-6577bfdc5931" autoIncrement="false" autoIncrementSequenceName="WinePricing_Available_seq" defaultValue="" name="Available" nullable="0" physicalName="Available" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="16" userDefinedTypeUUID="a26374aa-3026-4bb8-b564-eb2e186dfa5d" >
+    <column id="COL168" populated="true" UUID="9dc76133-dca2-442d-8319-6577bfdc5931" autoIncrement="false" autoIncrementSequenceName="WinePricing_Available_seq" defaultValue="0" name="Available" nullable="0" physicalName="Available" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="16" userDefinedTypeUUID="a26374aa-3026-4bb8-b564-eb2e186dfa5d" >
      <remarks>If a wine is not available it should be excluded from the list of wines for sale (True(1)-available, False(0)-excluded)</remarks>
     </column>
-    <column id="COL169" populated="true" UUID="e459d1df-791c-4a5b-bd0d-1a7a37c19b97" autoIncrement="false" autoIncrementSequenceName="WinePricing_SoldOut_seq" defaultValue="" name="SoldOut" nullable="0" physicalName="SoldOut" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="16" userDefinedTypeUUID="a26374aa-3026-4bb8-b564-eb2e186dfa5d" >
+    <column id="COL169" populated="true" UUID="e459d1df-791c-4a5b-bd0d-1a7a37c19b97" autoIncrement="false" autoIncrementSequenceName="WinePricing_SoldOut_seq" defaultValue="0" name="SoldOut" nullable="0" physicalName="SoldOut" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="16" userDefinedTypeUUID="a26374aa-3026-4bb8-b564-eb2e186dfa5d" >
      <remarks>True(1)-sold out, False(0)-in stock</remarks>
     </column>
     <column id="COL170" populated="true" UUID="00b5c00a-14cb-4342-82b0-9788a0807301" autoIncrement="false" autoIncrementSequenceName="WinePricing_PriceListSection_seq" defaultValue="" name="PriceListSection" nullable="0" physicalName="PriceListSection" precision="50" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
@@ -592,8 +592,8 @@ Retail sales are sometimes by case and sometimes by unit</remarks>
     <column id="COL171" populated="true" UUID="feadec1f-e5d6-4717-88f2-7f40653fca6d" autoIncrement="false" autoIncrementSequenceName="WinePricing_PriceListNotes_seq" defaultValue="" name="PriceListNotes" nullable="0" physicalName="PriceListNotes" precision="80" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>
     </column>
-    <column id="COL172" populated="true" UUID="bb4fd74e-eed4-4c2f-97bd-8cab8f3d1097" autoIncrement="false" autoIncrementSequenceName="WinePricing_FOBPrice_seq" defaultValue="" name="FOBPrice" nullable="0" physicalName="FOBPrice" precision="8" referenceCount="1" scale="2" sourceDataTypeName="UserDefinedSQLType" type="3" userDefinedTypeUUID="cc1304ea-628a-4fc5-a84a-06ba14759152" >
-     <remarks>case price for distributors</remarks>
+    <column id="COL172" populated="true" UUID="bb4fd74e-eed4-4c2f-97bd-8cab8f3d1097" autoIncrement="false" autoIncrementSequenceName="WinePricing_FOBPrice_seq" defaultValue="" name="FOBPrice" nullable="1" physicalName="FOBPrice" precision="8" referenceCount="1" scale="2" sourceDataTypeName="UserDefinedSQLType" type="3" userDefinedTypeUUID="cc1304ea-628a-4fc5-a84a-06ba14759152" >
+     <remarks>case price for distributors, null if not set yet for new wine</remarks>
     </column>
     <column id="COL173" populated="true" UUID="1998dc95-77b7-47ce-9610-d9a8fea95217" autoIncrement="false" autoIncrementSequenceName="WinePricing_NY_Wholesale_seq" defaultValue="" name="NY_Wholesale" nullable="1" physicalName="NY_Wholesale" precision="8" referenceCount="1" scale="2" sourceDataTypeName="UserDefinedSQLType" type="3" userDefinedTypeUUID="cc1304ea-628a-4fc5-a84a-06ba14759152" >
      <remarks>NY distributor price for retailers</remarks>
@@ -827,58 +827,61 @@ Retail sales are sometimes by case and sometimes by unit</remarks>
    </folder>
   </table>
   <relationships>
-   <relationship id="REL242" populated="true" UUID="3bdb4b85-c6b9-4808-9b0a-29d83c829921" deferrability="7" deleteRule="3" fk-table-ref="TAB109" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomers_Address_fk" physicalName="emailcustomers_emailcustomers_address_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
+   <relationship id="REL242" populated="true" UUID="3bdb4b85-c6b9-4808-9b0a-29d83c829921" deferrability="7" deleteRule="3" fk-table-ref="TAB109" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomers_Address_fk" physicalName="EmailCustomers_EmailCustomers_Address_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP243" populated="true" UUID="0a1ca204-91e6-4dad-b73f-190b4bde947c" fk-column-ref="COL110" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
    </relationship>
-   <relationship id="REL244" populated="true" UUID="2456a28c-d694-46f6-848b-55434dd576a3" deferrability="7" deleteRule="3" fk-table-ref="TAB121" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomerPhoneNumbers_fk" physicalName="emailcustomers_emailcustomerphonenumbers_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
+   <relationship id="REL244" populated="true" UUID="2456a28c-d694-46f6-848b-55434dd576a3" deferrability="7" deleteRule="3" fk-table-ref="TAB121" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomerPhoneNumbers_fk" physicalName="EmailCustomers_EmailCustomerPhoneNumbers_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP245" populated="true" UUID="e61694dd-0df9-4009-963c-b171c35cd1b5" fk-column-ref="COL122" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
    </relationship>
-   <relationship id="REL246" populated="true" UUID="69377640-7786-4f87-9c61-b679101ae7e5" deferrability="7" deleteRule="3" fk-table-ref="TAB90" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomerCreditCards_fk" physicalName="emailcustomers_emailcustomercreditcards_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
+   <relationship id="REL246" populated="true" UUID="69377640-7786-4f87-9c61-b679101ae7e5" deferrability="7" deleteRule="3" fk-table-ref="TAB90" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomerCreditCards_fk" physicalName="EmailCustomers_EmailCustomerCreditCards_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP247" populated="true" UUID="f3073d98-8131-47b1-a603-3a6c0d0e4a4e" fk-column-ref="COL91" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
    </relationship>
-   <relationship id="REL248" populated="true" UUID="20073f54-5430-404c-9e24-68dc14d023fa" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="EmailCustomers_Orders_fk" physicalName="emailcustomers_orders_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
+   <relationship id="REL248" populated="true" UUID="20073f54-5430-404c-9e24-68dc14d023fa" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="EmailCustomers_Orders_fk" physicalName="EmailCustomers_Orders_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP249" populated="true" UUID="becd949d-fac3-4610-9f07-ff8a3bc3d8fd" fk-column-ref="COL140" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
    </relationship>
-   <relationship id="REL250" populated="true" UUID="4a0ca037-7211-43eb-9913-6412cbc6ac02" deferrability="7" deleteRule="3" fk-table-ref="TAB145" fkCardinality="7" identifying="true" name="Wines_Orders_Wines_fk" physicalName="wines_orders_wines_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
+   <relationship id="REL250" populated="true" UUID="4a0ca037-7211-43eb-9913-6412cbc6ac02" deferrability="7" deleteRule="3" fk-table-ref="TAB145" fkCardinality="7" identifying="true" name="Wines_Orders_Wines_fk" physicalName="Wines_Orders_Wines_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP251" populated="true" UUID="671a149c-9df3-4657-978d-1cee6d8d7978" fk-column-ref="COL147" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL60" />
    </relationship>
-   <relationship id="REL252" populated="true" UUID="dcbec3e4-a935-4655-9e32-4718b76f38a8" deferrability="7" deleteRule="3" fk-table-ref="TAB166" fkCardinality="7" identifying="true" name="Wines_WinePricing_fk" physicalName="wines_winepricing_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
+   <relationship id="REL252" populated="true" UUID="dcbec3e4-a935-4655-9e32-4718b76f38a8" deferrability="7" deleteRule="3" fk-table-ref="TAB166" fkCardinality="7" identifying="true" name="Wines_WinePricing_fk" physicalName="Wines_WinePricing_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP253" populated="true" UUID="e594fd68-c2c0-4ad9-855e-024669d74e96" fk-column-ref="COL167" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL60" />
    </relationship>
-   <relationship id="REL254" populated="true" UUID="4e771034-b3a3-486b-b566-87284d50d8c1" deferrability="7" deleteRule="3" fk-table-ref="TAB184" fkCardinality="3" identifying="true" name="Wines_LegacyWineMaster_fk" physicalName="wines_legacywinemaster_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
+   <relationship id="REL254" populated="true" UUID="4e771034-b3a3-486b-b566-87284d50d8c1" deferrability="7" deleteRule="3" fk-table-ref="TAB184" fkCardinality="3" identifying="true" name="Wines_LegacyWineMaster_fk" physicalName="Wines_LegacyWineMaster_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP255" populated="true" UUID="fdd72698-11ff-4099-a141-264765d186b5" fk-column-ref="COL185" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL60" />
    </relationship>
-   <relationship id="REL256" populated="true" UUID="fce71d9d-236b-43d0-9037-b6695c16f650" deferrability="7" deleteRule="3" fk-table-ref="TAB231" fkCardinality="7" identifying="true" name="Wines_NJ_Distribution_fk" physicalName="wines_nj_distribution_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
+   <relationship id="REL256" populated="true" UUID="fce71d9d-236b-43d0-9037-b6695c16f650" deferrability="7" deleteRule="3" fk-table-ref="TAB231" fkCardinality="7" identifying="true" name="Wines_NJ_Distribution_fk" physicalName="Wines_NJ_Distribution_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP257" populated="true" UUID="ad72057d-0172-4b64-b173-eb6e263d1a08" fk-column-ref="COL232" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL60" />
    </relationship>
-   <relationship id="REL258" populated="true" UUID="b75915c7-1f6b-4449-be4b-5904d6a2b72d" deferrability="7" deleteRule="3" fk-table-ref="TAB109" fkCardinality="3" identifying="true" name="Addresses_EmailCustomers_Address_fk" physicalName="addresses_emailcustomers_address_fk" pk-table-ref="TAB100" pkCardinality="2" updateRule="3" >
+   <relationship id="REL258" populated="true" UUID="b75915c7-1f6b-4449-be4b-5904d6a2b72d" deferrability="7" deleteRule="3" fk-table-ref="TAB109" fkCardinality="3" identifying="true" name="Addresses_EmailCustomers_Address_fk" physicalName="Addresses_EmailCustomers_Address_fk" pk-table-ref="TAB100" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP259" populated="true" UUID="ce35536a-cbbe-4bd8-89e1-5edc07f822ce" fk-column-ref="COL111" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL101" />
    </relationship>
-   <relationship id="REL260" populated="true" UUID="101e0631-4f4b-4161-a10b-208444c12ef0" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="EmailCustomers_ShippingAddresses_Orders_fk" physicalName="emailcustomers_shippingaddresses_orders_fk" pk-table-ref="TAB109" pkCardinality="2" updateRule="3" >
+   <relationship id="REL260" populated="true" UUID="101e0631-4f4b-4161-a10b-208444c12ef0" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="EmailCustomers_ShippingAddresses_Orders_fk" physicalName="EmailCustomers_ShippingAddresses_Orders_fk" pk-table-ref="TAB109" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP261" populated="true" UUID="34314b75-853a-484e-8412-8645979ef3dd" fk-column-ref="COL140" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL110" />
     <column-mapping id="CMP262" populated="true" UUID="578ad226-47a6-4e42-a576-a6dbdceb4a26" fk-column-ref="COL141" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL111" />
    </relationship>
-   <relationship id="REL263" populated="true" UUID="cfe46d78-27dc-4d36-a496-933b8cc40283" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="Distributors_Orders_fk" physicalName="distributors_orders_fk" pk-table-ref="TAB115" pkCardinality="2" updateRule="3" >
+   <relationship id="REL263" populated="true" UUID="cfe46d78-27dc-4d36-a496-933b8cc40283" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="Distributors_Orders_fk" physicalName="Distributors_Orders_fk" pk-table-ref="TAB115" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP264" populated="true" UUID="8c964269-11f8-4fa6-82e5-769252cc0145" fk-column-ref="COL142" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL116" />
    </relationship>
-   <relationship id="REL265" populated="true" UUID="56842e64-c05e-4cae-8d3d-4e13f259e6fa" deferrability="7" deleteRule="3" fk-table-ref="TAB59" fkCardinality="7" identifying="false" name="Producers_Wines_fk" physicalName="producers_wines_fk" pk-table-ref="TAB129" pkCardinality="2" updateRule="3" >
+   <relationship id="REL265" populated="true" UUID="56842e64-c05e-4cae-8d3d-4e13f259e6fa" deferrability="7" deleteRule="3" fk-table-ref="TAB59" fkCardinality="7" identifying="false" name="Producers_Wines_fk" physicalName="Producers_Wines_fk" pk-table-ref="TAB129" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP266" populated="true" UUID="8d60f1bc-3c8f-48c0-8bd6-c5b668b1e084" fk-column-ref="COL75" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL130" />
    </relationship>
-   <relationship id="REL267" populated="true" UUID="266f0142-85ec-4020-8884-0b2cbb0cfb2d" deferrability="7" deleteRule="3" fk-table-ref="TAB145" fkCardinality="7" identifying="true" name="Orders_Orders_Wines_fk" physicalName="orders_orders_wines_fk" pk-table-ref="TAB137" pkCardinality="2" updateRule="3" >
+   <relationship id="REL267" populated="true" UUID="266f0142-85ec-4020-8884-0b2cbb0cfb2d" deferrability="7" deleteRule="3" fk-table-ref="TAB145" fkCardinality="7" identifying="true" name="Orders_Orders_Wines_fk" physicalName="Orders_Orders_Wines_fk" pk-table-ref="TAB137" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP268" populated="true" UUID="28a1059d-1cc4-4014-848b-d4b484c05649" fk-column-ref="COL146" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL138" />
    </relationship>
-   <relationship id="REL269" populated="true" UUID="c70acadb-be85-4523-ad06-23151c2959be" deferrability="7" deleteRule="3" fk-table-ref="TAB59" fkCardinality="7" identifying="false" name="LookupUnits_Wines_fk" physicalName="lookupunits_wines_fk" pk-table-ref="TAB151" pkCardinality="2" updateRule="3" >
+   <relationship id="REL269" populated="true" UUID="c70acadb-be85-4523-ad06-23151c2959be" deferrability="7" deleteRule="3" fk-table-ref="TAB59" fkCardinality="7" identifying="false" name="LookupUnits_Wines_fk" physicalName="LookupUnits_Wines_fk" pk-table-ref="TAB151" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP270" populated="true" UUID="64583d34-9e75-4bb5-b14e-6484b768ac94" fk-column-ref="COL77" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL152" />
    </relationship>
-   <relationship id="REL271" populated="true" UUID="edf0e74e-cce4-483c-8d71-da0753e5ff7b" deferrability="7" deleteRule="3" fk-table-ref="TAB90" fkCardinality="7" identifying="false" name="LookupCCIssuers_EmailCustomerCreditCards_fk" physicalName="lookupccissuers_emailcustomercreditcards_fk" pk-table-ref="TAB160" pkCardinality="2" updateRule="3" >
+   <relationship id="REL271" populated="true" UUID="edf0e74e-cce4-483c-8d71-da0753e5ff7b" deferrability="7" deleteRule="3" fk-table-ref="TAB90" fkCardinality="7" identifying="false" name="LookupCCIssuers_EmailCustomerCreditCards_fk" physicalName="LookupCCIssuers_EmailCustomerCreditCards_fk" pk-table-ref="TAB160" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP272" populated="true" UUID="0a3ecc9d-40ab-48b7-a7f3-9e2eb4611b3d" fk-column-ref="COL93" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL161" />
+   </relationship>
+   <relationship id="REL273" populated="true" UUID="bf2ce7e1-4b99-4317-94d8-ba8107e3ab6c" deferrability="7" deleteRule="3" fk-table-ref="TAB59" fkCardinality="7" identifying="false" name="LookupWineTypes_Wines_fk" physicalName="LookupWineTypes_Wines_fk" pk-table-ref="TAB237" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP274" populated="true" UUID="970dcdc5-8b2a-4547-bb80-844d849dd6ee" fk-column-ref="COL67" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL238" />
    </relationship>
   </relationships>
  </target-database>
- <ddl-generator type="ca.sqlpower.architect.ddl.MySqlDDLGenerator" allow-connection="false"> </ddl-generator>
+ <ddl-generator type="ca.sqlpower.architect.ddl.MySqlDDLGenerator" allow-connection="true"> </ddl-generator>
  <liquibase-settings useSeparateChangeSets="false" generateId="false" idStart="1"/>
  <create-kettle-job-settings filePath="" jobName="" schemaName="" kettleJoinType="0" savingToFile="true" />
- <play-pen zoom="1.0" viewportX="0" viewportY="0" relationship-style="rectilinear" names-displayLogicalNames="true" showPrimaryTag="true" showForeignTag="true" showAlternateTag="true" columnVisibility="ALL" relationshipLabelVisibility="true">
+ <play-pen zoom="1.1892071150027208" viewportX="0" viewportY="0" relationship-style="rectilinear" names-displayLogicalNames="true" showPrimaryTag="true" showForeignTag="true" showAlternateTag="true" columnVisibility="ALL" relationshipLabelVisibility="true">
   <table-pane table-ref="TAB48" x="22" y="20" bgColor="0xbfd6ff" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB59" x="715" y="21" bgColor="0xbfd6ff" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB90" x="22" y="454" bgColor="0xc7d0df" fgColor="0x000000" rounded="false" dashed="false"/>
@@ -889,12 +892,12 @@ Retail sales are sometimes by case and sometimes by unit</remarks>
   <table-pane table-ref="TAB129" x="673" y="905" bgColor="0xbfd6ff" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB137" x="397" y="20" bgColor="0xbfd6ff" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB145" x="463" y="226" bgColor="0xb9bbf6" fgColor="0x000000" rounded="false" dashed="false"/>
-  <table-pane table-ref="TAB151" x="824" y="737" bgColor="0xdfedce" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB151" x="825" y="737" bgColor="0xdfedce" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB160" x="62" y="635" bgColor="0xdfedce" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB166" x="307" y="671" bgColor="0xc7d0df" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB184" x="1133" y="26" bgColor="0xeeeeee" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB231" x="999" y="913" bgColor="0xeeeeee" fgColor="0x000000" rounded="false" dashed="false"/>
-  <table-pane table-ref="TAB237" x="1204" y="830" bgColor="0xdfedce" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB237" x="770" y="657" bgColor="0xdfedce" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-link relationship-ref="REL242" pkConnection="0.7884615384615384" fkConnection="0.16287878787878787" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="132"/>
   <table-link relationship-ref="REL258" pkConnection="0.22388059701492538" fkConnection="0.5513307984790875" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="66"/>
   <table-link relationship-ref="REL244" pkConnection="0.22692307692307692" fkConnection="0.11026615969581749" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="132"/>
@@ -910,6 +913,7 @@ Retail sales are sometimes by case and sometimes by unit</remarks>
   <table-link relationship-ref="REL252" pkConnection="0.8571428571428571" fkConnection="0.8953846153846153" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="130"/>
   <table-link relationship-ref="REL254" pkConnection="0.07380073800738007" fkConnection="0.04358974358974359" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="33"/>
   <table-link relationship-ref="REL256" pkConnection="0.933579335793358" fkConnection="0.4358974358974359" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="129"/>
+  <table-link relationship-ref="REL273" pkConnection="0.4391304347826087" fkConnection="0.5531914893617021" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
  </play-pen>
  <critic-manager>
   <critic-grouping platformType="Generic" enabled="true">

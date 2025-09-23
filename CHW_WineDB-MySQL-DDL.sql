@@ -26,8 +26,8 @@ CREATE TABLE LookupCaseUnits (
                 CaseUnitId TINYINT AUTO_INCREMENT NOT NULL,
                 Name VARCHAR(30) NOT NULL,
                 VolumeInMilliliters INT DEFAULT 750 NOT NULL,
-                UnitType VARCHAR(15) DEFAULT bottle NOT NULL,
-                VolumeUnitsOnLabel VARCHAR(15) DEFAULT ml NOT NULL,
+                UnitType VARCHAR(15) DEFAULT 'bottle' NOT NULL,
+                VolumeUnitsOnLabel VARCHAR(15) DEFAULT 'ml' NOT NULL,
                 LabelVolumeConvFactor DOUBLE PRECISION DEFAULT 1.0 NOT NULL,
                 PRIMARY KEY (CaseUnitId)
 );
@@ -83,34 +83,38 @@ ALTER TABLE Addresses MODIFY COLUMN PostalCode VARCHAR(30) COMMENT 'zipcode in U
 CREATE TABLE Wines (
                 WineId INT AUTO_INCREMENT NOT NULL,
                 AccountingItemNo VARCHAR(10) NOT NULL,
-                COLA_TTBID VARCHAR(15) NOT NULL,
-                UPC VARCHAR(15) NOT NULL,
+                COLA_TTBID VARCHAR(15) DEFAULT 'Pending' NOT NULL,
+                UPC VARCHAR(15),
                 Name VARCHAR(100) NOT NULL,
                 Vintage SMALLINT NOT NULL,
                 Color VARCHAR(15) NOT NULL,
-                StillSparklingFortified VARCHAR(15) NOT NULL,
-                CertifiedOrganic BOOLEAN NOT NULL,
-                Varietals VARCHAR(100) NOT NULL,
+                WineTypeId TINYINT NOT NULL,
+                CertifiedOrganic BOOLEAN DEFAULT 0 NOT NULL,
+                Varietals VARCHAR(100),
                 ABV DECIMAL(5,2) NOT NULL,
                 Country VARCHAR(100) NOT NULL,
-                Region VARCHAR(100) NOT NULL,
-                SubRegion VARCHAR(100) NOT NULL,
-                Appellation VARCHAR(100) NOT NULL,
+                Region VARCHAR(100),
+                SubRegion VARCHAR(100),
+                Appellation VARCHAR(100),
                 ProducerId INT NOT NULL,
                 UnitsPerCase SMALLINT NOT NULL,
                 CaseUnitId TINYINT NOT NULL,
-                BottleColor VARCHAR(15) NOT NULL,
-                ShelfTalkerText TEXT(2000) NOT NULL,
-                TastingNotes TEXT(2000) NOT NULL,
-                Vinification TEXT(2000) NOT NULL,
-                TerroirVineyardPractices TEXT(2000) NOT NULL,
-                PressParagraph TEXT(6000) NOT NULL,
+                BottleColor VARCHAR(15),
+                ShelfTalkerText TEXT(2000),
+                TastingNotes TEXT(2000),
+                Vinification TEXT(2000),
+                TerroirVineyardPractices TEXT(2000),
+                PressParagraph TEXT(6000),
                 CreationTimestamp DATETIME NOT NULL,
                 CreatedBy VARCHAR(32) NOT NULL,
                 ModificationTimestamp DATETIME NOT NULL,
                 ModifiedBy VARCHAR(32) NOT NULL,
                 PRIMARY KEY (WineId)
 );
+
+ALTER TABLE Wines MODIFY COLUMN AccountingItemNo VARCHAR(10) COMMENT 'AccountEdge ID';
+
+ALTER TABLE Wines MODIFY COLUMN COLA_TTBID VARCHAR(15) COMMENT 'Either the TTB ID or ''Pending''';
 
 ALTER TABLE Wines MODIFY COLUMN Vintage SMALLINT COMMENT '4 digit year';
 
@@ -203,11 +207,11 @@ ALTER TABLE LegacyWineMaster MODIFY COLUMN SoldOut CHAR(1) COMMENT 'True(1)-sold
 
 CREATE TABLE WinePricing (
                 WineId INT NOT NULL,
-                Available BOOLEAN NOT NULL,
-                SoldOut BOOLEAN NOT NULL,
+                Available BOOLEAN DEFAULT 0 NOT NULL,
+                SoldOut BOOLEAN DEFAULT 0 NOT NULL,
                 PriceListSection VARCHAR(50) NOT NULL,
                 PriceListNotes VARCHAR(80) NOT NULL,
-                FOBPrice DECIMAL(8,2) NOT NULL,
+                FOBPrice DECIMAL(8,2),
                 NY_Wholesale DECIMAL(8,2),
                 NY_MultiCasePrice DECIMAL(8,2),
                 NY_MultiCaseQty TINYINT,
@@ -226,7 +230,7 @@ ALTER TABLE WinePricing MODIFY COLUMN Available BOOLEAN COMMENT 'If a wine is no
 
 ALTER TABLE WinePricing MODIFY COLUMN SoldOut BOOLEAN COMMENT 'True(1)-sold out, False(0)-in stock';
 
-ALTER TABLE WinePricing MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'case price for distributors';
+ALTER TABLE WinePricing MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'case price for distributors, null if not set yet for new wine';
 
 ALTER TABLE WinePricing MODIFY COLUMN NY_Wholesale DECIMAL(8, 2) COMMENT 'NY distributor price for retailers';
 
@@ -315,6 +319,12 @@ CREATE TABLE Orders_Wines (
                 PRIMARY KEY (OrderId, WineId)
 );
 
+
+ALTER TABLE Wines ADD CONSTRAINT lookupwinetypes_wines_fk
+FOREIGN KEY (WineTypeId)
+REFERENCES LookupWineTypes (WineTypeId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
 
 ALTER TABLE EmailCustomerCreditCards ADD CONSTRAINT lookupccissuers_emailcustomercreditcards_fk
 FOREIGN KEY (CCIssuerId)
