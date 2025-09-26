@@ -1,0 +1,132 @@
+LOAD DATA LOCAL INFILE '/tmp/data/infiles/WineMasterTable_09-23-2.csv'
+REPLACE INTO TABLE LegacyWineMaster_923
+FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
+IGNORE 1 LINES
+(
+WineId,
+AccountingItemNo,
+NYPPItemNo,
+WesternItemNo,
+COLA_TTBID,
+UPC,
+FullName,
+Vintage,
+Color,
+StillSparklingFortified,
+CertifiedOrganic,
+Varietals,
+@ABV,
+Country,
+Region,
+SubRegion,
+Appellation,
+CaseUnitType,
+BottleSize,
+BottlesPerCase,
+BottleColor,
+FrontLabelFilename,
+BackLabelFilename,
+ShelfTalkerText,
+TastingNotes,
+Vinification,
+TerroirVineyardPractices,
+PressParagraph,
+ProducerName,
+ProducerDescription,
+ProducerCode,
+YearEstablished,
+COLA_PDF_Filename,
+NJ_AssignedUPC,
+NJ_BrandRegNo,
+@CREATED,
+@LASTUPDATED,
+Excluded,
+SoldOut,
+PriceListSection,
+PriceListNotes,
+@FOBPrice,
+FOB_ARB,
+@NY_MultiCasePrice,
+@NY_MultiCaseQty,
+@NJ_MultiCasePrice,
+@NJ_MultiCaseQty,
+@NY_PP,
+@NJ_PP
+)
+SET
+ABV=if(@ABV = '', NULL, @ABV),
+DateCreated=if(@CREATED = '', NULL, @CREATED),
+LastUpdated=if(@LASTUPDATED = '', NULL, @LASTUPDATED),
+FOBPrice=if(@FOBPrice = '', NULL, @FOBPrice),
+NY_MultiCasePrice=if(@NY_MultiCasePrice = '', NULL, @NY_MultiCasePrice),
+NY_MultiCaseQty=if(@NY_MultiCaseQty = '', NULL, @NY_MultiCaseQty),
+NJ_MultiCasePrice=if(@NJ_MultiCasePrice = '', NULL, @NJ_MultiCasePrice),
+NJ_MultiCaseQty=if(@NJ_MultiCaseQty = '', NULL, @NJ_MultiCaseQty),
+NY_PP=if(@NY_PP = '', NULL, @NY_PP),
+NJ_PP=if(@NJ_PP = '', NULL, @NJ_PP);
+
+CREATE TABLE LegacyWineMaster_923 (
+                WineId INT NOT NULL,
+                AccountingItemNo VARCHAR(11),
+                NYPPItemNo VARCHAR(17),
+                WesternItemNo VARCHAR(11),
+                COLA_TTBID VARCHAR(15),
+                UPC VARCHAR(13),
+                FullName VARCHAR(114) NOT NULL,
+                Vintage SMALLINT,
+                Color VARCHAR(5),
+                StillSparklingFortified VARCHAR(9),
+                CertifiedOrganic VARCHAR(19),
+                Varietals VARCHAR(100),
+                ABV DECIMAL(5,2),
+                Country VARCHAR(7),
+                Region VARCHAR(20),
+                SubRegion VARCHAR(20),
+                Appellation VARCHAR(58),
+                CaseUnitType VARCHAR(7),
+                BottleSize VARCHAR(18),
+                BottlesPerCase TINYINT,
+                BottleColor VARCHAR(6),
+                FrontLabelFilename VARCHAR(86),
+                BackLabelFilename VARCHAR(53),
+                ShelfTalkerText TEXT(1030),
+                TastingNotes TEXT(1248),
+                Vinification TEXT(1146),
+                TerroirVineyardPractices TEXT(1359),
+                PressParagraph TEXT(4660),
+                ProducerName VARCHAR(58),
+                ProducerDescription TEXT(1269),
+                ProducerCode CHAR(3),
+                YearEstablished VARCHAR(27),
+                COLA_PDF_Filename VARCHAR(70),
+                NJ_AssignedUPC VARCHAR(13),
+                NJ_BrandRegNo VARCHAR(6),
+                DateCreated DATE,
+                LastUpdated DATETIME,
+                Excluded VARCHAR(24),
+                SoldOut CHAR(1),
+                PriceListSection VARCHAR(39),
+                PriceListNotes VARCHAR(144),
+                FOBPrice DECIMAL(8,2),
+                FOB_ARB VARCHAR(29),
+                NY_MultiCasePrice DECIMAL(8,2),
+                NY_MultiCaseQty TINYINT,
+                NJ_MultiCasePrice DECIMAL(8,2),
+                NJ_MultiCaseQty TINYINT,
+                NY_PP DOUBLE PRECISION,
+                NJ_PP DOUBLE PRECISION,
+                PRIMARY KEY (WineId)
+);
+
+
+# Some vim macros for fixing the csv written by libreoffice Calc
+:%s/^$/\\n/
+:%s/\\n\n/\\n\\n/
+:%s/\n\\n/\\n\\n/
+:%s/\n"|/\\n"|/
+:%s/\n\([^0-9][^0-9][^0-9][^0-9][^|]\)/\\n\1/
+:%s/|"""/|"\\"/g
+:%s/""/\\"/g
+
+# fix LastUpdated date mm/dd/yyyy -> yyyy-mm-dd
+:%s,|\(\d\{2}\)/\(\d\{2}\)/\(\d\{4}\) ,|\3-\1-\2 ,
