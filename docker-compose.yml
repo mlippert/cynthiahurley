@@ -1,5 +1,8 @@
 ---
-# Configuration to start up a mongodb container containing the riffdata to be analyzed
+# Configuration to start up a database container (mariadb, mysql or mongodb) for use developing
+# a database for Cynthia Hurley Wines.
+# There's no dependency between these services, it was just more convenient to have them all in
+# a single compose file, and bring them up and down individually.
 
 version: '3.7'
 services:
@@ -14,6 +17,7 @@ services:
       - '3306:3306'
     volumes:
       - ./data/mariadb:/var/lib/mysql
+      - ./data/infiles:/tmp/data/infiles
 
   chw-mysql:
     image: mysql:latest
@@ -26,6 +30,7 @@ services:
       - '3306:3306'
     volumes:
       - ./data/mysql:/var/lib/mysql
+      - ./data/infiles:/tmp/data/infiles
 
   chw-mongo:
     image: mongo:${MONGO_VER-latest}
