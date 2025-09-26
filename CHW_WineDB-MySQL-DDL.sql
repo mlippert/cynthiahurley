@@ -43,12 +43,14 @@ CREATE TABLE LegacyWineMaster_923 (
                 PriceListNotes VARCHAR(144),
                 FOBPrice DECIMAL(8,2),
                 FOB_ARB VARCHAR(29),
+                NY_PP DECIMAL(8,2),
                 NY_MultiCasePrice DECIMAL(8,2),
                 NY_MultiCaseQty TINYINT,
+                NJ_PP DECIMAL(8,2),
                 NJ_MultiCasePrice DECIMAL(8,2),
                 NJ_MultiCaseQty TINYINT,
-                NY_PP DOUBLE PRECISION,
-                NJ_PP DOUBLE PRECISION,
+                NY_CurrentPricing VARCHAR(42),
+                NJ_CurrentPricing VARCHAR(30),
                 PRIMARY KEY (WineId)
 );
 
@@ -65,6 +67,10 @@ ALTER TABLE LegacyWineMaster_923 MODIFY COLUMN SoldOut CHAR(1) COMMENT 'True(1)-
 ALTER TABLE LegacyWineMaster_923 MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'Free on board (FOB) is the wine price for a case that includes all costs up to being lifted onto a ship.';
 
 ALTER TABLE LegacyWineMaster_923 MODIFY COLUMN FOB_ARB VARCHAR(29) COMMENT 'discounted FOB price negotiated w/ Arborway';
+
+ALTER TABLE LegacyWineMaster_923 MODIFY COLUMN NY_PP DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NY';
+
+ALTER TABLE LegacyWineMaster_923 MODIFY COLUMN NJ_PP DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NJ';
 
 
 CREATE TABLE LookupWineTypes (
@@ -280,15 +286,13 @@ CREATE TABLE WinePricing (
                 PriceListSection VARCHAR(50) NOT NULL,
                 PriceListNotes VARCHAR(80) NOT NULL,
                 FOBPrice DECIMAL(8,2),
-                NY_Wholesale DECIMAL(8,2),
+                FOB_ARB DECIMAL(8,2) DEFAULT FOBPrice,
+                NY_PP DECIMAL(8,2),
                 NY_MultiCasePrice DECIMAL(8,2),
                 NY_MultiCaseQty TINYINT,
-                NJ_Wholesale DECIMAL(8,2),
+                NJ_PP DECIMAL(8,2),
                 NJ_MultiCasePrice DECIMAL(8,2),
                 NJ_MiltiCaseQty TINYINT,
-                CurrentMassachusettsPricing VARCHAR(100) NOT NULL,
-                CurrentNewJerseyPricing VARCHAR(100) NOT NULL,
-                CurrentNewYorkPricing VARCHAR(100) NOT NULL,
                 PRIMARY KEY (WineId)
 );
 
@@ -300,13 +304,15 @@ ALTER TABLE WinePricing MODIFY COLUMN SoldOut BOOLEAN COMMENT 'True(1)-sold out,
 
 ALTER TABLE WinePricing MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'case price for distributors, null if not set yet for new wine';
 
-ALTER TABLE WinePricing MODIFY COLUMN NY_Wholesale DECIMAL(8, 2) COMMENT 'NY distributor price for retailers';
+ALTER TABLE WinePricing MODIFY COLUMN FOB_ARB DECIMAL(8, 2) COMMENT 'discounted FOB price negotiated w/ Arborway';
+
+ALTER TABLE WinePricing MODIFY COLUMN NY_PP DECIMAL(8, 2) COMMENT 'NY distributor price for retailers';
 
 ALTER TABLE WinePricing MODIFY COLUMN NY_MultiCasePrice DECIMAL(8, 2) COMMENT 'NY multi case break retailer price';
 
 ALTER TABLE WinePricing MODIFY COLUMN NY_MultiCaseQty TINYINT COMMENT 'NY min # of cases to get multi case price';
 
-ALTER TABLE WinePricing MODIFY COLUMN NJ_Wholesale DECIMAL(8, 2) COMMENT 'NJ distributor price for retailers';
+ALTER TABLE WinePricing MODIFY COLUMN NJ_PP DECIMAL(8, 2) COMMENT 'NJ distributor price for retailers';
 
 ALTER TABLE WinePricing MODIFY COLUMN NJ_MultiCasePrice DECIMAL(8, 2) COMMENT 'NJ multi case break retailer price';
 

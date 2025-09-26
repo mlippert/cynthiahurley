@@ -1,4 +1,4 @@
-LOAD DATA LOCAL INFILE '/tmp/data/infiles/WineMasterTable_09-23-2.csv'
+LOAD DATA LOCAL INFILE '/tmp/data/infiles/WineMasterTable_09-23-3.csv'
 REPLACE INTO TABLE LegacyWineMaster_923
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 IGNORE 1 LINES
@@ -10,7 +10,7 @@ WesternItemNo,
 COLA_TTBID,
 UPC,
 FullName,
-Vintage,
+@Vintage,
 Color,
 StillSparklingFortified,
 CertifiedOrganic,
@@ -46,24 +46,27 @@ PriceListSection,
 PriceListNotes,
 @FOBPrice,
 FOB_ARB,
+@NY_PP,
 @NY_MultiCasePrice,
 @NY_MultiCaseQty,
+@NJ_PP,
 @NJ_MultiCasePrice,
 @NJ_MultiCaseQty,
-@NY_PP,
-@NJ_PP
+NY_CurrentPricing,
+NJ_CurrentPricing
 )
 SET
+Vintage=if(@Vintage = 'NV', -1, @Vintage),
 ABV=if(@ABV = '', NULL, @ABV),
 DateCreated=if(@CREATED = '', NULL, @CREATED),
 LastUpdated=if(@LASTUPDATED = '', NULL, @LASTUPDATED),
 FOBPrice=if(@FOBPrice = '', NULL, @FOBPrice),
+NY_PP=if(@NY_PP = '', NULL, @NY_PP),
 NY_MultiCasePrice=if(@NY_MultiCasePrice = '', NULL, @NY_MultiCasePrice),
 NY_MultiCaseQty=if(@NY_MultiCaseQty = '', NULL, @NY_MultiCaseQty),
+NJ_PP=if(@NJ_PP = '', NULL, @NJ_PP),
 NJ_MultiCasePrice=if(@NJ_MultiCasePrice = '', NULL, @NJ_MultiCasePrice),
-NJ_MultiCaseQty=if(@NJ_MultiCaseQty = '', NULL, @NJ_MultiCaseQty),
-NY_PP=if(@NY_PP = '', NULL, @NY_PP),
-NJ_PP=if(@NJ_PP = '', NULL, @NJ_PP);
+NJ_MultiCaseQty=if(@NJ_MultiCaseQty = '', NULL, @NJ_MultiCaseQty);
 
 CREATE TABLE LegacyWineMaster_923 (
                 WineId INT NOT NULL,
@@ -109,12 +112,14 @@ CREATE TABLE LegacyWineMaster_923 (
                 PriceListNotes VARCHAR(144),
                 FOBPrice DECIMAL(8,2),
                 FOB_ARB VARCHAR(29),
+                NY_PP DECIMAL(8,2),
                 NY_MultiCasePrice DECIMAL(8,2),
                 NY_MultiCaseQty TINYINT,
+                NJ_PP DECIMAL(8,2),
                 NJ_MultiCasePrice DECIMAL(8,2),
                 NJ_MultiCaseQty TINYINT,
-                NY_PP DOUBLE PRECISION,
-                NJ_PP DOUBLE PRECISION,
+                NY_CurrentPricing VARCHAR(42),
+                NJ_CurrentPricing VARCHAR(30),
                 PRIMARY KEY (WineId)
 );
 
