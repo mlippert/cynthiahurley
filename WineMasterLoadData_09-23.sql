@@ -123,6 +123,23 @@ CREATE TABLE LegacyWineMaster_923 (
                 PRIMARY KEY (WineId)
 );
 
+SELECT
+WineId,
+AccountingItemNo,
+NY_CurrentPricing,
+NY_PP,
+NY_MultiCasePrice,
+NY_MultiCaseQty,
+NJ_CurrentPricing,
+NJ_PP,
+NJ_MultiCasePrice,
+NJ_MultiCaseQty
+FROM LegacyWineMaster_923
+INTO OUTFILE '/tmp/data/infiles/WinePricing_09-23.tsv'
+;
+
+/* To get permission to write to a file execute the following SQL statement AS the root user: */
+GRANT FILE ON *.* TO chwuser;
 
 # Some vim macros for fixing the csv written by libreoffice Calc
 :%s/^$/\\n/
