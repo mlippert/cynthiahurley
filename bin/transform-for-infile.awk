@@ -24,7 +24,13 @@
 #
 # Transformations:
 # - Convert newlines in fields into backslash n ('\n')
+#
+# DEVNOTE: 
+# Run with gawk NOT mawk. At least on Ubuntu there is a bug in the mawk implementation
+# such that /^[0-9]{4,8}\|/ does NOT match records starting w/ more than 4 numbers
+# playing around seemed like there is an issue w/ the escaped | at the end of the RE.
 
-/^[0-9]{4}\|/ { if ( record != "" ) print record; record = $0; next }
+BEGIN { FS = "|" }
+/^[0-9]{4,8}\|/ { if ( record != "" ) print record; record = $0; next }
 { record = record "\\n" $0 }
 END { if ( record != "" ) print record }
