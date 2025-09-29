@@ -987,52 +987,183 @@ Retail sales are sometimes by case and sometimes by unit</remarks>
     </index>
    </folder>
   </table>
+  <table id="TAB294" populated="true" UUID="a4eb1540-3b2f-48c2-91d0-6389eac21865" name="LegacyEmailOrders_911" objectType="TABLE" physicalName="LegacyEmailOrders_911" >
+   <remarks></remarks>
+   <folder id="FOLTAB2941" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL295" populated="true" UUID="6bd4a012-1831-45a7-9f91-c187c549c12a" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_EmailOrderId_seq" defaultValue="" name="EmailOrderId" nullable="0" physicalName="EmailOrderId" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL296" populated="true" UUID="5329967f-6717-4687-acbc-01b8c710fc56" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_FirstDate_seq" defaultValue="" name="FirstDate" nullable="1" physicalName="FirstDate" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="91" userDefinedTypeUUID="ee349be3-6af2-46e1-b305-975f5354b009" >
+     <remarks></remarks>
+    </column>
+    <column id="COL297" populated="true" UUID="848913d7-ce72-45a9-8a63-03ed60d58408" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_InqDate_seq" defaultValue="" name="InqDate" nullable="1" physicalName="InqDate" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="91" userDefinedTypeUUID="ee349be3-6af2-46e1-b305-975f5354b009" >
+     <remarks></remarks>
+    </column>
+    <column id="COL298" populated="true" UUID="338715d6-61a2-4777-b6ce-7dcacbe62043" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_FullName_seq" defaultValue="" name="FullName" nullable="1" physicalName="FullName" precision="69" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL299" populated="true" UUID="ffa930c8-a1e6-4007-ab13-c4de1fbc0f3d" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_LastName_seq" defaultValue="" name="LastName" nullable="1" physicalName="LastName" precision="26" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL300" populated="true" UUID="00a22dcf-9091-4724-877c-45ae5ced4012" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_CompanyAptNo_seq" defaultValue="" name="CompanyAptNo" nullable="1" physicalName="CompanyAptNo" precision="56" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL301" populated="true" UUID="92810ffb-1125-4705-b311-4be690cbde68" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Street_seq" defaultValue="" name="Street" nullable="1" physicalName="Street" precision="102" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL302" populated="true" UUID="a8eabd47-fbc1-4aea-a6e7-8266bd74418d" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_City_seq" defaultValue="" name="City" nullable="1" physicalName="City" precision="39" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL303" populated="true" UUID="9d40ae4b-8c76-4f3b-8d2d-85e6827ea97d" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_State_seq" defaultValue="" name="State" nullable="1" physicalName="State" precision="14" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL304" populated="true" UUID="d264040d-a91c-41a6-ac93-e694f2fd3934" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Zip_seq" defaultValue="" name="Zip" nullable="1" physicalName="Zip" precision="14" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL305" populated="true" UUID="fbc5dd47-06e1-487d-954a-e3e299c0c41f" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_PhoneHome_seq" defaultValue="" name="PhoneHome" nullable="1" physicalName="PhoneHome" precision="44" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL306" populated="true" UUID="6af4a6f5-7dd0-429e-a78a-f7cf1ebe5088" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_PhoneWork_seq" defaultValue="" name="PhoneWork" nullable="1" physicalName="PhoneWork" precision="30" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL307" populated="true" UUID="4bf07935-b950-498c-8bf3-338eeea5310b" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_FaxNumber_seq" defaultValue="" name="FaxNumber" nullable="1" physicalName="FaxNumber" precision="22" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL308" populated="true" UUID="6ac87d2b-2d77-4bd7-99b2-6add59d5b392" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Email_seq" defaultValue="" name="Email" nullable="1" physicalName="Email" precision="965" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
+     <remarks></remarks>
+    </column>
+    <column id="COL309" populated="true" UUID="586f3fb5-c26c-459f-b8ee-e63494143309" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Email1_seq" defaultValue="" name="Email1" nullable="1" physicalName="Email1" precision="490" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
+     <remarks></remarks>
+    </column>
+    <column id="COL310" populated="true" UUID="68d491f1-15df-40e4-a757-6d5610d6a1e2" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Source_seq" defaultValue="" name="Source" nullable="1" physicalName="Source" precision="38" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL311" populated="true" UUID="d9a3b756-9365-4a18-b305-50f18d64b8e4" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_SubPaid_seq" defaultValue="" name="SubPaid" nullable="1" physicalName="SubPaid" precision="23" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL312" populated="true" UUID="90ab57cb-2588-430b-b32d-dadf509199e4" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_CCVisa_seq" defaultValue="" name="CCVisa" nullable="1" physicalName="CCVisa" precision="61" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL313" populated="true" UUID="b99cc761-ee7c-4788-becf-6dfe55a30497" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_CCAmex_seq" defaultValue="" name="CCAmex" nullable="1" physicalName="CCAmex" precision="90" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL314" populated="true" UUID="03908930-73c2-4388-817f-728056c9b719" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_CCMastercard_seq" defaultValue="" name="CCMastercard" nullable="1" physicalName="CCMastercard" precision="81" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL315" populated="true" UUID="dc419473-391a-4a56-b4f9-d5b3cd97901a" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_CC_ID_seq" defaultValue="" name="CC_ID" nullable="1" physicalName="CC_ID" precision="39" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL316" populated="true" UUID="72ec9b34-4332-4c5a-aab4-d09b486f3a2a" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_TotalRetailCharge_seq" defaultValue="" name="TotalRetailCharge" nullable="1" physicalName="TotalRetailCharge" precision="101" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL317" populated="true" UUID="683af2a6-9174-4a35-89a2-d8158c814cf8" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Fax_seq" defaultValue="" name="Fax" nullable="1" physicalName="Fax" precision="33" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL318" populated="true" UUID="d3feed87-d320-4476-a095-2bc00917bccd" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Quantity_seq" defaultValue="" name="Quantity" nullable="1" physicalName="Quantity" precision="37" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL319" populated="true" UUID="9f500e6d-94a0-4489-99cb-9187966bc59a" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Quant2_seq" defaultValue="" name="Quant2" nullable="1" physicalName="Quant2" precision="24" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL320" populated="true" UUID="9096bff1-3bd2-4c39-bf89-daa2ff303d2b" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Quant3_seq" defaultValue="" name="Quant3" nullable="1" physicalName="Quant3" precision="34" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL321" populated="true" UUID="ddcb5816-348f-4472-984e-b580539980fe" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Quant4_seq" defaultValue="" name="Quant4" nullable="1" physicalName="Quant4" precision="36" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL322" populated="true" UUID="43aec2a2-7c4b-40a1-962a-d2b686e4d609" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Quant5_seq" defaultValue="" name="Quant5" nullable="1" physicalName="Quant5" precision="22" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL323" populated="true" UUID="4644c251-82f1-4c64-b5d4-08b61fcee8c1" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_DelItemss_seq" defaultValue="" name="DelItemss" nullable="1" physicalName="DelItemss" precision="88" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL324" populated="true" UUID="add52d11-c523-4bf3-b7fc-aef556c1d8d9" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_DelItem2_seq" defaultValue="" name="DelItem2" nullable="1" physicalName="DelItem2" precision="2089" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
+     <remarks></remarks>
+    </column>
+    <column id="COL325" populated="true" UUID="ee02abf2-3f0b-46d0-9730-81729d493fed" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_DelItem3_seq" defaultValue="" name="DelItem3" nullable="1" physicalName="DelItem3" precision="71" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL326" populated="true" UUID="351387d2-2e4f-44cc-bf50-c4fa933995f4" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_DelItem4_seq" defaultValue="" name="DelItem4" nullable="1" physicalName="DelItem4" precision="73" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL327" populated="true" UUID="e20797f0-7bd0-4940-ac1b-5e0156cc8f76" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_DelItem5_seq" defaultValue="" name="DelItem5" nullable="1" physicalName="DelItem5" precision="71" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+     <remarks></remarks>
+    </column>
+    <column id="COL328" populated="true" UUID="d3cd57fb-340a-48ba-9f9c-aac400cf44d3" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Vintage_seq" defaultValue="" name="Vintage" nullable="1" physicalName="Vintage" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="5" userDefinedTypeUUID="69fb547f-e14c-4748-9746-4c0e9e94eb52" >
+     <remarks></remarks>
+    </column>
+    <column id="COL329" populated="true" UUID="eecb654d-6aae-476f-b4f7-26050a2c9ce3" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Vintage2_seq" defaultValue="" name="Vintage2" nullable="1" physicalName="Vintage2" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="5" userDefinedTypeUUID="69fb547f-e14c-4748-9746-4c0e9e94eb52" >
+     <remarks></remarks>
+    </column>
+    <column id="COL330" populated="true" UUID="eb116290-a82f-469a-8ea4-8c334866c70c" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Vintage3_seq" defaultValue="" name="Vintage3" nullable="1" physicalName="Vintage3" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="5" userDefinedTypeUUID="69fb547f-e14c-4748-9746-4c0e9e94eb52" >
+     <remarks></remarks>
+    </column>
+    <column id="COL331" populated="true" UUID="7001de51-a6c5-4626-9d22-5a62e8e54ee5" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Vintage4_seq" defaultValue="" name="Vintage4" nullable="1" physicalName="Vintage4" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="5" userDefinedTypeUUID="69fb547f-e14c-4748-9746-4c0e9e94eb52" >
+     <remarks></remarks>
+    </column>
+    <column id="COL332" populated="true" UUID="a43edf1c-eed7-41da-8766-e6d5be7c919a" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_Vintage5_seq" defaultValue="" name="Vintage5" nullable="1" physicalName="Vintage5" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="5" userDefinedTypeUUID="69fb547f-e14c-4748-9746-4c0e9e94eb52" >
+     <remarks></remarks>
+    </column>
+    <column id="COL333" populated="true" UUID="b1ed060b-c358-491d-a1a2-3f30e0c774ab" autoIncrement="false" autoIncrementSequenceName="LegacyEmailOrders_911_CustDetails_seq" defaultValue="" name="CustDetails" nullable="1" physicalName="CustDetails" precision="1065" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-1" userDefinedTypeUUID="9a814859-ab26-4acd-9415-ea82291bcac1" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB2943" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB2942" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB2944" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX334" populated="true" UUID="66111d8f-d231-4c8c-8882-eef33522a746" clustered="false" name="LegacyEmailOrderId" physicalName="legacyemailorderid" primaryKeyIndex="true" unique="false" >
+     <index-column id="IDC335" populated="true" UUID="fe90e284-3e4e-4b13-a23d-17ffd7fadc06" ascendingOrDescending="UNSPECIFIED" column-ref="COL295" name="EmailOrderId" physicalName="EmailOrderId" />
+    </index>
+   </folder>
+  </table>
   <relationships>
-   <relationship id="REL294" populated="true" UUID="3bdb4b85-c6b9-4808-9b0a-29d83c829921" deferrability="7" deleteRule="3" fk-table-ref="TAB109" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomers_Address_fk" physicalName="emailcustomers_emailcustomers_address_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP295" populated="true" UUID="0a1ca204-91e6-4dad-b73f-190b4bde947c" fk-column-ref="COL110" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
+   <relationship id="REL336" populated="true" UUID="3bdb4b85-c6b9-4808-9b0a-29d83c829921" deferrability="7" deleteRule="3" fk-table-ref="TAB109" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomers_Address_fk" physicalName="emailcustomers_emailcustomers_address_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP337" populated="true" UUID="0a1ca204-91e6-4dad-b73f-190b4bde947c" fk-column-ref="COL110" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
    </relationship>
-   <relationship id="REL296" populated="true" UUID="2456a28c-d694-46f6-848b-55434dd576a3" deferrability="7" deleteRule="3" fk-table-ref="TAB121" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomerPhoneNumbers_fk" physicalName="emailcustomers_emailcustomerphonenumbers_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP297" populated="true" UUID="e61694dd-0df9-4009-963c-b171c35cd1b5" fk-column-ref="COL122" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
+   <relationship id="REL338" populated="true" UUID="2456a28c-d694-46f6-848b-55434dd576a3" deferrability="7" deleteRule="3" fk-table-ref="TAB121" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomerPhoneNumbers_fk" physicalName="emailcustomers_emailcustomerphonenumbers_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP339" populated="true" UUID="e61694dd-0df9-4009-963c-b171c35cd1b5" fk-column-ref="COL122" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
    </relationship>
-   <relationship id="REL298" populated="true" UUID="69377640-7786-4f87-9c61-b679101ae7e5" deferrability="7" deleteRule="3" fk-table-ref="TAB90" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomerCreditCards_fk" physicalName="emailcustomers_emailcustomercreditcards_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP299" populated="true" UUID="f3073d98-8131-47b1-a603-3a6c0d0e4a4e" fk-column-ref="COL91" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
+   <relationship id="REL340" populated="true" UUID="69377640-7786-4f87-9c61-b679101ae7e5" deferrability="7" deleteRule="3" fk-table-ref="TAB90" fkCardinality="7" identifying="true" name="EmailCustomers_EmailCustomerCreditCards_fk" physicalName="emailcustomers_emailcustomercreditcards_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP341" populated="true" UUID="f3073d98-8131-47b1-a603-3a6c0d0e4a4e" fk-column-ref="COL91" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
    </relationship>
-   <relationship id="REL300" populated="true" UUID="20073f54-5430-404c-9e24-68dc14d023fa" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="EmailCustomers_Orders_fk" physicalName="emailcustomers_orders_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP301" populated="true" UUID="becd949d-fac3-4610-9f07-ff8a3bc3d8fd" fk-column-ref="COL140" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
+   <relationship id="REL342" populated="true" UUID="20073f54-5430-404c-9e24-68dc14d023fa" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="EmailCustomers_Orders_fk" physicalName="emailcustomers_orders_fk" pk-table-ref="TAB48" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP343" populated="true" UUID="becd949d-fac3-4610-9f07-ff8a3bc3d8fd" fk-column-ref="COL140" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL49" />
    </relationship>
-   <relationship id="REL302" populated="true" UUID="4a0ca037-7211-43eb-9913-6412cbc6ac02" deferrability="7" deleteRule="3" fk-table-ref="TAB145" fkCardinality="7" identifying="true" name="Wines_Orders_Wines_fk" physicalName="wines_orders_wines_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP303" populated="true" UUID="671a149c-9df3-4657-978d-1cee6d8d7978" fk-column-ref="COL147" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL60" />
+   <relationship id="REL344" populated="true" UUID="4a0ca037-7211-43eb-9913-6412cbc6ac02" deferrability="7" deleteRule="3" fk-table-ref="TAB145" fkCardinality="7" identifying="true" name="Wines_Orders_Wines_fk" physicalName="wines_orders_wines_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP345" populated="true" UUID="671a149c-9df3-4657-978d-1cee6d8d7978" fk-column-ref="COL147" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL60" />
    </relationship>
-   <relationship id="REL304" populated="true" UUID="dcbec3e4-a935-4655-9e32-4718b76f38a8" deferrability="7" deleteRule="3" fk-table-ref="TAB166" fkCardinality="7" identifying="true" name="Wines_WinePricing_fk" physicalName="wines_winepricing_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP305" populated="true" UUID="e594fd68-c2c0-4ad9-855e-024669d74e96" fk-column-ref="COL167" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL60" />
+   <relationship id="REL346" populated="true" UUID="dcbec3e4-a935-4655-9e32-4718b76f38a8" deferrability="7" deleteRule="3" fk-table-ref="TAB166" fkCardinality="7" identifying="true" name="Wines_WinePricing_fk" physicalName="wines_winepricing_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP347" populated="true" UUID="e594fd68-c2c0-4ad9-855e-024669d74e96" fk-column-ref="COL167" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL60" />
    </relationship>
-   <relationship id="REL306" populated="true" UUID="fce71d9d-236b-43d0-9037-b6695c16f650" deferrability="7" deleteRule="3" fk-table-ref="TAB229" fkCardinality="7" identifying="true" name="Wines_NJ_Distribution_fk" physicalName="wines_nj_distribution_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP307" populated="true" UUID="ad72057d-0172-4b64-b173-eb6e263d1a08" fk-column-ref="COL230" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL60" />
+   <relationship id="REL348" populated="true" UUID="fce71d9d-236b-43d0-9037-b6695c16f650" deferrability="7" deleteRule="3" fk-table-ref="TAB229" fkCardinality="7" identifying="true" name="Wines_NJ_Distribution_fk" physicalName="wines_nj_distribution_fk" pk-table-ref="TAB59" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP349" populated="true" UUID="ad72057d-0172-4b64-b173-eb6e263d1a08" fk-column-ref="COL230" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL60" />
    </relationship>
-   <relationship id="REL308" populated="true" UUID="b75915c7-1f6b-4449-be4b-5904d6a2b72d" deferrability="7" deleteRule="3" fk-table-ref="TAB109" fkCardinality="3" identifying="true" name="Addresses_EmailCustomers_Address_fk" physicalName="addresses_emailcustomers_address_fk" pk-table-ref="TAB100" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP309" populated="true" UUID="ce35536a-cbbe-4bd8-89e1-5edc07f822ce" fk-column-ref="COL111" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL101" />
+   <relationship id="REL350" populated="true" UUID="b75915c7-1f6b-4449-be4b-5904d6a2b72d" deferrability="7" deleteRule="3" fk-table-ref="TAB109" fkCardinality="3" identifying="true" name="Addresses_EmailCustomers_Address_fk" physicalName="addresses_emailcustomers_address_fk" pk-table-ref="TAB100" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP351" populated="true" UUID="ce35536a-cbbe-4bd8-89e1-5edc07f822ce" fk-column-ref="COL111" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL101" />
    </relationship>
-   <relationship id="REL310" populated="true" UUID="101e0631-4f4b-4161-a10b-208444c12ef0" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="EmailCustomers_ShippingAddresses_Orders_fk" physicalName="emailcustomers_shippingaddresses_orders_fk" pk-table-ref="TAB109" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP311" populated="true" UUID="34314b75-853a-484e-8412-8645979ef3dd" fk-column-ref="COL140" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL110" />
-    <column-mapping id="CMP312" populated="true" UUID="578ad226-47a6-4e42-a576-a6dbdceb4a26" fk-column-ref="COL141" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL111" />
+   <relationship id="REL352" populated="true" UUID="101e0631-4f4b-4161-a10b-208444c12ef0" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="EmailCustomers_ShippingAddresses_Orders_fk" physicalName="emailcustomers_shippingaddresses_orders_fk" pk-table-ref="TAB109" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP353" populated="true" UUID="34314b75-853a-484e-8412-8645979ef3dd" fk-column-ref="COL140" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL110" />
+    <column-mapping id="CMP354" populated="true" UUID="578ad226-47a6-4e42-a576-a6dbdceb4a26" fk-column-ref="COL141" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL111" />
    </relationship>
-   <relationship id="REL313" populated="true" UUID="cfe46d78-27dc-4d36-a496-933b8cc40283" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="Distributors_Orders_fk" physicalName="distributors_orders_fk" pk-table-ref="TAB115" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP314" populated="true" UUID="8c964269-11f8-4fa6-82e5-769252cc0145" fk-column-ref="COL142" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL116" />
+   <relationship id="REL355" populated="true" UUID="cfe46d78-27dc-4d36-a496-933b8cc40283" deferrability="7" deleteRule="3" fk-table-ref="TAB137" fkCardinality="7" identifying="false" name="Distributors_Orders_fk" physicalName="distributors_orders_fk" pk-table-ref="TAB115" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP356" populated="true" UUID="8c964269-11f8-4fa6-82e5-769252cc0145" fk-column-ref="COL142" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL116" />
    </relationship>
-   <relationship id="REL315" populated="true" UUID="56842e64-c05e-4cae-8d3d-4e13f259e6fa" deferrability="7" deleteRule="3" fk-table-ref="TAB59" fkCardinality="7" identifying="false" name="Producers_Wines_fk" physicalName="producers_wines_fk" pk-table-ref="TAB129" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP316" populated="true" UUID="8d60f1bc-3c8f-48c0-8bd6-c5b668b1e084" fk-column-ref="COL75" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL130" />
+   <relationship id="REL357" populated="true" UUID="56842e64-c05e-4cae-8d3d-4e13f259e6fa" deferrability="7" deleteRule="3" fk-table-ref="TAB59" fkCardinality="7" identifying="false" name="Producers_Wines_fk" physicalName="producers_wines_fk" pk-table-ref="TAB129" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP358" populated="true" UUID="8d60f1bc-3c8f-48c0-8bd6-c5b668b1e084" fk-column-ref="COL75" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL130" />
    </relationship>
-   <relationship id="REL317" populated="true" UUID="266f0142-85ec-4020-8884-0b2cbb0cfb2d" deferrability="7" deleteRule="3" fk-table-ref="TAB145" fkCardinality="7" identifying="true" name="Orders_Orders_Wines_fk" physicalName="orders_orders_wines_fk" pk-table-ref="TAB137" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP318" populated="true" UUID="28a1059d-1cc4-4014-848b-d4b484c05649" fk-column-ref="COL146" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL138" />
+   <relationship id="REL359" populated="true" UUID="266f0142-85ec-4020-8884-0b2cbb0cfb2d" deferrability="7" deleteRule="3" fk-table-ref="TAB145" fkCardinality="7" identifying="true" name="Orders_Orders_Wines_fk" physicalName="orders_orders_wines_fk" pk-table-ref="TAB137" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP360" populated="true" UUID="28a1059d-1cc4-4014-848b-d4b484c05649" fk-column-ref="COL146" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL138" />
    </relationship>
-   <relationship id="REL319" populated="true" UUID="c70acadb-be85-4523-ad06-23151c2959be" deferrability="7" deleteRule="3" fk-table-ref="TAB59" fkCardinality="7" identifying="false" name="LookupUnits_Wines_fk" physicalName="lookupunits_wines_fk" pk-table-ref="TAB151" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP320" populated="true" UUID="64583d34-9e75-4bb5-b14e-6484b768ac94" fk-column-ref="COL77" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL152" />
+   <relationship id="REL361" populated="true" UUID="c70acadb-be85-4523-ad06-23151c2959be" deferrability="7" deleteRule="3" fk-table-ref="TAB59" fkCardinality="7" identifying="false" name="LookupUnits_Wines_fk" physicalName="lookupunits_wines_fk" pk-table-ref="TAB151" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP362" populated="true" UUID="64583d34-9e75-4bb5-b14e-6484b768ac94" fk-column-ref="COL77" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL152" />
    </relationship>
-   <relationship id="REL321" populated="true" UUID="edf0e74e-cce4-483c-8d71-da0753e5ff7b" deferrability="7" deleteRule="3" fk-table-ref="TAB90" fkCardinality="7" identifying="false" name="LookupCCIssuers_EmailCustomerCreditCards_fk" physicalName="lookupccissuers_emailcustomercreditcards_fk" pk-table-ref="TAB160" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP322" populated="true" UUID="0a3ecc9d-40ab-48b7-a7f3-9e2eb4611b3d" fk-column-ref="COL93" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL161" />
+   <relationship id="REL363" populated="true" UUID="edf0e74e-cce4-483c-8d71-da0753e5ff7b" deferrability="7" deleteRule="3" fk-table-ref="TAB90" fkCardinality="7" identifying="false" name="LookupCCIssuers_EmailCustomerCreditCards_fk" physicalName="lookupccissuers_emailcustomercreditcards_fk" pk-table-ref="TAB160" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP364" populated="true" UUID="0a3ecc9d-40ab-48b7-a7f3-9e2eb4611b3d" fk-column-ref="COL93" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL161" />
    </relationship>
-   <relationship id="REL323" populated="true" UUID="bf2ce7e1-4b99-4317-94d8-ba8107e3ab6c" deferrability="7" deleteRule="3" fk-table-ref="TAB59" fkCardinality="7" identifying="false" name="LookupWineTypes_Wines_fk" physicalName="lookupwinetypes_wines_fk" pk-table-ref="TAB235" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP324" populated="true" UUID="970dcdc5-8b2a-4547-bb80-844d849dd6ee" fk-column-ref="COL67" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL236" />
+   <relationship id="REL365" populated="true" UUID="bf2ce7e1-4b99-4317-94d8-ba8107e3ab6c" deferrability="7" deleteRule="3" fk-table-ref="TAB59" fkCardinality="7" identifying="false" name="LookupWineTypes_Wines_fk" physicalName="lookupwinetypes_wines_fk" pk-table-ref="TAB235" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP366" populated="true" UUID="970dcdc5-8b2a-4547-bb80-844d849dd6ee" fk-column-ref="COL67" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL236" />
    </relationship>
   </relationships>
  </target-database>
@@ -1057,21 +1188,22 @@ Retail sales are sometimes by case and sometimes by unit</remarks>
   <table-pane table-ref="TAB229" x="999" y="913" bgColor="0xeeeeee" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB235" x="770" y="657" bgColor="0xdfedce" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB240" x="1165" y="23" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
-  <table-link relationship-ref="REL294" pkConnection="0.7884615384615384" fkConnection="0.16287878787878787" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="132"/>
-  <table-link relationship-ref="REL308" pkConnection="0.22388059701492538" fkConnection="0.5513307984790875" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="66"/>
-  <table-link relationship-ref="REL296" pkConnection="0.22692307692307692" fkConnection="0.11026615969581749" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="132"/>
-  <table-link relationship-ref="REL298" pkConnection="0.08076923076923077" fkConnection="0.07984790874524715" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="132"/>
-  <table-link relationship-ref="REL315" pkConnection="0.15028901734104047" fkConnection="0.11151079136690648" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
-  <table-link relationship-ref="REL317" pkConnection="0.69140625" fkConnection="0.38028169014084506" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="132"/>
-  <table-link relationship-ref="REL302" pkConnection="0.6292834890965732" fkConnection="0.6818181818181818" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="18"/>
-  <table-link relationship-ref="REL319" pkConnection="0.6814814814814815" fkConnection="0.8487084870848709" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
-  <table-link relationship-ref="REL300" pkConnection="0.4166666666666667" fkConnection="0.5982905982905983" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="33"/>
-  <table-link relationship-ref="REL310" pkConnection="0.9015151515151515" fkConnection="0.09375" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
-  <table-link relationship-ref="REL313" pkConnection="0.5" fkConnection="0.22957198443579765" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
-  <table-link relationship-ref="REL321" pkConnection="0.7117117117117117" fkConnection="0.752851711026616" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
-  <table-link relationship-ref="REL304" pkConnection="0.8571428571428571" fkConnection="0.8953846153846153" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="130"/>
-  <table-link relationship-ref="REL306" pkConnection="0.933579335793358" fkConnection="0.4358974358974359" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="129"/>
-  <table-link relationship-ref="REL323" pkConnection="0.4391304347826087" fkConnection="0.5531914893617021" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
+  <table-pane table-ref="TAB294" x="67" y="793" bgColor="0xeeeeee" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-link relationship-ref="REL336" pkConnection="0.7884615384615384" fkConnection="0.16287878787878787" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL350" pkConnection="0.22388059701492538" fkConnection="0.5513307984790875" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="66"/>
+  <table-link relationship-ref="REL338" pkConnection="0.22692307692307692" fkConnection="0.11026615969581749" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL340" pkConnection="0.08076923076923077" fkConnection="0.07984790874524715" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL357" pkConnection="0.15028901734104047" fkConnection="0.11151079136690648" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
+  <table-link relationship-ref="REL359" pkConnection="0.69140625" fkConnection="0.38028169014084506" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL344" pkConnection="0.6292834890965732" fkConnection="0.6818181818181818" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="18"/>
+  <table-link relationship-ref="REL361" pkConnection="0.6814814814814815" fkConnection="0.8487084870848709" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
+  <table-link relationship-ref="REL342" pkConnection="0.4166666666666667" fkConnection="0.5982905982905983" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="33"/>
+  <table-link relationship-ref="REL352" pkConnection="0.9015151515151515" fkConnection="0.09375" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
+  <table-link relationship-ref="REL355" pkConnection="0.5" fkConnection="0.22957198443579765" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
+  <table-link relationship-ref="REL363" pkConnection="0.7117117117117117" fkConnection="0.752851711026616" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
+  <table-link relationship-ref="REL346" pkConnection="0.8571428571428571" fkConnection="0.8953846153846153" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="130"/>
+  <table-link relationship-ref="REL348" pkConnection="0.933579335793358" fkConnection="0.4358974358974359" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="129"/>
+  <table-link relationship-ref="REL365" pkConnection="0.4391304347826087" fkConnection="0.5531914893617021" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
  </play-pen>
  <critic-manager>
   <critic-grouping platformType="Generic" enabled="true">
