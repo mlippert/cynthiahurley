@@ -1,0 +1,14 @@
+# This file is in the ./filemakerData directory.
+# This directory is where files/directories for working w/ Filemaker pro are kept along
+# with filemaker database files and files containing data from those database files
+# which may be in Excel (.xslx), OpenDoc Calc (.odb), .csv, .tsv files.
+# No data should be committed in this repository UNLESS it is protected (ie encrypted)
+# So in general we don't want to commit anything in this directory or its subdirectories,
+# but we want this directory to exist, therefore this .gitignore is committed in this
+# directory, and we'll allow encrypted files (.gpg) to be seen and committed as well.
+
+# Ignore everything in this directory
+/*
+# Except this file and encrypted files
+!/.gitignore
+!/*.gpg

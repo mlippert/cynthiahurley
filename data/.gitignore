@@ -1,0 +1,12 @@
+# This file is in the ./data directory, For development we bind subdirectories of this
+# directory into database containers. In general we don't want to commit anything in
+# this directory or it's subdirectories, but we want this directory to exist,
+# therefore this .gitignore is committed in this directory.
+
+# Ignore everything in this directory
+/*
+# Except this file and encrypted files in the infiles subdirectory
+!/.gitignore
+!/infiles/
+/infiles/*
+!/infiles/*.gpg

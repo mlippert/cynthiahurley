@@ -1,8 +1,6 @@
 # Files we don't want in *this* repository #
 ############################################
-# various existing filemaker databases and filemaker installation files, etc. NOT to be added to the repo
-filemakerData/
-data/
+# NOTE: there is a specialized .gitignore in /data and /filemakerData to ignore files in those subdirectories
 
 # created distribution files (e.g. compiled typescript) #
 #########################################################
