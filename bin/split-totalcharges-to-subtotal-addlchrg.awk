@@ -8,18 +8,17 @@
 # else:
 # awk -f split-totalcharges-to-subtotal-addlchrg.awk input_csvfile
 #
-# Strip out all '$' because they're extraneous and only present some of the time
-# if the first character is not a digit, assume it can't be parsed and leave the 3 field empty
-# else
-# if '/' is not present assume text is for just the PP value, this should handle all case's
-#   price over 999 as I don't believe any of those have a multi case price discount
-# else
-# split the text on the ',', the 1st part is the PP value
-# split the 2nd part on the '/', the 1st part is the multi case price, the 2nd the multi case quantity
+# SQL to create the tsv to parse:
+# SELECT EmailOrderId, FirstDate, FullName, Email1, TotalRetailCharge, Subtotal, AdditionalCharges
+#   FROM LegacyEmailOrders_911
+#   WHERE TotalRetailCharge != ''
+#   INTO OUTFILE '/tmp/data/infiles/EmailOrdersTotalCharges.tsv';
 
 BEGIN {
     FS = "\t"
     OFS = FS
+    # Default only writes out 6 digits of precision ("%.6g")
+    CONVFMT = OFMT = "%.2f"
 
     # Name the fields
     EmailOrderId = 1
@@ -34,14 +33,29 @@ BEGIN {
 {
     totalCharge = $TotalRetailCharge
 
-    addlChargesIndex = index(totalCharge, " ") + 1
+    # strip leading and trailing spaces
+    gsub(/^ +| +$/, "", totalCharge)
+
+    # now strip a leading '$' and any following spaces
+    # which won't affect the numeric value of the Subtotal
+    sub(/^\$ */, "", totalCharge)
+    #DEBUG: print("totalCharge: '" totalCharge "'") > "/dev/stderr"
+
+    spaceIndex = index(totalCharge, " ")
+    plusIndex = index(totalCharge, "+")
+    if (plusIndex != 0) {
+        addlChargesIndex = plusIndex
+        if ((spaceIndex != 0) && (spaceIndex < plusIndex)) addlChargesIndex = spaceIndex + 1
+    }
+    else addlChargesIndex = spaceIndex + 1
 
     if(addlChargesIndex == 1) {
         SetSubtotal(totalCharge)
     }
     else {
-        SetSubtotal(substr(totalCharge, 1, addlChargesIndex - 2))
-        SetAdditionalCharges(substr(totalCharge, addlChargesIndex))
+        if (SetSubtotal(substr(totalCharge, 1, addlChargesIndex - 1))) {
+            SetAdditionalCharges(substr(totalCharge, addlChargesIndex))
+        }
     }
 
     print $0
@@ -50,9 +64,13 @@ BEGIN {
 function SetSubtotal(rawSubtotal)
 {
     # strip all non digit & decimal point characters
-    gsub(/[^0-9.]/, "", rawSubtotal)
+    gsub(/[^0-9\.]/, "", rawSubtotal)
 
-    if(length(rawSubtotal) != 0) $Subtotal = rawSubtotal + 0
+    if(length(rawSubtotal) != 0) {
+        $Subtotal = rawSubtotal + 0
+        return 1 # set subtotal
+    }
+    return 0 # did not set subtotal
 }
 
 function SetAdditionalCharges(rawAdditionalCharges)
