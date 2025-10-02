@@ -140,6 +140,7 @@ INTO OUTFILE '/tmp/data/infiles/WinePricing_09-23.tsv'
 
 /* To get permission to write to a file execute the following SQL statement AS the root user: */
 GRANT FILE ON *.* TO chwuser;
+/* Also change the folder permissions on the bound directory ie. chmod o+w data/infiles/ */
 
 # Some vim macros for fixing the csv written by libreoffice Calc
 :%s/^$/\\n/
@@ -232,6 +233,8 @@ CREATE TABLE LegacyEmailOrders_911 (
                 CCMastercard VARCHAR(81),
                 CC_ID VARCHAR(39),
                 TotalRetailCharge VARCHAR(101),
+                Subtotal DECIMAL(8,2),
+                AdditionalCharges VARCHAR(120),
                 Fax VARCHAR(33),
                 Quantity VARCHAR(37),
                 Quant2 VARCHAR(24),
