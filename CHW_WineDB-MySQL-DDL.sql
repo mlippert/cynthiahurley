@@ -1,4 +1,57 @@
 
+CREATE TABLE LegacyEmailOrders_1002 (
+                EmailOrderId INT NOT NULL,
+                OrderNumber VARCHAR(10),
+                FirstDate DATE,
+                InqDate DATE,
+                FullName VARCHAR(69),
+                LastName VARCHAR(26),
+                CompanyAptNo VARCHAR(56),
+                Street VARCHAR(102),
+                City VARCHAR(39),
+                State VARCHAR(14),
+                Zip VARCHAR(14),
+                PhoneHome VARCHAR(44),
+                PhoneWork VARCHAR(30),
+                FaxNumber VARCHAR(22),
+                Email TEXT(965),
+                Email1 TEXT(490),
+                Source VARCHAR(38),
+                SubPaid VARCHAR(23),
+                CCVisa VARCHAR(61),
+                CCAmex VARCHAR(90),
+                CCMastercard VARCHAR(81),
+                CC_ID VARCHAR(39),
+                TotalRetailCharge VARCHAR(101),
+                Subtotal DECIMAL(8,2),
+                AdditionalCharges VARCHAR(120),
+                Fax VARCHAR(33),
+                Quantity VARCHAR(37),
+                Quant2 VARCHAR(24),
+                Quant3 VARCHAR(34),
+                Quant4 VARCHAR(36),
+                Quant5 VARCHAR(22),
+                DelItemss VARCHAR(88),
+                DelItem2 TEXT(2089),
+                DelItem3 VARCHAR(71),
+                DelItem4 VARCHAR(73),
+                DelItem5 VARCHAR(71),
+                Vintage SMALLINT,
+                Vintage2 SMALLINT,
+                Vintage3 SMALLINT,
+                Vintage4 SMALLINT,
+                Vintage5 SMALLINT,
+                CustDetails TEXT(1130),
+                PRIMARY KEY (EmailOrderId)
+);
+
+ALTER TABLE LegacyEmailOrders_1002 MODIFY COLUMN OrderNumber VARCHAR(10) COMMENT 'Accounting system''s order number that includes this order';
+
+ALTER TABLE LegacyEmailOrders_1002 MODIFY COLUMN Subtotal DECIMAL(8, 2) COMMENT 'Subtotal of the wine order before S&H';
+
+ALTER TABLE LegacyEmailOrders_1002 MODIFY COLUMN AdditionalCharges VARCHAR(120) COMMENT 'Describe charges that will be added to subtotal';
+
+
 CREATE TABLE LegacyEmailOrders_911 (
                 EmailOrderId INT NOT NULL,
                 FirstDate DATE,

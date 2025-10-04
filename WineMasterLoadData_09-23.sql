@@ -155,12 +155,13 @@ GRANT FILE ON *.* TO chwuser;
 :%s,|\(\d\{2}\)/\(\d\{2}\)/\(\d\{4}\) ,|\3-\1-\2 ,
 
 
-LOAD DATA LOCAL INFILE '/tmp/data/infiles/EmailWineOrders_09-11-cleaned.csv'
-REPLACE INTO TABLE LegacyEmailOrders_911
+LOAD DATA LOCAL INFILE '/tmp/data/infiles/EmailWineOrders_10-02-cleaned.csv'
+REPLACE INTO TABLE LegacyEmailOrders_1002
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 IGNORE 1 LINES
 (
 EmailOrderId,
+OrderNumber,
 @FirstDate,
 @InqDate,
 FullName,
@@ -182,6 +183,8 @@ CCAmex,
 CCMastercard,
 CC_ID,
 TotalRetailCharge,
+@Subtotal,
+AdditionalCharges,
 Fax,
 Quantity,
 Quant2,
@@ -203,6 +206,7 @@ CustDetails
 SET
 FirstDate=if(LENGTH(@FirstDate) < 9, NULL, @FirstDate),
 InqDate=if(LENGTH(@InqDate) < 9, NULL, @InqDate),
+Subtotal=if(@Subtotal = '', NULL, @Subtotal),
 Vintage=if(@Vintage REGEXP '^[0-9]{4}$', @Vintage, NULL),
 Vintage2=if(@Vintage2 REGEXP '^[0-9]{4}$', @Vintage2, NULL),
 Vintage3=if(@Vintage3 REGEXP '^[0-9]{4}$', @Vintage3, NULL),
@@ -210,8 +214,9 @@ Vintage4=if(@Vintage4 REGEXP '^[0-9]{4}$', @Vintage4, NULL),
 Vintage5=if(@Vintage5 REGEXP '^[0-9]{4}$', @Vintage5, NULL)
 ;
 
-CREATE TABLE LegacyEmailOrders_911 (
+CREATE TABLE EmailOrdersTotalCharges_1002 (
                 EmailOrderId INT NOT NULL,
+                OrderNumber VARCHAR(10),
                 FirstDate DATE,
                 InqDate DATE,
                 FullName VARCHAR(69),
@@ -251,6 +256,69 @@ CREATE TABLE LegacyEmailOrders_911 (
                 Vintage3 SMALLINT,
                 Vintage4 SMALLINT,
                 Vintage5 SMALLINT,
-                CustDetails TEXT(1065),
+                CustDetails TEXT(1130),
                 PRIMARY KEY (EmailOrderId)
 );
+
+/* qryEmailOrdersWithTotalCharge */
+SELECT EmailOrderId, FirstDate, FullName, Email1, TotalRetailCharge, Subtotal, AdditionalCharges
+FROM LegacyEmailOrders_1002
+WHERE TotalRetailCharge != ''
+INTO OUTFILE '/tmp/data/infiles/EmailOrdersTotalCharges_10-02.tsv'
+;
+
+CREATE TABLE LegacyEmailOrdersTotals_1002 (
+                EmailOrderId INT NOT NULL,
+                TotalRetailCharge VARCHAR(101),
+                Subtotal DECIMAL(8,2),
+                AdditionalCharges VARCHAR(120),
+                PRIMARY KEY (EmailOrderId)
+);
+
+LOAD DATA LOCAL INFILE '/tmp/data/infiles/EmailOrdersTotalCharges_10-02_SplitInNewFields.tsv'
+REPLACE INTO TABLE LegacyEmailOrdersTotals_1002
+FIELDS OPTIONALLY ENCLOSED BY '"'
+IGNORE 1 LINES
+(
+EmailOrderId,
+@FirstDate,
+@FullName,
+@Email1,
+TotalRetailCharge,
+@Subtotal,
+AdditionalCharges
+)
+SET
+Subtotal=if(@Subtotal = '', NULL, @Subtotal)
+;
+
+SELECT YEAR( EOrders.FirstDate ) AS Year, EOrders.FullName FullName, SUM( `EOTotals`.`Subtotal` ) AS Total
+FROM chw.LegacyEmailOrders_1002 AS EOrders, chw.LegacyEmailOrdersTotals_1002 AS EOTotals
+WHERE EOrders.EmailOrderId = EOTotals.EmailOrderId GROUP BY Year, FullName ORDER BY Year ASC, FullName ASC
+;
+
+SELECT
+    YEAR( Orders.FirstDate ) Year,
+    Orders.FullName,
+    COUNT( Orders.FullName ) NumOrders,
+    SUM( OrderTotals.Subtotal ) Total
+FROM
+    chw.LegacyEmailOrders_1002 Orders,
+    chw.LegacyEmailOrdersTotals_1002 OrderTotals
+WHERE OrderTotals.EmailOrderId = Orders.EmailOrderId
+GROUP BY Orders.FullName, YEAR( Orders.FirstDate )
+ORDER BY Year ASC, Total ASC
+;
+
+/* using JOIN syntax instead of WHERE */
+SELECT
+    YEAR( Orders.FirstDate ) Year,
+    Orders.FullName,
+    COUNT( Orders.FullName ) NumOrders,
+    SUM( OrderTotals.Subtotal ) Total
+FROM
+    chw.LegacyEmailOrders_1002 Orders INNER JOIN chw.LegacyEmailOrdersTotals_1002 OrderTotals
+    ON Orders.EmailOrderId = OrderTotals.EmailOrderId
+GROUP BY Orders.FullName, YEAR( Orders.FirstDate )
+ORDER BY Year ASC, Total ASC
+;
