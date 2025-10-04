@@ -33,6 +33,11 @@ BEGIN {
 {
     totalCharge = $TotalRetailCharge
 
+    # make sure the Subtotal and AdditionalCharges fields exist when
+    # written out even if they aren't updated.
+    $Subtotal = ""
+    $AdditionalCharges = ""
+
     # strip leading and trailing spaces
     gsub(/^ +| +$/, "", totalCharge)
 
@@ -41,20 +46,17 @@ BEGIN {
     sub(/^\$ */, "", totalCharge)
     #DEBUG: print("totalCharge: '" totalCharge "'") > "/dev/stderr"
 
-    spaceIndex = index(totalCharge, " ")
-    plusIndex = index(totalCharge, "+")
-    if (plusIndex != 0) {
-        addlChargesIndex = plusIndex
-        if ((spaceIndex != 0) && (spaceIndex < plusIndex)) addlChargesIndex = spaceIndex + 1
-    }
-    else addlChargesIndex = spaceIndex + 1
-
-    if(addlChargesIndex == 1) {
+    match(totalCharge, / |\+|\\n/)
+    if (RSTART == 0) {
+        # no separator found treat as just subtotal
         SetSubtotal(totalCharge)
     }
     else {
-        if (SetSubtotal(substr(totalCharge, 1, addlChargesIndex - 1))) {
-            SetAdditionalCharges(substr(totalCharge, addlChargesIndex))
+        if (SetSubtotal(substr(totalCharge, 1, RSTART - 1))) {
+            # keep + separators in AdditionalCharges, skip all others
+            additionalChargesIndex = RSTART
+            if (substr(totalCharge, RSTART, 1) != "+") additionalChargesIndex += RLENGTH
+            SetAdditionalCharges(substr(totalCharge, additionalChargesIndex))
         }
     }
 
