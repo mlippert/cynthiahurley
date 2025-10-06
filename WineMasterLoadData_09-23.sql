@@ -260,6 +260,37 @@ CREATE TABLE EmailOrdersTotalCharges_1002 (
                 PRIMARY KEY (EmailOrderId)
 );
 
+/*
+Notes about LegacyEmailOrders_1002
+26511 Order Records
+ 4823 Distinct FullName
+  371 FullName == ''
+  187 FullName LIKE ' %' (starts with a space)
+    1 FullName LIKE '\n%' (starts with a newline)
+    9 FullName LIKE '%\n%' (contains a newline)
+ 2873 Distinct Email1
+ 5601 Email1 == ''
+  155 Distinct Email1 LIKE ' %' (starts with a space)
+    1 Distinct Email1 LIKE '\n%' (starts with a newline)
+  226 Distinct Email1 LIKE '%\n%' (contains a newline)
+
+ 5437 Distinct FullName, Email1
+ 5148 Distinct FullName, Email1 with FullName != ''
+ 3139 Distinct FullName, Email1 with Email1 != ''
+ 2851 Distinct FullName, Email1 with FullName != '' AND Email1 != ''
+ 1287 Distinct FullName, Email1 with FullName != '' AND Email1 != '' AND NumberOfOrders > 1
+  601 Distinct FullName, Email1 with FullName != '' AND Email1 != '' AND NumberOfOrders > 1 AND Year >= 2016
+
+Query for that last follows:
+*/
+SELECT FullName, Email1, COUNT( FullName ) NumberOfOrders, YEAR( FirstDate ) Year
+FROM chw.LegacyEmailOrders_1002
+WHERE FullName != '' AND Email1 != '' AND YEAR( FirstDate ) >= 2016
+GROUP BY FullName, Email1
+HAVING NumberOfOrders > 1
+ORDER BY FullName ASC
+;
+
 /* qryEmailOrdersWithTotalCharge */
 SELECT EmailOrderId, FirstDate, FullName, Email1, TotalRetailCharge, Subtotal, AdditionalCharges
 FROM LegacyEmailOrders_1002
