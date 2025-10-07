@@ -214,7 +214,7 @@ Vintage4=if(@Vintage4 REGEXP '^[0-9]{4}$', @Vintage4, NULL),
 Vintage5=if(@Vintage5 REGEXP '^[0-9]{4}$', @Vintage5, NULL)
 ;
 
-CREATE TABLE EmailOrdersTotalCharges_1002 (
+CREATE TABLE LegacyEmailOrders_1002 (
                 EmailOrderId INT NOT NULL,
                 OrderNumber VARCHAR(10),
                 FirstDate DATE,
@@ -352,4 +352,20 @@ FROM
     ON Orders.EmailOrderId = OrderTotals.EmailOrderId
 GROUP BY Orders.FullName, YEAR( Orders.FirstDate )
 ORDER BY Year ASC, Total ASC
+;
+
+/* Customers Since 2020 Total of all orders ever */
+/* Customer Total orders since 2020 - Add WHERE clause YEAR(Orders.FirstDate) >= 2020 */
+SELECT
+    Orders.FullName, Orders.Email1,
+    SUM( OrderTotals.Subtotal ) Total,
+    MIN( YEAR( Orders.FirstDate ) ) YearOfFirstOrder,
+    MAX( YEAR( Orders.FirstDate ) ) YearOfLastOrder,
+    COUNT( Orders.FullName ) NumberOfOrders
+FROM
+    chw.LegacyEmailOrders_1002 Orders INNER JOIN chw.LegacyEmailOrdersTotals_1002 OrderTotals
+    ON Orders.EmailOrderId = OrderTotals.EmailOrderId
+GROUP BY Orders.FullName
+HAVING ( ( YearOfLastOrder >= 2020 ) )
+ORDER BY Total ASC, Orders.FullName ASC
 ;
