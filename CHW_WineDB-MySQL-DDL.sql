@@ -1,4 +1,14 @@
 
+CREATE TABLE Retailers (
+                RetailerId INT AUTO_INCREMENT NOT NULL,
+                Name VARCHAR(200) NOT NULL,
+                Email VARCHAR(100),
+                PRIMARY KEY (RetailerId)
+);
+
+ALTER TABLE Retailers COMMENT 'Retailers fullfil the email customers orders';
+
+
 CREATE TABLE LegacyEmailOrders_1002 (
                 EmailOrderId INT NOT NULL,
                 OrderNumber VARCHAR(10),
@@ -31,7 +41,7 @@ CREATE TABLE LegacyEmailOrders_1002 (
                 Quant3 VARCHAR(34),
                 Quant4 VARCHAR(36),
                 Quant5 VARCHAR(22),
-                DelItemss VARCHAR(88),
+                DelItems VARCHAR(88),
                 DelItem2 TEXT(2089),
                 DelItem3 VARCHAR(71),
                 DelItem4 VARCHAR(73),
@@ -333,10 +343,10 @@ CREATE TABLE Wines (
                 Vinification TEXT(2000),
                 TerroirVineyardPractices TEXT(2000),
                 PressParagraph TEXT(6000),
-                CreationTimestamp DATETIME NOT NULL,
+                Created DATETIME NOT NULL,
                 CreatedBy VARCHAR(32) NOT NULL,
-                ModificationTimestamp DATETIME NOT NULL,
-                ModifiedBy VARCHAR(32) NOT NULL,
+                LastModified DATETIME NOT NULL,
+                LastModifiedBy VARCHAR(32) NOT NULL,
                 PRIMARY KEY (WineId)
 );
 
@@ -357,7 +367,7 @@ ALTER TABLE Wines MODIFY COLUMN CaseUnitId TINYINT COMMENT 'Type of unit in a ca
 
 ALTER TABLE Wines MODIFY COLUMN CreatedBy VARCHAR(32) COMMENT 'User who created this record';
 
-ALTER TABLE Wines MODIFY COLUMN ModifiedBy VARCHAR(32) COMMENT 'User who last modified this record';
+ALTER TABLE Wines MODIFY COLUMN LastModifiedBy VARCHAR(32) COMMENT 'User who last modified this record';
 
 
 CREATE TABLE NJ_Distribution (
@@ -418,15 +428,22 @@ ALTER TABLE WinePricing MODIFY COLUMN NJ_MiltiCaseQty TINYINT COMMENT 'NJ min # 
 
 CREATE TABLE EmailCustomers (
                 EmailCustomerId INT AUTO_INCREMENT NOT NULL,
-                Created DATETIME NOT NULL,
-                CreatedBy VARCHAR(30) NOT NULL,
-                LastModified DATETIME NOT NULL,
-                LastModifiedBy VARCHAR(30) NOT NULL,
-                FirstName VARCHAR(100) NOT NULL,
-                LastName VARCHAR(100) NOT NULL,
+                Title VARCHAR(20),
+                GivenName VARCHAR(100) NOT NULL,
+                Surname VARCHAR(100) NOT NULL,
                 Email VARCHAR(200) NOT NULL,
+                Created DATETIME NOT NULL,
+                CreatedBy VARCHAR(32) NOT NULL,
+                LastModified DATETIME NOT NULL,
+                LastModifiedBy VARCHAR(32) NOT NULL,
                 PRIMARY KEY (EmailCustomerId)
 );
+
+ALTER TABLE EmailCustomers MODIFY COLUMN Title VARCHAR(20) COMMENT 'The title the person prefers to be addressed by, ie Mr, Ms, Dr. etc';
+
+ALTER TABLE EmailCustomers MODIFY COLUMN GivenName VARCHAR(100) COMMENT 'A given name may also include a middle name or initial';
+
+ALTER TABLE EmailCustomers MODIFY COLUMN Surname VARCHAR(100) COMMENT 'Family name; Last in most western countries, first in most eastern countries';
 
 
 CREATE TABLE EmailCustomerCreditCards (
@@ -470,18 +487,16 @@ CREATE TABLE EmailCustomers_ShippingAddresses (
 
 CREATE TABLE Orders (
                 OrderId INT AUTO_INCREMENT NOT NULL,
-                OrderNo INT NOT NULL,
+                AccountingOrderNo VARCHAR(15) NOT NULL,
                 EmailCustomerId INT NOT NULL,
                 AddressId INT NOT NULL,
-                DistributorId INT NOT NULL,
+                RetailerId INT NOT NULL,
                 PRIMARY KEY (OrderId)
 );
 
-ALTER TABLE Orders MODIFY COLUMN OrderNo INTEGER COMMENT '7 digit order reference number';
+ALTER TABLE Orders MODIFY COLUMN AccountingOrderNo VARCHAR(15) COMMENT 'Accounting Order number for retailer that includes this order';
 
 ALTER TABLE Orders MODIFY COLUMN AddressId INTEGER COMMENT 'Customer''s selected shipping address for this order';
-
-ALTER TABLE Orders MODIFY COLUMN DistributorId INTEGER COMMENT 'Distributor who will fulfill this order (serving shipping address)';
 
 
 CREATE TABLE Orders_Wines (
@@ -490,6 +505,12 @@ CREATE TABLE Orders_Wines (
                 PRIMARY KEY (OrderId, WineId)
 );
 
+
+ALTER TABLE Orders ADD CONSTRAINT retailers_orders_fk
+FOREIGN KEY (RetailerId)
+REFERENCES Retailers (RetailerId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
 
 ALTER TABLE Wines ADD CONSTRAINT lookupwinetypes_wines_fk
 FOREIGN KEY (WineTypeId)
@@ -512,12 +533,6 @@ ON UPDATE NO ACTION;
 ALTER TABLE Wines ADD CONSTRAINT producers_wines_fk
 FOREIGN KEY (ProducerId)
 REFERENCES Producers (ProducerId)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION;
-
-ALTER TABLE Orders ADD CONSTRAINT distributors_orders_fk
-FOREIGN KEY (DistributorId)
-REFERENCES Distributors (DistributorId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
