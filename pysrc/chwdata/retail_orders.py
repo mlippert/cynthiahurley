@@ -80,6 +80,13 @@ class RetailOrders:
                    '{participant_cnt} participants:'
                   )
 
+    # Select statement to retrieve unique fullnames from
+        unique_fullname_sql = 'SELECT DISTINCT FullName'
+                              ' FROM chw.LegacyEmailOrders_1002'
+                              ' WHERE FullName != \'\''
+                              ' ORDER BY FullName ASC'
+                              ' ;'
+
     def __init__(self, *, domain=default_domain,
                           port=default_port,
                           db_name=default_db_name,
@@ -122,7 +129,7 @@ class RetailOrders:
     def create_customers_from_legacy(self):
         """
         """
-        cursor = self._connection.cursor()
+        unique_fullname_cursor = self._connection.cursor()
 
 
 class Wines:
