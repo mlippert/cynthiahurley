@@ -487,23 +487,51 @@ CREATE TABLE EmailCustomers_ShippingAddresses (
 
 CREATE TABLE Orders (
                 OrderId INT AUTO_INCREMENT NOT NULL,
+                OrderDate DATE NOT NULL,
                 AccountingOrderNo VARCHAR(15) NOT NULL,
                 EmailCustomerId INT NOT NULL,
                 AddressId INT NOT NULL,
                 RetailerId INT NOT NULL,
+                AdditionalCharges VARCHAR(120),
+                Notes VARCHAR(250),
                 PRIMARY KEY (OrderId)
 );
+
+ALTER TABLE Orders MODIFY COLUMN OrderDate DATE COMMENT 'Date the order was placed';
 
 ALTER TABLE Orders MODIFY COLUMN AccountingOrderNo VARCHAR(15) COMMENT 'Accounting Order number for retailer that includes this order';
 
 ALTER TABLE Orders MODIFY COLUMN AddressId INTEGER COMMENT 'Customer''s selected shipping address for this order';
 
+ALTER TABLE Orders MODIFY COLUMN Notes VARCHAR(250) COMMENT 'Notes about the order to include on the invoice';
+
+
+CREATE TABLE OrderInvoices (
+                OrderId INT NOT NULL,
+                InvoicePDF LONGBLOB NOT NULL,
+                PRIMARY KEY (OrderId)
+);
+
+ALTER TABLE OrderInvoices MODIFY COLUMN InvoicePDF BLOB COMMENT 'The Invoice PDF sent to the customer';
+
 
 CREATE TABLE Orders_Wines (
                 OrderId INT NOT NULL,
                 WineId INT NOT NULL,
+                QtyCases TINYINT DEFAULT 0 NOT NULL,
+                QtyUnits TINYINT DEFAULT 0 NOT NULL,
+                CasePrice DECIMAL(8,2) NOT NULL,
+                UnitPrice DECIMAL(8,2) NOT NULL,
                 PRIMARY KEY (OrderId, WineId)
 );
+
+ALTER TABLE Orders_Wines MODIFY COLUMN QtyCases TINYINT COMMENT 'Number of full cases ordered';
+
+ALTER TABLE Orders_Wines MODIFY COLUMN QtyUnits TINYINT COMMENT 'Number of units (bottles, BiB, etc) in partial case ordered';
+
+ALTER TABLE Orders_Wines MODIFY COLUMN CasePrice DECIMAL(8, 2) COMMENT 'Price for full cases ordered';
+
+ALTER TABLE Orders_Wines MODIFY COLUMN UnitPrice DECIMAL(8, 2) COMMENT 'Price for units (bottles, BiB, etc) in partial case ordered';
 
 
 ALTER TABLE Orders ADD CONSTRAINT retailers_orders_fk
@@ -591,6 +619,12 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE Orders_Wines ADD CONSTRAINT orders_orders_wines_fk
+FOREIGN KEY (OrderId)
+REFERENCES Orders (OrderId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE OrderInvoices ADD CONSTRAINT orders_orderinvoices_fk
 FOREIGN KEY (OrderId)
 REFERENCES Orders (OrderId)
 ON DELETE NO ACTION
