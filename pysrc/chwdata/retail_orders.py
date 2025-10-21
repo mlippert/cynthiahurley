@@ -6,6 +6,9 @@
 This module retrieves provides access to the Retail Order tables, and to the
 LegacyEmailOrders table from the chw database
 
+Python naming convention reminder note: single underscore prefix class names are
+for "private" internal use and should not be considered part of the public API.
+
 =============== ================================================================
 Created on      October 10, 2025
 --------------- ----------------------------------------------------------------
@@ -32,6 +35,7 @@ default_port = 3306
 default_db_name = 'chw'
 default_db_user = 'chwuser'
 default_db_password = 'cynthiahurley'
+default_update_user = 'Gillian'
 
 # Task 1: Create retail customers from LegacyEmailOrders
 #  - Find all unique FullName's which are not empty.
@@ -81,11 +85,57 @@ class RetailOrders:
                   )
 
     # Select statement to retrieve unique fullnames from
-        unique_fullname_sql = 'SELECT DISTINCT FullName'
-                              ' FROM chw.LegacyEmailOrders_1002'
-                              ' WHERE FullName != \'\''
-                              ' ORDER BY FullName ASC'
-                              ' ;'
+    _unique_fullname_sql = 'SELECT FullName, COUNT( FullName ) NumOrders '
+                           ' FROM chw.LegacyEmailOrders_1002'
+                           ' WHERE FullName != \'\''
+                           ' GROUP BY FullName'
+                           ' ORDER BY FullName ASC'
+                           ' ;'
+
+    _unique_fullname_sql2 = 'SELECT DISTINCT FullName'
+                            ' FROM chw.LegacyEmailOrders_1002'
+                            ' WHERE FullName != \'\''
+                            ' ORDER BY FullName ASC'
+                            ' ;'
+
+    # Select statement for Customer columns of ALL LegacyEmailOrders records with a matching FullName
+    _legacy_customer_info_sql = 'SELECT EmailOrderId'
+                                     ', FirstDate'
+                                     ', FullName'
+                                     ', LastName'
+                                     ', Email1'
+                                     ', CompanyAptNo'
+                                     ', Street'
+                                     ', City'
+                                     ', State'
+                                     ', Zip'
+                                     ', PhoneHome'
+                                     ', PhoneWork'
+                                     ', FaxNumber'
+                                     ', CCVisa'
+                                     ', CCAmex'
+                                     ', CCMastercard'
+                                     ', CC_ID'
+                                ' FROM chw.LegacyEmailOrders_1002'
+                                ' WHERE FullName = ?'
+                                ' ORDER BY FirstDate ASC'
+                                ' ;'
+
+    # Insert statement to create EmailCustomer record
+    _insert_email_customer_sql = 'INSERT INTO chw.EmailCustomers '
+                                 ' (Title,'
+                                 ', GivenName'
+                                 ', Surname'
+                                 ', Suffix'
+                                 ', Email'
+                                 ', Created'
+                                 ', CreatedBy'
+                                 ', LastModified'
+                                 ', LastModifiedBy'
+                                 ')'
+                                 ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                                 ' ;'
+
 
     def __init__(self, *, domain=default_domain,
                           port=default_port,
@@ -126,10 +176,138 @@ class RetailOrders:
         """
         self.client.drop_database(self.db)
 
-    def create_customers_from_legacy(self):
+    def create_customers_from_legacy(self, update_user=default_update_user):
         """
+        Create retail customers from LegacyEmailOrders
+        - Find all unique FullName's which are not empty.
+        - For each unique full name create a new EmailCustomer
+        - Attempt to parse the full name into an optional Title, a given name and a surname
+          - Convert all consecutive whitespace into a single space character
+          - Strip leading and trailing non-alphanumeric characters
+          - Split into words on space characters
+          - Check 1st word to see if it is a known title (Mr. Mrs. Ms. Dr., etc.)
+              if so set EmailCustomer title field and shift words (2nd becomes 1st, etc)
+          - Check last word for known suffixes ((Jr. II, III, MD)
+              if so WHAT?
+          - If 2 words assume 1st is given name and 2nd is surname and set them
+            ALSO set flag for manual review to FALSE in the EmailCustomers_LegacyEmailsOrders table
+          - Otherwise if more than 2 words, set given name to all words except last joined by spaces,
+            and set surname to the last word.
+            ALSO set flag for manual review to TRUE in the EmailCustomers_LegacyEmailsOrders table
+
+        - INSERT EmailCustomer record (get the assigned EmailCustomerId (HOW? cursor.lastrowid))
+        - INSERT an EmailCustomers_LegacyEmailOrders record for EVERY LegacyEmailOrders record which
+          has that unique FullName.
         """
-        unique_fullname_cursor = self._connection.cursor()
+        with self._connection.cursor() as unique_fullname_cursor,
+             self._connection.cursor(prepared=True) as legacy_customer_info_cursor,
+             self._connection.cursor(prepared=True) as insert_email_customer_cursor:
+
+            unique_fullname_cursor.execute(RetailOrders._unique_fullname_sql)
+            for fullname_row in unique_fullname_cursor:
+                # Parse name into title, given_name, surname, suffix, manual_review_needed
+                parsed_name = self.parse_fullname(fullname_row[0])
+
+                # Get Legacy order records for fullname
+                legacy_customer_info_cursor.execute(RetailOrders._legacy_customer_info_sql, (fullname_row[0],))
+
+                # TODO: for now we'll just use the FirstDate and Email1 from the 1st legacy order
+                #       as the values for the new email customer record
+                customer_info_row = legacy_customer_info_cursor.fetchone()
+                customer_created = customer_info_row[1]
+                customer_email = customer_info_row[4]
+
+                # Insert new Email Customer record
+                new_email_customer = (parsed_name['title'],
+                                      parsed_name['given_name'],
+                                      parsed_name['surname'],
+                                      parsed_name['suffix'],
+                                      customer_email,
+                                      customer_created,
+                                      update_user,
+                                      customer_created,
+                                      update_user
+                                     )
+                insert_email_customer_cursor.execute(RetailOrders._insert_email_customer_sql, new_email_customer)
+
+
+    @staticmethod
+    def parse_fullname(self, fullname):
+        """
+        Attempt to parse the given freeform fullname into a given name and surname,
+        along with a preferred title and suffix if those values are found.
+        The name parts will be returned in a dictionary with keys:
+        'title', 'given_name', 'surname', 'suffix' and 'manual_review_needed'
+
+        This will be done by:
+          - Converting all consecutive whitespace into a single space character
+          - Stripping leading and trailing non-alphanumeric characters
+          - Splitting into words on space characters
+          - Check 1st word to see if it is a known title (Mr. Mrs. Ms. Dr., etc.)
+              if so set EmailCustomer title field and shift words (2nd becomes 1st, etc)
+          - Check last word for known suffixes ((Jr. II, III, MD)
+              if so WHAT?
+          - If 2 words assume 1st is given name and 2nd is surname and set them
+            ALSO set flag for manual review to FALSE in the EmailCustomers_LegacyEmailsOrders table
+          - Otherwise set given name to all words except last joined by spaces,
+            and set surname to the last word. Note 1 word sets only the surname and 0 words sets
+            neither, leaving the unset fields set to the empty string.
+            ALSO set flag for manual review to TRUE in the EmailCustomers_LegacyEmailsOrders table
+        """
+
+        # return object to contain values parsed from given fullname
+        name_parts = {'title':      None,
+                      'given_name': '',
+                      'surname':    '',
+                      'suffix':     None,
+                      'manual_review_needed': True}
+
+        name_words = fullname.split()
+
+        if (len(name_words) >= 1 && is_name_title(name_words[0])):
+            name_parts['title'] = name_words[0]
+            del name_words[0]
+
+        if (len(name_words) >= 1 && is_name_suffix(name_words[-1])):
+            name_parts['suffix'] = name_words[-1]
+            del name_words[-1]
+
+        # concatenate all remaining words except the last one into the given_name
+        # put the last word in the surname (as long as there is at least 1 word)
+        if (len(name_words) > 0):
+            name_parts['given_name'] = ' '.join(name_words[0,-1])
+            name_parts['surname'] = name_words[-1]
+            name_parts['manual_review_needed'] = len(name_words) != 2
+
+        return name_parts
+
+    @staticmethod
+    def is_name_title(name):
+        """
+        Determine if the supplied name is a known title
+        """
+
+        # list of known titles
+        # TODO: Consider if we want to check for several variations and always return
+        #       a canonical version, ie match case insensitive with trailing '.' stripped
+        #       to 'mr' would return 'Mr.', similarly 'ms', 'mrs', 'dr'
+        known_titles = ('Mr', 'Mr.', 'Ms', 'Ms.', 'Mrs', 'Mrs.', 'Dr', 'Dr.')
+
+        return name in known_titles
+
+    @staticmethod
+    def is_name_suffix(name):
+        """
+        Determine if the supplied name is a known suffix
+        """
+
+        # list of known suffixes
+        # TODO: Consider if we want to check for several variations and always return
+        #       a canonical version, ie match case insensitive with trailing '.' stripped
+        #       to 'jr' would return 'Jr.', similarly 'iii', 'md'
+        known_suffixes = ('Jr', 'Jr.', 'III', '111', 'MD')
+
+        return name in known_suffixes
 
 
 class Wines:
