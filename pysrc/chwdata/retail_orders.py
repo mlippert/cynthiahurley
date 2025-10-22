@@ -85,64 +85,65 @@ class RetailOrders:
                   )
 
     # Select statement to retrieve unique fullnames from
-    _unique_fullname_sql = 'SELECT FullName, COUNT( FullName ) NumOrders '
-                           ' FROM chw.LegacyEmailOrders_1002'
-                           ' WHERE FullName != \'\''
-                           ' GROUP BY FullName'
-                           ' ORDER BY FullName ASC'
-                           ' ;'
-
-    _unique_fullname_sql2 = 'SELECT DISTINCT FullName'
+    _unique_fullname_sql = ('SELECT FullName, COUNT( FullName ) NumOrders '
                             ' FROM chw.LegacyEmailOrders_1002'
                             ' WHERE FullName != \'\''
+                            ' GROUP BY FullName'
                             ' ORDER BY FullName ASC'
-                            ' ;'
+                            ' ;')
+
+    _unique_fullname_sql2 = ('SELECT DISTINCT FullName'
+                             ' FROM chw.LegacyEmailOrders_1002'
+                             ' WHERE FullName != \'\''
+                             ' ORDER BY FullName ASC'
+                             ' ;')
 
     # Select statement for Customer columns of ALL LegacyEmailOrders records with a matching FullName
-    _legacy_customer_info_sql = 'SELECT EmailOrderId'
-                                     ', FirstDate'
-                                     ', FullName'
-                                     ', LastName'
-                                     ', Email1'
-                                     ', CompanyAptNo'
-                                     ', Street'
-                                     ', City'
-                                     ', State'
-                                     ', Zip'
-                                     ', PhoneHome'
-                                     ', PhoneWork'
-                                     ', FaxNumber'
-                                     ', CCVisa'
-                                     ', CCAmex'
-                                     ', CCMastercard'
-                                     ', CC_ID'
-                                ' FROM chw.LegacyEmailOrders_1002'
-                                ' WHERE FullName = ?'
-                                ' ORDER BY FirstDate ASC'
-                                ' ;'
+    _legacy_customer_info_sql = ('SELECT EmailOrderId'
+                                      ', FirstDate'
+                                      ', FullName'
+                                      ', LastName'
+                                      ', Email1'
+                                      ', CompanyAptNo'
+                                      ', Street'
+                                      ', City'
+                                      ', State'
+                                      ', Zip'
+                                      ', PhoneHome'
+                                      ', PhoneWork'
+                                      ', FaxNumber'
+                                      ', CCVisa'
+                                      ', CCAmex'
+                                      ', CCMastercard'
+                                      ', CC_ID'
+                                 ' FROM chw.LegacyEmailOrders_1002'
+                                 ' WHERE FullName = ?'
+                                 ' ORDER BY FirstDate ASC'
+                                 ' ;')
 
     # Insert statement to create EmailCustomer record
-    _insert_email_customer_sql = 'INSERT INTO chw.EmailCustomers '
-                                 ' (Title,'
-                                 ', GivenName'
-                                 ', Surname'
-                                 ', Suffix'
-                                 ', Email'
-                                 ', Created'
-                                 ', CreatedBy'
-                                 ', LastModified'
-                                 ', LastModifiedBy'
-                                 ')'
-                                 ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-                                 ' ;'
+    _insert_email_customer_sql = ('INSERT INTO chw.EmailCustomers '
+                                  ' (Title,'
+                                  ', GivenName'
+                                  ', Surname'
+                                  ', Suffix'
+                                  ', Email'
+                                  ', Created'
+                                  ', CreatedBy'
+                                  ', LastModified'
+                                  ', LastModifiedBy'
+                                  ')'
+                                  ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                                  ' ;')
 
-
-    def __init__(self, *, domain=default_domain,
-                          port=default_port,
-                          db_name=default_db_name,
-                          db_user=default_db_user,
-                          db_password=default_db_password):
+    def __init__(self, *,
+                 domain=default_domain,
+                 port=default_port,
+                 db_name=default_db_name,
+                 db_user=default_db_user,
+                 db_password=default_db_password):
         """
+        Initialize the RetailOrders class, setting initial values for all instance variables
         """
         self.logger = logging.getLogger('CynthiaHurleyDB.RetailOrders')
 
@@ -165,16 +166,6 @@ class RetailOrders:
             self._connection.close()
             print("Connection closed.")
 
-
-
-    def drop_db(self):
-        """
-        Drop the Riff Database.
-
-        Obviously the database will need to be restored before any other operations
-        will succeed.
-        """
-        self.client.drop_database(self.db)
 
     def create_customers_from_legacy(self, update_user=default_update_user):
         """
@@ -199,9 +190,9 @@ class RetailOrders:
         - INSERT an EmailCustomers_LegacyEmailOrders record for EVERY LegacyEmailOrders record which
           has that unique FullName.
         """
-        with self._connection.cursor() as unique_fullname_cursor,
-             self._connection.cursor(prepared=True) as legacy_customer_info_cursor,
-             self._connection.cursor(prepared=True) as insert_email_customer_cursor:
+        with (self._connection.cursor() as unique_fullname_cursor,
+              self._connection.cursor(prepared=True) as legacy_customer_info_cursor,
+              self._connection.cursor(prepared=True) as insert_email_customer_cursor):
 
             unique_fullname_cursor.execute(RetailOrders._unique_fullname_sql)
             for fullname_row in unique_fullname_cursor:
@@ -228,11 +219,15 @@ class RetailOrders:
                                       customer_created,
                                       update_user
                                      )
-                insert_email_customer_cursor.execute(RetailOrders._insert_email_customer_sql, new_email_customer)
 
+                # for now don't insert just write to stdout
+                #insert_email_customer_cursor.execute(RetailOrders._insert_email_customer_sql, new_email_customer)
+                #f = sys.stdout
+                #f.write(f'  {"":4} < {b[0]:4}: {b[1]:4}\n')
+                print(new_email_customer, file=sys.stdout)
 
     @staticmethod
-    def parse_fullname(self, fullname):
+    def parse_fullname(fullname):
         """
         Attempt to parse the given freeform fullname into a given name and surname,
         along with a preferred title and suffix if those values are found.
@@ -264,17 +259,17 @@ class RetailOrders:
 
         name_words = fullname.split()
 
-        if (len(name_words) >= 1 && is_name_title(name_words[0])):
+        if (len(name_words) >= 1 and RetailOrders.is_name_title(name_words[0])):
             name_parts['title'] = name_words[0]
             del name_words[0]
 
-        if (len(name_words) >= 1 && is_name_suffix(name_words[-1])):
+        if (len(name_words) >= 1 and RetailOrders.is_name_suffix(name_words[-1])):
             name_parts['suffix'] = name_words[-1]
             del name_words[-1]
 
         # concatenate all remaining words except the last one into the given_name
         # put the last word in the surname (as long as there is at least 1 word)
-        if (len(name_words) > 0):
+        if len(name_words) > 0:
             name_parts['given_name'] = ' '.join(name_words[0,-1])
             name_parts['surname'] = name_words[-1]
             name_parts['manual_review_needed'] = len(name_words) != 2
@@ -340,6 +335,9 @@ class Wines:
         self._connection = mariadb.connect(**self._db_config)
 
 
+def do_create_customers_from_legacy():
+    retailOrders = RetailOrders()
+    retailOrders.create_customers_from_legacy()
 
 
 # Following is just the copied example from:
