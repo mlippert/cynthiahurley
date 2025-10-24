@@ -30,7 +30,7 @@ import mariadb
 
 # Local application imports
 
-default_domain = 'localhost'
+default_domain = '127.0.0.1'
 default_port = 3306
 default_db_name = 'chw'
 default_db_user = 'chwuser'
@@ -59,6 +59,7 @@ default_update_user = 'Gillian'
 #    has that unique FullName.
 #
 #
+
 
 class RetailOrders:
     """
@@ -157,6 +158,8 @@ class RetailOrders:
             self._connection = mariadb.connect(**self._db_config)
         except mariadb.Error as e:
             print(f"An error occurred: {e}")
+            print('mariadb.onnect arguments:', self._db_config)
+            sys.exit(1)
 
     def __del__(self):
         """
@@ -224,7 +227,14 @@ class RetailOrders:
                 #insert_email_customer_cursor.execute(RetailOrders._insert_email_customer_sql, new_email_customer)
                 #f = sys.stdout
                 #f.write(f'  {"":4} < {b[0]:4}: {b[1]:4}\n')
-                print(new_email_customer, file=sys.stdout)
+                #print(new_email_customer, file=sys.stdout)
+                print('!!' if parsed_name['manual_review_needed'] else '--',
+                      fullname_row[0], '-->',
+                      'T:"' + parsed_name['title'] + '"' if parsed_name['title'] is not None else '',
+                      'F:"' + parsed_name['given_name'] + '"',
+                      'L:"' + parsed_name['surname'] + '"',
+                      'S:"' + parsed_name['suffix'] + '"' if parsed_name['suffix'] is not None else '',
+                      file=sys.stdout)
 
     @staticmethod
     def parse_fullname(fullname):
@@ -270,7 +280,7 @@ class RetailOrders:
         # concatenate all remaining words except the last one into the given_name
         # put the last word in the surname (as long as there is at least 1 word)
         if len(name_words) > 0:
-            name_parts['given_name'] = ' '.join(name_words[0,-1])
+            name_parts['given_name'] = ' '.join(name_words[0:-1])
             name_parts['surname'] = name_words[-1]
             name_parts['manual_review_needed'] = len(name_words) != 2
 
@@ -300,7 +310,7 @@ class RetailOrders:
         # TODO: Consider if we want to check for several variations and always return
         #       a canonical version, ie match case insensitive with trailing '.' stripped
         #       to 'jr' would return 'Jr.', similarly 'iii', 'md'
-        known_suffixes = ('Jr', 'Jr.', 'III', '111', 'MD')
+        known_suffixes = ('Jr', 'Jr.', 'II', 'III', '111', 'MD')
 
         return name in known_suffixes
 
@@ -335,7 +345,7 @@ class Wines:
         self._connection = mariadb.connect(**self._db_config)
 
 
-def do_create_customers_from_legacy():
+def do_create_customers_from_legacy(user):
     retailOrders = RetailOrders()
     retailOrders.create_customers_from_legacy()
 
@@ -351,6 +361,7 @@ db_config = {
     'password': 'cynthiahurley',
     'database': 'chw'
 }
+
 
 def run_db_operations():
     conn = None
@@ -373,11 +384,11 @@ def run_db_operations():
                     email VARCHAR(255) UNIQUE
                 )
             """)
-            conn.commit() # Commit the transaction for DDL
+            conn.commit()  # Commit the transaction for DDL
             print("Table 'users' created or already exists.")
         except mariadb.Error as e:
             print(f"Error creating table: {e}")
-            conn.rollback() # Rollback in case of DDL error
+            conn.rollback()  # Rollback in case of DDL error
 
         # --- Example: Insert Data (Parameterized Query) ---
         print("\nInserting data...")
@@ -385,7 +396,7 @@ def run_db_operations():
         try:
             cursor.execute(insert_query, ("Alice Wonderland", "alice@example.com"))
             cursor.execute(insert_query, ("Bob Builder", "bob@example.com"))
-            conn.commit() # Commit the transaction for DML
+            conn.commit()  # Commit the transaction for DML
             print(f"Inserted {cursor.rowcount} rows.")
             print(f"Last inserted ID: {cursor.lastrowid}")
         except mariadb.IntegrityError as e:
@@ -398,7 +409,7 @@ def run_db_operations():
         # --- Example: Select Data ---
         print("\nSelecting data...")
         select_query = "SELECT id, name, email FROM users WHERE name LIKE ?"
-        cursor.execute(select_query, ("%Alice%",)) # Note the comma for single parameter tuple
+        cursor.execute(select_query, ("%Alice%",))  # Note the comma for single parameter tuple
 
         print("Fetched data:")
         for row in cursor:
@@ -432,6 +443,7 @@ def run_db_operations():
 
 #if __name__ == "__main__":
 #    run_db_operations()
+
 
 def _test():
     pass

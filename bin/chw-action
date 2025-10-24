@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#
+# Run the main python script which performs actions on the data in the chw mariadb database
+# Passes the commandline parameters along to that script.
+
+MAINPY=main.py
+
+if [[ -f ./$MAINPY ]]; then
+    MAINPY=./$MAINPY
+elif [[ -f ./pysrc/$MAINPY ]]; then
+    MAINPY=./pysrc/$MAINPY
+elif [[ -f ../pysrc/$MAINPY ]]; then
+    MAINPY=../pysrc/$MAINPY
+else
+    echo "Can't find $MAINPY"
+    exit 1
+fi
+
+python $MAINPY "$@"

@@ -18,9 +18,6 @@ ndef = $(if $(value $(1)),,$(error $(1) not set))
 CNTR_CLI := podman
 COMPOSE = podman-compose
 
-LINT_LOG := logs/lint.log
-TEST_LOG := logs/test.log
-
 # docker-compose database service names so they can be brought up and down individually
 MARIADB_SERVICE := chw-mariadb
 MYSQL_SERVICE   := chw-mysql
@@ -47,7 +44,7 @@ BASE_IMAGES := \
 
 .DEFAULT_GOAL := help
 .DELETE_ON_ERROR :
-.PHONY : all up down up-mariadb down-mariadb up-mysql down-mysql up-mongo down-mongo help
+.PHONY : run init install up down up-mariadb down-mariadb up-mysql down-mysql up-mongo down-mongo help
 
 run : ## run the main python script
 	$(call ndef,VIRTUAL_ENV)
@@ -63,29 +60,19 @@ install : ## create python3 virtual env, install requirements (define VER for ot
 	pip install --upgrade pip setuptools    ; \
 	pip install -r requirements.txt
 
-build : lint ## build the analyze-data
-	@echo "No building is currently needed to run analyze-data"
+build : lint ## build the chwdata cli
+	@echo "No building is currently needed to run the chwdata cli"
 
 lint : ## run lint over all python source updating the .lint files
 	@$(MAKE) -C pysrc lint
 
-lint-log : ESLINT_OPTIONS += --output-file $(LINT_LOG) ## run eslint concise diffable output to $(LINT_LOG)
-lint-log : ESLINT_FORMAT = unix
-vim-lint : ESLINT_FORMAT = unix ## run eslint in format consumable by vim quickfix
-eslint : ## run lint over the sources & tests; display results to stdout
-eslint vim-lint lint-log :
-	$(ESLINT) $(ESLINT_OPTIONS) --format $(ESLINT_FORMAT) src
-
 test : ## (Not implemented) run the unit tests
-	@echo test would run "$(MOCHA) --reporter spec test | tee $(TEST_LOG)"
+	@$(MAKE) -C pysrc test
 
 clean : clean-build ## remove ALL created artifacts
 
 clean-build : ## remove all artifacts created by the build target
 	@$(MAKE) -C pysrc clean-build
-
-clean-lintlog :
-	@rm $(LINT_LOG) 2> /dev/null || true
 
 outdated : ## check for newer versions of required python packages
 	$(call ndef,VIRTUAL_ENV)
@@ -141,7 +128,7 @@ show-ps : ## Show all docker containers w/ limited fields
 ## if you want the help sorted rather than in the order of occurrence, pipe the grep to sort and pipe that to awk
 help :
 	@echo ""                                                                   ; \
-	echo "Useful targets in this analyze-data Makefile:"                       ; \
+	echo "Useful targets in this CHW data Makefile:"                           ; \
 	(grep -E '^[a-zA-Z_-]+ ?:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = " ?:.*?## "}; {printf "\033[36m%-20s\033[0m : %s\n", $$1, $$2}') ; \
 	echo ""                                                                    ; \
 	echo "If VIRTUAL_ENV needs to be set for a target, run '. activate' first" ; \
