@@ -62,6 +62,10 @@ ALTER TABLE LegacyEmailOrders_1002 MODIFY COLUMN Subtotal DECIMAL(8, 2) COMMENT 
 ALTER TABLE LegacyEmailOrders_1002 MODIFY COLUMN AdditionalCharges VARCHAR(120) COMMENT 'Describe charges that will be added to subtotal';
 
 
+CREATE INDEX legacyemailorders_1002_fullname_idx
+ ON LegacyEmailOrders_1002
+ ( FullName );
+
 CREATE TABLE LegacyEmailOrders_911 (
                 EmailOrderId INT NOT NULL,
                 FirstDate DATE,
@@ -431,6 +435,7 @@ CREATE TABLE EmailCustomers (
                 Title VARCHAR(20),
                 GivenName VARCHAR(100) NOT NULL,
                 Surname VARCHAR(100) NOT NULL,
+                Suffix VARCHAR(15),
                 Email VARCHAR(200) NOT NULL,
                 Created DATETIME NOT NULL,
                 CreatedBy VARCHAR(32) NOT NULL,
@@ -444,6 +449,23 @@ ALTER TABLE EmailCustomers MODIFY COLUMN Title VARCHAR(20) COMMENT 'The title th
 ALTER TABLE EmailCustomers MODIFY COLUMN GivenName VARCHAR(100) COMMENT 'A given name may also include a middle name or initial';
 
 ALTER TABLE EmailCustomers MODIFY COLUMN Surname VARCHAR(100) COMMENT 'Family name; Last in most western countries, first in most eastern countries';
+
+
+CREATE TABLE EmailCustomers_LegacyEmailOrders (
+                EmailCustomerId INT NOT NULL,
+                EmailOrderId INT NOT NULL,
+                NameNeedsReview BOOLEAN DEFAULT 0 NOT NULL,
+                EmailNeedsReview BOOLEAN DEFAULT 0 NOT NULL,
+                ConversionNotes VARCHAR(250),
+                PRIMARY KEY (EmailCustomerId, EmailOrderId)
+);
+
+ALTER TABLE EmailCustomers_LegacyEmailOrders COMMENT 'Map customer back to legacy orders it was extracted from
+along w/ notes about conversion';
+
+ALTER TABLE EmailCustomers_LegacyEmailOrders MODIFY COLUMN NameNeedsReview BOOLEAN COMMENT 'Conversion of legacy fullname needs manual review';
+
+ALTER TABLE EmailCustomers_LegacyEmailOrders MODIFY COLUMN ConversionNotes VARCHAR(250) COMMENT 'Notes about the conversion of the legacy order';
 
 
 CREATE TABLE EmailCustomerCreditCards (
@@ -540,6 +562,12 @@ REFERENCES Retailers (RetailerId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
+ALTER TABLE EmailCustomers_LegacyEmailOrders ADD CONSTRAINT legacyemailorders_1002_emailcustomer_legacyemailorders_fk
+FOREIGN KEY (EmailOrderId)
+REFERENCES LegacyEmailOrders_1002 (EmailOrderId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
 ALTER TABLE Wines ADD CONSTRAINT lookupwinetypes_wines_fk
 FOREIGN KEY (WineTypeId)
 REFERENCES LookupWineTypes (WineTypeId)
@@ -607,6 +635,12 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE Orders ADD CONSTRAINT emailcustomers_orders_fk
+FOREIGN KEY (EmailCustomerId)
+REFERENCES EmailCustomers (EmailCustomerId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE EmailCustomers_LegacyEmailOrders ADD CONSTRAINT emailcustomers_emailcustomer_legacyemailorders_fk
 FOREIGN KEY (EmailCustomerId)
 REFERENCES EmailCustomers (EmailCustomerId)
 ON DELETE NO ACTION
