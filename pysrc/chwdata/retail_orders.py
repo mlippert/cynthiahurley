@@ -23,7 +23,7 @@ Copyright       (c) 2025-present Michael Jay Lippert
 import sys
 import logging
 import pprint
-from datetime import timedelta
+from datetime import timedelta, date
 
 # Third party imports
 import mariadb
@@ -91,36 +91,38 @@ class RetailOrders:
                             ' WHERE FullName != \'\''
                             ' GROUP BY FullName'
                             ' ORDER BY FullName ASC'
-                            ' ;')
+                           )
 
     _unique_fullname_sql2 = ('SELECT DISTINCT FullName'
                              ' FROM chw.LegacyEmailOrders_1002'
                              ' WHERE FullName != \'\''
                              ' ORDER BY FullName ASC'
-                             ' ;')
+                            )
 
     # Select statement for Customer columns of ALL LegacyEmailOrders records with a matching FullName
-    _legacy_customer_info_sql = ('SELECT EmailOrderId'
-                                      ', FirstDate'
-                                      ', FullName'
-                                      ', LastName'
-                                      ', Email1'
-                                      ', CompanyAptNo'
-                                      ', Street'
-                                      ', City'
-                                      ', State'
-                                      ', Zip'
-                                      ', PhoneHome'
-                                      ', PhoneWork'
-                                      ', FaxNumber'
-                                      ', CCVisa'
-                                      ', CCAmex'
-                                      ', CCMastercard'
-                                      ', CC_ID'
+    _legacy_customer_info_columns = ('EmailOrderId',
+                                     'FirstDate',
+                                     'FullName',
+                                     'LastName',
+                                     'Email1',
+                                     'CompanyAptNo',
+                                     'Street',
+                                     'City',
+                                     'State',
+                                     'Zip',
+                                     'PhoneHome',
+                                     'PhoneWork',
+                                     'FaxNumber',
+                                     'CCVisa',
+                                     'CCAmex',
+                                     'CCMastercard',
+                                     'CC_ID'
+                                    )
+    _legacy_customer_info_sql = ('SELECT ' + ', '.join(_legacy_customer_info_columns) +
                                  ' FROM chw.LegacyEmailOrders_1002'
                                  ' WHERE FullName = ?'
                                  ' ORDER BY FirstDate ASC'
-                                 ' ;')
+                                )
 
     # Insert statement to create EmailCustomer record
     _insert_email_customer_sql = ('INSERT INTO chw.EmailCustomers '
@@ -135,7 +137,18 @@ class RetailOrders:
                                   ', LastModifiedBy'
                                   ')'
                                   ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-                                  ' ;')
+                                 )
+
+    # Insert statement to create EmailCustomers_LegacyEmailOrders record
+    _insert_email_customer_sql = ('INSERT INTO chw.EmailCustomers_LegacyEmailOrders '
+                                  ' (EmailCustomerId,'
+                                  ', EmailOrderId'
+                                  ', NameNeedsReview'
+                                  ', EmailNeedsReview'
+                                  ', ConversionNotes'
+                                  ')'
+                                  ' VALUES (?, ?, ?, ?, ?)'
+                                 )
 
     def __init__(self, *,
                  domain=default_domain,
@@ -168,7 +181,6 @@ class RetailOrders:
         if self._connection:
             self._connection.close()
             print("Connection closed.")
-
 
     def create_customers_from_legacy(self, update_user=default_update_user):
         """
@@ -209,19 +221,17 @@ class RetailOrders:
 
                 # TODO: for now we'll just use the FirstDate and Email1 from the 1st legacy order
                 #       as the values for the new email customer record
-                customer_info_row = legacy_customer_info_cursor.fetchone()
-                customer_created = customer_info_row[1]
-                customer_email = customer_info_row[4]
+                customer_info = self._get_customer_info_from_legacy_orders(legacy_customer_info_cursor)
 
                 # Insert new Email Customer record
                 new_email_customer = (parsed_name['title'],
                                       parsed_name['given_name'],
                                       parsed_name['surname'],
                                       parsed_name['suffix'],
-                                      customer_email,
-                                      customer_created,
+                                      customer_info['email'],
+                                      customer_info['first_order_date'],
                                       update_user,
-                                      customer_created,
+                                      customer_info['last_order_date'],
                                       update_user
                                      )
 
@@ -242,6 +252,33 @@ class RetailOrders:
                 needs_review += 1 if parsed_name['manual_review_needed'] else 0
 
             print('Total customers:', customer_count, 'Needs review:', needs_review)
+
+    @classmethod
+    def _get_customer_info_from_legacy_orders(cls, legacy_customer_info_cursor):
+        """
+        Get additional customer information such as email, and shipping addresses from
+        for the given cursor of Legacy Order records of the customer of interest (matching
+        a particular FullName). The cursor should be positioned such that it will iterate
+        over all of the customers orders.
+        """
+
+        # return object to contain values parsed from the legacy order records
+        customer_info = {'email':                  None,
+                         'email_needs_review':     True,
+                         'email_changed_orderids': [],
+                         'first_order_date':       date(1970, 1, 1),
+                         'last_order_date':        date(1970, 1, 1)
+                        }
+
+        # TODO: for now we'll just use the FirstDate and Email1 from the 1st legacy order
+        #       as the values for the new email customer record
+        column_names = cls._legacy_customer_info_columns
+        customer_info_row = legacy_customer_info_cursor.fetchone()
+        customer_info['email'] = customer_info_row[column_names.index('Email1')]
+        customer_info['first_order_date'] = customer_info_row[column_names.index('FirstDate')]
+        customer_info['last_order_date'] = customer_info['first_order_date']
+
+        return customer_info
 
     @staticmethod
     def parse_fullname(fullname):
