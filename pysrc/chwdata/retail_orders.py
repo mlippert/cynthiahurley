@@ -197,6 +197,8 @@ class RetailOrders:
               self._connection.cursor(prepared=True) as legacy_customer_info_cursor,
               self._connection.cursor(prepared=True) as insert_email_customer_cursor):
 
+            customer_count = 0
+            needs_review = 0
             unique_fullname_cursor.execute(RetailOrders._unique_fullname_sql)
             for fullname_row in unique_fullname_cursor:
                 # Parse name into title, given_name, surname, suffix, manual_review_needed
@@ -228,13 +230,18 @@ class RetailOrders:
                 #f = sys.stdout
                 #f.write(f'  {"":4} < {b[0]:4}: {b[1]:4}\n')
                 #print(new_email_customer, file=sys.stdout)
-                print('!!' if parsed_name['manual_review_needed'] else '--',
-                      fullname_row[0], '-->',
-                      'T:"' + parsed_name['title'] + '"' if parsed_name['title'] is not None else '',
-                      'F:"' + parsed_name['given_name'] + '"',
-                      'L:"' + parsed_name['surname'] + '"',
-                      'S:"' + parsed_name['suffix'] + '"' if parsed_name['suffix'] is not None else '',
-                      file=sys.stdout)
+                #print('!!' if parsed_name['manual_review_needed'] else '--',
+                #      fullname_row[0], '-->',
+                #      'T:"' + parsed_name['title'] + '"' if parsed_name['title'] is not None else '',
+                #      'F:"' + parsed_name['given_name'] + '"',
+                #      'L:"' + parsed_name['surname'] + '"',
+                #      'S:"' + parsed_name['suffix'] + '"' if parsed_name['suffix'] is not None else '',
+                #      file=sys.stdout)
+
+                customer_count += 1
+                needs_review += 1 if parsed_name['manual_review_needed'] else 0
+
+            print('Total customers:', customer_count, 'Needs review:', needs_review)
 
     @staticmethod
     def parse_fullname(fullname):
