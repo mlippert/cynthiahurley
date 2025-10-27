@@ -228,7 +228,7 @@ class RetailOrders:
                                       parsed_name['given_name'],
                                       parsed_name['surname'],
                                       parsed_name['suffix'],
-                                      customer_info['email'],
+                                      None if len(customer_info['email']) == 0 else customer_info['email'][0],
                                       customer_info['first_order_date'],
                                       update_user,
                                       customer_info['last_order_date'],
@@ -246,6 +246,7 @@ class RetailOrders:
                 #      'F:"' + parsed_name['given_name'] + '"',
                 #      'L:"' + parsed_name['surname'] + '"',
                 #      'S:"' + parsed_name['suffix'] + '"' if parsed_name['suffix'] is not None else '',
+                #      'E:', customer_info['email'],
                 #      file=sys.stdout)
 
                 customer_count += 1
@@ -263,8 +264,9 @@ class RetailOrders:
         """
 
         # return object to contain values parsed from the legacy order records
-        customer_info = {'email':                  None,
-                         'email_needs_review':     True,
+        customer_info = {'order_ids':              [],
+                         'email':                  [],
+                         'email_needs_review':     False,
                          'email_changed_orderids': [],
                          'first_order_date':       date(1970, 1, 1),
                          'last_order_date':        date(1970, 1, 1)
@@ -273,10 +275,31 @@ class RetailOrders:
         # TODO: for now we'll just use the FirstDate and Email1 from the 1st legacy order
         #       as the values for the new email customer record
         column_names = cls._legacy_customer_info_columns
+
+        # get the first order (we expect them to be sorted ascending by FirstDate)
+        # and there MUST be at least one to have extracted the fullname from
         customer_info_row = legacy_customer_info_cursor.fetchone()
-        customer_info['email'] = customer_info_row[column_names.index('Email1')]
+        curEmail1 = customer_info_row[column_names.index('Email1')]
+        customer_info['order_ids'] += [customer_info_row[column_names.index('EmailOrderId')]]
+        # NOTE: I think FirstDate is the order date
         customer_info['first_order_date'] = customer_info_row[column_names.index('FirstDate')]
         customer_info['last_order_date'] = customer_info['first_order_date']
+
+        prevEmail1 = curEmail1
+
+        for customer_info_row in legacy_customer_info_cursor:
+            customer_info['order_ids'] += [customer_info_row[column_names.index('EmailOrderId')]]
+            customer_info['last_order_date'] = customer_info_row[column_names.index('FirstDate')]
+
+            curEmail1 = customer_info_row[column_names.index('Email1')]
+            if curEmail1 != prevEmail1:
+                customer_info['email_needs_review'] = True
+                customer_info['email_changed_orderids'] += [customer_info_row[column_names.index('EmailOrderId')]]
+
+            prevEmail1 = curEmail1
+
+        customer_info['email'] = RetailOrders.get_email_addresses(prevEmail1)
+        customer_info['email_needs_review'] = len(customer_info['email']) > 1
 
         return customer_info
 
@@ -357,6 +380,21 @@ class RetailOrders:
         known_suffixes = ('Jr', 'Jr.', 'II', 'III', '111', 'MD')
 
         return name in known_suffixes
+
+    @staticmethod
+    def get_email_addresses(email_field):
+        """
+        Extract all email addresses from the given email field.
+        Any "word" in the field which contains an '@' is considered an email address
+        """
+
+        email_words = email_field.split()
+        emails = [email for email in email_words if '@' in email]
+
+        # TODO: do we need to report back other conditions which might warrant review
+        # such as more words than email addresses
+
+        return emails
 
 
 class Wines:
