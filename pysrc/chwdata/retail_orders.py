@@ -3,7 +3,7 @@
   chwdata.retail_orders.py
 ################################################################################
 
-This module retrieves provides access to the Retail Order tables, and to the
+This module provides access to the Retail Order tables, and to the
 LegacyEmailOrders table from the chw database
 
 Python naming convention reminder note: single underscore prefix class names are
@@ -126,7 +126,7 @@ class RetailOrders:
 
     # Insert statement to create EmailCustomer record
     _insert_email_customer_sql = ('INSERT INTO chw.EmailCustomers '
-                                  ' (Title,'
+                                  ' (Title'
                                   ', GivenName'
                                   ', Surname'
                                   ', Suffix'
@@ -140,15 +140,15 @@ class RetailOrders:
                                  )
 
     # Insert statement to create EmailCustomers_LegacyEmailOrders record
-    _insert_email_customer_sql = ('INSERT INTO chw.EmailCustomers_LegacyEmailOrders '
-                                  ' (EmailCustomerId,'
-                                  ', EmailOrderId'
-                                  ', NameNeedsReview'
-                                  ', EmailNeedsReview'
-                                  ', ConversionNotes'
-                                  ')'
-                                  ' VALUES (?, ?, ?, ?, ?)'
-                                 )
+    _insert_customer_legacyorder_sql = ('INSERT INTO chw.EmailCustomers_LegacyEmailOrders '
+                                        ' (EmailCustomerId'
+                                        ', EmailOrderId'
+                                        ', NameNeedsReview'
+                                        ', EmailNeedsReview'
+                                        ', ConversionNotes'
+                                        ')'
+                                        ' VALUES (?, ?, ?, ?, ?)'
+                                       )
 
     def __init__(self, *,
                  domain=default_domain,
@@ -207,7 +207,13 @@ class RetailOrders:
         """
         with (self._connection.cursor() as unique_fullname_cursor,
               self._connection.cursor(prepared=True) as legacy_customer_info_cursor,
-              self._connection.cursor(prepared=True) as insert_email_customer_cursor):
+              self._connection.cursor(prepared=True) as insert_email_customer_cursor,
+              self._connection.cursor(prepared=True) as insert_customer_legacyorder_cursor):
+
+            #print(RetailOrders._unique_fullname_sql, file=sys.stdout)
+            #print(RetailOrders._legacy_customer_info_sql, file=sys.stdout)
+            #print(RetailOrders._insert_email_customer_sql, file=sys.stdout)
+            #print(RetailOrders._insert_customer_legacyorder_sql, file=sys.stdout)
 
             customer_count = 0
             needs_review = 0
@@ -229,14 +235,26 @@ class RetailOrders:
                                       parsed_name['surname'],
                                       parsed_name['suffix'],
                                       None if len(customer_info['email']) == 0 else customer_info['email'][0],
-                                      customer_info['first_order_date'],
+                                      customer_info['first_order_date'] if customer_info['first_order_date'] is not None else date(1970, 1, 1),
                                       update_user,
-                                      customer_info['last_order_date'],
+                                      customer_info['last_order_date'] if customer_info['last_order_date'] is not None else date(1970, 1, 1),
                                       update_user
                                      )
 
-                # for now don't insert just write to stdout
-                #insert_email_customer_cursor.execute(RetailOrders._insert_email_customer_sql, new_email_customer)
+                #print(new_email_customer, file=sys.stdout)
+                insert_email_customer_cursor.execute(RetailOrders._insert_email_customer_sql, new_email_customer)
+                customer_id = insert_email_customer_cursor.lastrowid
+                for order_id in customer_info['order_ids']:
+                    customer_legacyorder = (customer_id,
+                                            order_id,
+                                            parsed_name['manual_review_needed'],
+                                            customer_info['email_needs_review'],
+                                            None
+                                           )
+                    #print(customer_legacyorder, file=sys.stdout)
+                    insert_customer_legacyorder_cursor.execute(RetailOrders._insert_customer_legacyorder_sql,
+                                                               customer_legacyorder)
+
                 #f = sys.stdout
                 #f.write(f'  {"":4} < {b[0]:4}: {b[1]:4}\n')
                 #print(new_email_customer, file=sys.stdout)
@@ -253,6 +271,7 @@ class RetailOrders:
                 needs_review += 1 if parsed_name['manual_review_needed'] else 0
 
             print('Total customers:', customer_count, 'Needs review:', needs_review)
+        self._connection.commit()
 
     @classmethod
     def _get_customer_info_from_legacy_orders(cls, legacy_customer_info_cursor):
