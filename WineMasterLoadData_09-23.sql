@@ -369,3 +369,92 @@ GROUP BY Orders.FullName
 HAVING ( ( YearOfLastOrder >= 2020 ) )
 ORDER BY Total ASC, Orders.FullName ASC
 ;
+
+
+SELECT
+    EC.EmailCustomerId EmailCustomerId,
+    EC.GivenName GivenName,
+    EC.Surname Surname,
+    EC.Email Email,
+    LEO.FirstDate OrderDate,
+    LEO.DelItemss Item
+FROM chw.EmailCustomers EC
+JOIN chw.EmailCustomers_LegacyEmailOrders EC_LEO
+  ON EC.EmailCustomerId = EC_LEO.EmailCustomerId
+JOIN chw.LegacyEmailOrders_1002 LEO
+  ON LEO.EmailOrderId = EC_LEO.EmailOrderId
+UNION ALL
+(SELECT
+    EC.EmailCustomerId,
+    EC.GivenName,
+    EC.Surname,
+    EC.Email,
+    LEO.FirstDate,
+    LEO.DelItem2
+FROM chw.EmailCustomers EC
+JOIN chw.EmailCustomers_LegacyEmailOrders EC_LEO
+  ON EC.EmailCustomerId = EC_LEO.EmailCustomerId
+JOIN chw.LegacyEmailOrders_1002 LEO
+  ON LEO.EmailOrderId = EC_LEO.EmailOrderId)
+WHERE EC.EmailCustomerId IN
+(10946,
+10500,
+10770,
+11155,
+9313,
+13635,
+10858,
+12396,
+13028,
+11719,
+11050,
+13786,
+11383,
+11979)
+ORDER BY EmailCustomerId ASC, OrderDate ASC
+
+SELECT
+    EC.EmailCustomerId,
+    EC.GivenName,
+    EC.Surname,
+    EC.Email,
+    LEO.FirstDate OrderDate,
+    LEO.DelItemss,
+    LEO.DelItem2,
+    LEO.DelItem3,
+    LEO.DelItem4,
+    LEO.DelItem5,
+    LEO.Vintage,
+    LEO.Vintage2,
+    LEO.Vintage3,
+    LEO.Vintage4,
+    LEO.Vintage5,
+    LEO.Quantity,
+    LEO.Quant2,
+    LEO.Quant3,
+    LEO.Quant4,
+    LEO.Quant5
+FROM chw.EmailCustomers EC
+JOIN chw.EmailCustomers_LegacyEmailOrders EC_LEO
+  ON EC.EmailCustomerId = EC_LEO.EmailCustomerId
+JOIN chw.LegacyEmailOrders_1002 LEO
+  ON LEO.EmailOrderId = EC_LEO.EmailOrderId
+WHERE EC.EmailCustomerId IN
+(10946,
+10500,
+10770,
+11155,
+9313,
+13635,
+10858,
+12396,
+13028,
+11719,
+11050,
+13786,
+11383,
+11979,
+11630,
+9600,
+11646)
+ORDER BY EC.EmailCustomerId ASC, OrderDate ASC
