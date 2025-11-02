@@ -22,7 +22,7 @@ Copyright       (c) 2025-present Michael Jay Lippert
 import click
 
 # Local application imports
-from chwdata.retail_orders import do_create_customers_from_legacy
+from chwdata.retail_orders import do_create_customers_from_legacy, do_write_top_customer_order_report
 
 
 @click.command()
@@ -37,6 +37,12 @@ def import_legacy_customers(user):
     """
     do_create_customers_from_legacy(user=user)
 
+@click.command()
+def write_top_customer_order_report():
+    """
+    Write out the top customer order item report (to stdout)
+    """
+    do_write_top_customer_order_report()
 
 @click.group()
 def cli():
@@ -49,6 +55,7 @@ def cli():
 
 
 cli.add_command(import_legacy_customers)
+cli.add_command(write_top_customer_order_report)
 
 
 if __name__ == '__main__':

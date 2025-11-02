@@ -172,7 +172,7 @@ class RetailOrders:
                                         'LEO.Quant5'
                                        )
 
-    _orders_of_top_customers_sql = ('SELECT ' + ', '.join(_orders_of_top_customers_columns) +
+    _orders_of_top_customers2_sql = ('SELECT ' + ', '.join(_orders_of_top_customers_columns) +
                                     'FROM chw.EmailCustomers EC'
                                     'JOIN chw.EmailCustomers_LegacyEmailOrders EC_LEO'
                                     '  ON EC.EmailCustomerId = EC_LEO.EmailCustomerId'
@@ -182,6 +182,69 @@ class RetailOrders:
                                     '(10946, 10500, 10770, 11155, 9313, 13635, 10858, 12396, 13028, 11719, 11050, 13786, 11383, 11979, 11630, 9600, 11646)'
                                     'ORDER BY EC.EmailCustomerId ASC, OrderDate ASC'
                                    )
+
+    _top_customers_emails = ('kcweiner@texcrude.com',
+                             'Jack.Ende@uphs.upenn.edu',
+                             'jchilds@jwchilds.com',
+                             'lukecorsten@yahoo.com',
+                             'Steve.Ezell@landcorp.com',
+                             'Joseph.Losee@chp.edu',
+                             'philip.mengel@gmail.com',
+                             'njmoult@yahoo.com ',
+                             'BCLindsay@aol.com',
+                             'lewoolcott@gmail.com ',
+                             'tpotter@capdale.com',
+                             'michael.a.gangemi@gmail.com',
+                             'wagner@clearbrookadvisors.com',
+                             'alitt4383@aol.com',
+                             'byronagrant@gmail.com',
+                             'adupont@craneco.com',
+                             'cis@mosbacherproperties.com',
+                             'cek@mosbacherproperties.com'
+                            )
+    _orders_of_top_customers_sql = ('SELECT EC.EmailCustomerId'
+                                         ', EC.GivenName'
+                                         ', EC.Surname'
+                                         ', EC.Email'
+                                         ', LEO.PhoneHome'
+                                         ', LEO.FirstDate OrderDate'
+                                         ', U.EmailOrderId'
+                                         ', U.Item'
+                                         ', U.Vintage'
+                                         ', U.Quantity'
+                                   ' FROM ((SELECT EmailOrderId, DelItemss AS Item, Vintage, Quantity'
+                                          ' FROM LegacyEmailOrders_1002'
+                                          ' WHERE DelItemss != \'\''
+                                          ')'
+                                         ' UNION ALL'
+                                         ' (SELECT EmailOrderId, DelItem2, Vintage2, Quant2'
+                                          ' FROM LegacyEmailOrders_1002'
+                                          ' WHERE DelItem2 != \'\''
+                                          ')'
+                                         ' UNION ALL'
+                                         ' (SELECT EmailOrderId, DelItem3, Vintage3, Quant3'
+                                          ' FROM LegacyEmailOrders_1002'
+                                          ' WHERE DelItem3 != \'\''
+                                          ')'
+                                         ' UNION ALL'
+                                         ' (SELECT EmailOrderId, DelItem4, Vintage4, Quant4'
+                                          ' FROM LegacyEmailOrders_1002'
+                                          ' WHERE DelItem4 != \'\''
+                                          ')'
+                                         ' UNION ALL'
+                                         ' (SELECT EmailOrderId, DelItem5, Vintage5, Quant5'
+                                          ' FROM LegacyEmailOrders_1002'
+                                          ' WHERE DelItem5 != \'\''
+                                          ')'
+                                         ') AS U'
+                                   ' JOIN LegacyEmailOrders_1002 AS LEO ON U.EmailOrderId = LEO.EmailOrderId'
+                                   ' JOIN EmailCustomers_LegacyEmailOrders AS EC_LEO ON U.EmailOrderId = EC_LEO.EmailOrderId'
+                                   ' JOIN EmailCustomers AS EC ON EC_LEO.EmailCustomerId = EC.EmailCustomerId'
+                                   ' WHERE EC.Email IN (\'' + '\', \''.join(_top_customers_emails) + '\')' +
+                                   ' OR (EC.GivenName = \'Alexander\' AND EC.Surname = \'Kinsey\')'
+                                   ' ORDER BY Email ASC, OrderDate ASC'
+                                   )
+
     def __init__(self, *,
                  domain=default_domain,
                  port=default_port,
@@ -212,7 +275,7 @@ class RetailOrders:
         """
         if self._connection:
             self._connection.close()
-            print("Connection closed.")
+            print("Connection closed.", file=sys.stderr)
 
     def create_customers_from_legacy(self, update_user=default_update_user):
         """
@@ -276,12 +339,17 @@ class RetailOrders:
                 #print(new_email_customer, file=sys.stdout)
                 insert_email_customer_cursor.execute(RetailOrders._insert_email_customer_sql, new_email_customer)
                 customer_id = insert_email_customer_cursor.lastrowid
+                name_needs_review = parsed_name['manual_review_needed']
+                email_needs_review = customer_info['email_needs_review']
+                conversion_notes = ('Email was changed in order ids: '
+                                    + ', '.join([str(id) for id in customer_info['email_changed_orderids']])
+                                    if len(customer_info['email_changed_orderids']) > 0 else None)
                 for order_id in customer_info['order_ids']:
                     customer_legacyorder = (customer_id,
                                             order_id,
-                                            parsed_name['manual_review_needed'],
-                                            customer_info['email_needs_review'],
-                                            None
+                                            name_needs_review,
+                                            email_needs_review,
+                                            conversion_notes
                                            )
                     #print(customer_legacyorder, file=sys.stdout)
                     insert_customer_legacyorder_cursor.execute(RetailOrders._insert_customer_legacyorder_sql,
@@ -304,6 +372,74 @@ class RetailOrders:
 
             print('Total customers:', customer_count, 'Needs review:', needs_review)
         self._connection.commit()
+
+    def write_top_customer_order_report(self):
+        """
+        TODO: this belongs in a different module, easier here for now though. -mjl 2025-10-31
+        """
+
+        # File to write report to (TODO make a parameter, for now just stdout)
+        f = sys.stdout
+
+        # Column indices
+        EmailCustomerId = 0
+        GivenName       = 1
+        Surname         = 2
+        Email           = 3
+        PhoneHome       = 4
+        OrderDate       = 5
+        EmailOrderId    = 6
+        Item            = 7
+        Vintage         = 8
+        Quantity        = 9
+
+        customer_item_report_header = '''
+## {1} {2}
+|                  |                                |
+| ---------------: | :----------------------------- |
+| **Email:**       | {3!s:30} |
+| **H Phone:**     | {4!s:30} |
+| **Customer ID:** | {0!s:30} |
+|                  |                                |
+
+| Order Date / ID    | Item                                                     | Vintage | Quantity |
+| :----------------- | :------------------------------------------------------- | ------: | :------- |
+'''
+
+        customer_item_report_new_order = '| {5} / {6:>5} | {7:56} | {8!s:>7} | {9:8} |\n'
+        customer_item_report_add_item  = '|                    | {7:56} | {8!s:>7} | {9:8} |\n'
+
+        with self._connection.cursor() as top_customer_order_items_cursor:
+            top_customer_order_items_cursor.execute(RetailOrders._orders_of_top_customers_sql)
+
+            # Write out Report header
+            f.write('# Items Ordered by Customer\n\n')
+
+            prev_customer_id = cur_customer_id = None
+            prev_order_id = cur_order_id = None
+            for customer_order_row in top_customer_order_items_cursor:
+                # Check for customer change
+                if customer_order_row[EmailCustomerId] != prev_customer_id:
+                    # Write out header info for changed customer
+                    f.write(customer_item_report_header.format(*customer_order_row))
+
+                    # save current customer id as previous
+                    prev_customer_id = customer_order_row[EmailCustomerId]
+
+                # Check for order change
+                order_fmt = customer_item_report_add_item
+                if customer_order_row[EmailOrderId] != prev_order_id:
+                    # switch the order fmt to include the order info column
+                    order_fmt = customer_item_report_new_order
+
+                    # save current order id as previous
+                    prev_order_id = customer_order_row[EmailOrderId]
+
+                # write the item ordered
+                f.write(order_fmt.format(*customer_order_row))
+
+            # Write a final blank line to end the final item table in the markdown report
+            f.write('\n')
 
     @classmethod
     def _get_customer_info_from_legacy_orders(cls, legacy_customer_info_cursor):
@@ -481,6 +617,10 @@ class Wines:
 def do_create_customers_from_legacy(user):
     retailOrders = RetailOrders()
     retailOrders.create_customers_from_legacy()
+
+def do_write_top_customer_order_report():
+    retailOrders = RetailOrders()
+    retailOrders.write_top_customer_order_report()
 
 
 # Following is just the copied example from:
