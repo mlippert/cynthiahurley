@@ -1,4 +1,82 @@
 
+CREATE TABLE LegacyWineMaster_1027 (
+                WineId INT NOT NULL,
+                AccountingItemNo VARCHAR(11),
+                NYPPItemNo VARCHAR(17),
+                WesternItemNo VARCHAR(11),
+                COLA_TTBID VARCHAR(15),
+                UPC VARCHAR(13),
+                FullName VARCHAR(114),
+                Vintage SMALLINT,
+                Color VARCHAR(5),
+                StillSparklingFortified VARCHAR(9),
+                CertifiedOrganic VARCHAR(19),
+                Varietals VARCHAR(100),
+                ABV DECIMAL(5,2),
+                Country VARCHAR(7),
+                Region VARCHAR(20),
+                SubRegion VARCHAR(20),
+                Appellation VARCHAR(58),
+                CaseUnitType VARCHAR(7),
+                BottleSize VARCHAR(18),
+                BottlesPerCase TINYINT,
+                BottleColor VARCHAR(6),
+                ShelfTalkerText TEXT(1030),
+                TastingNotes TEXT(1248),
+                Vinification TEXT(1146),
+                TerroirVineyardPractices TEXT(1359),
+                PressParagraph TEXT(4660),
+                ProducerName VARCHAR(58),
+                ProducerDescription TEXT(1269),
+                ProducerCode CHAR(3),
+                YearEstablished VARCHAR(27),
+                NJ_AssignedUPC VARCHAR(13),
+                NJ_BrandRegNo VARCHAR(6),
+                DateCreated DATE,
+                LastUpdated DATETIME,
+                Excluded VARCHAR(24),
+                SoldOut CHAR(1),
+                PriceListSection VARCHAR(39),
+                PriceListNotes VARCHAR(144),
+                FOBPrice DECIMAL(8,2),
+                FOB_ARB VARCHAR(29),
+                NY_Wholesale DECIMAL(8,2),
+                NY_MultiCasePrice DECIMAL(8,2),
+                NY_MultiCaseQty TINYINT,
+                NJ_Wholesale DECIMAL(8,2),
+                NJ_MultiCasePrice DECIMAL(8,2),
+                NJ_MultiCaseQty TINYINT,
+                NY_CurrentPricing VARCHAR(42),
+                NJ_CurrentPricing VARCHAR(30),
+                MA_CurrentPricing VARCHAR(29),
+                AE_Record_Id INT,
+                FrontLabelFilename VARCHAR(86),
+                BackLabelFilename VARCHAR(53),
+                COLA_PDF_Filename VARCHAR(70),
+                PRIMARY KEY (WineId)
+);
+
+ALTER TABLE LegacyWineMaster_1027 MODIFY COLUMN Vintage SMALLINT COMMENT '4 digit year';
+
+ALTER TABLE LegacyWineMaster_1027 MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
+
+ALTER TABLE LegacyWineMaster_1027 MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volume';
+
+ALTER TABLE LegacyWineMaster_1027 MODIFY COLUMN CaseUnitType VARCHAR(7) COMMENT 'Bottle, Can, BiB';
+
+ALTER TABLE LegacyWineMaster_1027 MODIFY COLUMN SoldOut CHAR(1) COMMENT 'True(1)-sold out, False(0)-in stock';
+
+ALTER TABLE LegacyWineMaster_1027 MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'Free on board (FOB) is the wine price for a case that includes all costs up to being lifted onto a ship.';
+
+ALTER TABLE LegacyWineMaster_1027 MODIFY COLUMN FOB_ARB VARCHAR(29) COMMENT 'discounted FOB price negotiated w/ Arborway';
+
+ALTER TABLE LegacyWineMaster_1027 MODIFY COLUMN NY_Wholesale DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NY';
+
+ALTER TABLE LegacyWineMaster_1027 MODIFY COLUMN NJ_Wholesale DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NJ';
+
+ALTER TABLE LegacyWineMaster_1027 MODIFY COLUMN AE_Record_Id INTEGER COMMENT 'Account Edge record Id';
+
+
 CREATE TABLE Retailers (
                 RetailerId INT AUTO_INCREMENT NOT NULL,
                 Name VARCHAR(200) NOT NULL,
