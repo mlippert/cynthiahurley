@@ -1,5 +1,5 @@
-LOAD DATA LOCAL INFILE '/tmp/data/infiles/WineMasterTable_09-23-3.csv'
-REPLACE INTO TABLE LegacyWineMaster_923
+LOAD DATA LOCAL INFILE '/tmp/data/infiles/WineMasterTable_11-03-xform.csv'
+REPLACE INTO TABLE LegacyWineMaster_1103
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 IGNORE 1 LINES
 (
@@ -7,7 +7,7 @@ WineId,
 AccountingItemNo,
 NYPPItemNo,
 WesternItemNo,
-COLA_TTBID,
+COLA_TTB_ID,
 UPC,
 FullName,
 @Vintage,
@@ -18,14 +18,12 @@ Varietals,
 @ABV,
 Country,
 Region,
-SubRegion,
+Subregion,
 Appellation,
 CaseUnitType,
 BottleSize,
 BottlesPerCase,
 BottleColor,
-FrontLabelFilename,
-BackLabelFilename,
 ShelfTalkerText,
 TastingNotes,
 Vinification,
@@ -35,7 +33,6 @@ ProducerName,
 ProducerDescription,
 ProducerCode,
 YearEstablished,
-COLA_PDF_Filename,
 NJ_AssignedUPC,
 NJ_BrandRegNo,
 @CREATED,
@@ -45,15 +42,23 @@ SoldOut,
 PriceListSection,
 PriceListNotes,
 @FOBPrice,
-FOB_ARB,
-@NY_PP,
+@FOB_MA,
+@FOB_ARB,
+ARB_Comment,
+@NY_Wholesale,
 @NY_MultiCasePrice,
 @NY_MultiCaseQty,
-@NJ_PP,
+@NJ_Wholesale,
 @NJ_MultiCasePrice,
 @NJ_MultiCaseQty,
+PriceNotes,
+@AE_Record_Id,
 NY_CurrentPricing,
-NJ_CurrentPricing
+NJ_CurrentPricing,
+MA_CurrentPricing,
+FrontLabelFilename,
+BackLabelFilename,
+COLA_PDF_Filename
 )
 SET
 Vintage=if(@Vintage = 'NV', -1, @Vintage),
@@ -61,12 +66,15 @@ ABV=if(@ABV = '', NULL, @ABV),
 DateCreated=if(@CREATED = '', NULL, @CREATED),
 LastUpdated=if(@LASTUPDATED = '', NULL, @LASTUPDATED),
 FOBPrice=if(@FOBPrice = '', NULL, @FOBPrice),
-NY_PP=if(@NY_PP = '', NULL, @NY_PP),
+FOB_MA=if(@FOB_MA = '', NULL, @FOB_MA),
+FOB_ARB=if(@FOB_ARB = '', NULL, @FOB_ARB),
+NY_Wholesale=if(@NY_Wholesale = '', NULL, @NY_Wholesale),
 NY_MultiCasePrice=if(@NY_MultiCasePrice = '', NULL, @NY_MultiCasePrice),
 NY_MultiCaseQty=if(@NY_MultiCaseQty = '', NULL, @NY_MultiCaseQty),
-NJ_PP=if(@NJ_PP = '', NULL, @NJ_PP),
+NJ_Wholesale=if(@NJ_Wholesale = '', NULL, @NJ_Wholesale),
 NJ_MultiCasePrice=if(@NJ_MultiCasePrice = '', NULL, @NJ_MultiCasePrice),
-NJ_MultiCaseQty=if(@NJ_MultiCaseQty = '', NULL, @NJ_MultiCaseQty);
+NJ_MultiCaseQty=if(@NJ_MultiCaseQty = '', NULL, @NJ_MultiCaseQty),
+AE_Record_Id=if(@AE_Record_Id = '', NULL, @AE_Record_Id);
 
 CREATE TABLE LegacyWineMaster_923 (
                 WineId INT NOT NULL,
@@ -155,15 +163,14 @@ GRANT FILE ON *.* TO chwuser;
 :%s,|\(\d\{2}\)/\(\d\{2}\)/\(\d\{4}\) ,|\3-\1-\2 ,
 
 
-LOAD DATA LOCAL INFILE '/tmp/data/infiles/EmailWineOrders_10-02-cleaned.csv'
-REPLACE INTO TABLE LegacyEmailOrders_1002
+LOAD DATA LOCAL INFILE '/tmp/data/infiles/EmailWineOrders_11-03-xform.csv'
+REPLACE INTO TABLE LegacyEmailOrders_1103
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 IGNORE 1 LINES
 (
 EmailOrderId,
 OrderNumber,
 @FirstDate,
-@InqDate,
 FullName,
 LastName,
 CompanyAptNo,
@@ -185,27 +192,26 @@ CC_ID,
 TotalRetailCharge,
 @Subtotal,
 AdditionalCharges,
-Fax,
+Retailer,
 Quantity,
-Quant2,
-Quant3,
-Quant4,
-Quant5,
-DelItemss,
-DelItem2,
-DelItem3,
-DelItem4,
-DelItem5,
+DelItems,
 @Vintage,
+Quant2,
+DelItem2,
 @Vintage2,
+Quant3,
+DelItem3,
 @Vintage3,
+Quant4,
+DelItem4,
 @Vintage4,
+Quant5,
+DelItem5,
 @Vintage5,
 CustDetails
 )
 SET
 FirstDate=if(LENGTH(@FirstDate) < 9, NULL, @FirstDate),
-InqDate=if(LENGTH(@InqDate) < 9, NULL, @InqDate),
 Subtotal=if(@Subtotal = '', NULL, @Subtotal),
 Vintage=if(@Vintage REGEXP '^[0-9]{4}$', @Vintage, NULL),
 Vintage2=if(@Vintage2 REGEXP '^[0-9]{4}$', @Vintage2, NULL),
@@ -419,6 +425,7 @@ SELECT
     EC.Surname,
     EC.Email,
     LEO.FirstDate OrderDate,
+    LEO.PhoneHome,
     LEO.DelItemss,
     LEO.DelItem2,
     LEO.DelItem3,
@@ -439,22 +446,61 @@ JOIN chw.EmailCustomers_LegacyEmailOrders EC_LEO
   ON EC.EmailCustomerId = EC_LEO.EmailCustomerId
 JOIN chw.LegacyEmailOrders_1002 LEO
   ON LEO.EmailOrderId = EC_LEO.EmailOrderId
-WHERE EC.EmailCustomerId IN
-(10946,
-10500,
-10770,
-11155,
-9313,
-13635,
-10858,
-12396,
-13028,
-11719,
-11050,
-13786,
-11383,
-11979,
-11630,
-9600,
-11646)
+WHERE EC.Email IN
+(
+'kcweiner@texcrude.com',
+'Jack.Ende@uphs.upenn.edu',
+'jchilds@jwchilds.com',
+'lukecorsten@yahoo.com',
+'Steve.Ezell@landcorp.com',
+'Joseph.Losee@chp.edu',
+'philip.mengel@gmail.com',
+'njmoult@yahoo.com ',
+'BCLindsay@aol.com',
+'lewoolcott@gmail.com ',
+'tpotter@capdale.com',
+'michael.a.gangemi@gmail.com',
+'wagner@clearbrookadvisors.com',
+'alitt4383@aol.com',
+'byronagrant@gmail.com',
+'adupont@craneco.com'
+)
 ORDER BY EC.EmailCustomerId ASC, OrderDate ASC
+
+SELECT EC.EmailCustomerId, EC.GivenName, EC.Surname, EC.Email, LEO.PhoneHome, LEO.FirstDate OrderDate, U.EmailOrderId, U.Item, U.Vintage, U.Quantity
+FROM
+((select EmailOrderId, DelItemss as Item, Vintage, Quantity from LegacyEmailOrders_1002 where DelItemss != '')
+union all
+(select EmailOrderId, DelItem2, Vintage2, Quant2 from LegacyEmailOrders_1002 where DelItem2 != '')
+union all
+(select EmailOrderId, DelItem3, Vintage3, Quant3 from LegacyEmailOrders_1002 where DelItem3 != '')
+union all
+(select EmailOrderId, DelItem4, Vintage4, Quant4 from LegacyEmailOrders_1002 where DelItem4 != '')
+union all
+(select EmailOrderId, DelItem5, Vintage5, Quant5 from LegacyEmailOrders_1002 where DelItem5 != '')) AS U
+JOIN LegacyEmailOrders_1002 AS LEO ON U.EmailOrderId = LEO.EmailOrderId
+JOIN EmailCustomers_LegacyEmailOrders AS EC_LEO ON U.EmailOrderId = EC_LEO.EmailOrderId
+JOIN EmailCustomers AS EC ON EC_LEO.EmailCustomerId = EC.EmailCustomerId
+WHERE EC.Email IN
+(
+'kcweiner@texcrude.com',
+'Jack.Ende@uphs.upenn.edu',
+'jchilds@jwchilds.com',
+'lukecorsten@yahoo.com',
+'Steve.Ezell@landcorp.com',
+'Joseph.Losee@chp.edu',
+'philip.mengel@gmail.com',
+'njmoult@yahoo.com ',
+'BCLindsay@aol.com',
+'lewoolcott@gmail.com ',
+'tpotter@capdale.com',
+'michael.a.gangemi@gmail.com',
+'wagner@clearbrookadvisors.com',
+'alitt4383@aol.com',
+'byronagrant@gmail.com',
+'adupont@craneco.com',
+'cis@mosbacherproperties.com',
+'cek@mosbacherproperties.com'
+) OR (EC.GivenName = 'Alexander' AND EC.Surname = 'Kinsey')
+ORDER BY Email ASC, OrderDate ASC
+INTO OUTFILE '/tmp/data/infiles/TopCustomersOrderItems_1002.tsv'
