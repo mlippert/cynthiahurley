@@ -1,5 +1,5 @@
-LOAD DATA LOCAL INFILE '/tmp/data/infiles/WineMasterTable_11-03-xform.csv'
-REPLACE INTO TABLE LegacyWineMaster_1103
+LOAD DATA LOCAL INFILE '/tmp/data/infiles/WineMasterTable_11-06-xform.csv'
+REPLACE INTO TABLE LegacyWineMaster_1106
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 IGNORE 1 LINES
 (
@@ -33,8 +33,11 @@ ProducerName,
 ProducerDescription,
 ProducerCode,
 YearEstablished,
+Exporter,
 NJ_AssignedUPC,
 NJ_BrandRegNo,
+@LastPurchasePrice,
+@LastPurchaseDate,
 @CREATED,
 @LASTUPDATED,
 Excluded,
@@ -65,6 +68,8 @@ Vintage=if(@Vintage = 'NV', -1, @Vintage),
 ABV=if(@ABV = '', NULL, @ABV),
 DateCreated=if(@CREATED = '', NULL, @CREATED),
 LastUpdated=if(@LASTUPDATED = '', NULL, @LASTUPDATED),
+LastPurchasePrice=if(@LastPurchasePrice = '', NULL, @LastPurchasePrice),
+LastPurchaseDate=if(@LastPurchaseDate = '', NULL, @LastPurchaseDate),
 FOBPrice=if(@FOBPrice = '', NULL, @FOBPrice),
 FOB_MA=if(@FOB_MA = '', NULL, @FOB_MA),
 FOB_ARB=if(@FOB_ARB = '', NULL, @FOB_ARB),
