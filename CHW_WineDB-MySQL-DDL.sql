@@ -220,6 +220,16 @@ CREATE TABLE Producers (
 ALTER TABLE Producers COMMENT 'A wine producer';
 
 
+CREATE TABLE Producers_LegacyWineMaster (
+                ProducerId INT NOT NULL,
+                WineId INT NOT NULL,
+                ConversionNotes VARCHAR(250),
+                PRIMARY KEY (ProducerId, WineId)
+);
+
+ALTER TABLE Producers_LegacyWineMaster MODIFY COLUMN ConversionNotes VARCHAR(250) COMMENT 'Notes about creating the producer from the legacy wine records';
+
+
 CREATE TABLE Distributors (
                 DistributorId INT AUTO_INCREMENT NOT NULL,
                 Name VARCHAR(200) NOT NULL,
@@ -495,6 +505,12 @@ REFERENCES LookupWineColors (WineColorId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
+ALTER TABLE Producers_LegacyWineMaster ADD CONSTRAINT legacywinemaster_1106_producers_legacywinemaster_fk
+FOREIGN KEY (WineId)
+REFERENCES LegacyWineMaster_1106 (WineId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
 ALTER TABLE Orders ADD CONSTRAINT retailers_orders_fk
 FOREIGN KEY (RetailerId)
 REFERENCES Retailers (RetailerId)
@@ -526,6 +542,12 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE Wines ADD CONSTRAINT producers_wines_fk
+FOREIGN KEY (ProducerId)
+REFERENCES Producers (ProducerId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE Producers_LegacyWineMaster ADD CONSTRAINT producers_producers_legacywinemaster_fk
 FOREIGN KEY (ProducerId)
 REFERENCES Producers (ProducerId)
 ON DELETE NO ACTION
