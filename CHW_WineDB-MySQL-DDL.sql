@@ -1,4 +1,13 @@
 
+CREATE TABLE LookupWineColors (
+                WineColorId TINYINT AUTO_INCREMENT NOT NULL,
+                WineColor VARCHAR(10) NOT NULL,
+                PRIMARY KEY (WineColorId)
+);
+
+ALTER TABLE LookupWineColors MODIFY COLUMN WineColor VARCHAR(10) COMMENT 'White, Red or Rosé';
+
+
 CREATE TABLE LegacyWineMaster_1106 (
                 WineId INT NOT NULL,
                 AccountingItemNo VARCHAR(11),
@@ -239,11 +248,11 @@ ALTER TABLE Addresses MODIFY COLUMN PostalCode VARCHAR(30) COMMENT 'zipcode in U
 CREATE TABLE Wines (
                 WineId INT AUTO_INCREMENT NOT NULL,
                 AccountingItemNo VARCHAR(15) NOT NULL,
-                COLA_TTBID VARCHAR(15) DEFAULT 'Pending' NOT NULL,
-                UPC VARCHAR(15),
+                COLA_TTB_ID VARCHAR(15) DEFAULT 'Pending' NOT NULL,
+                UPC VARCHAR(13),
                 FullName VARCHAR(150) NOT NULL,
                 Vintage SMALLINT,
-                Color VARCHAR(15) NOT NULL,
+                WineColorId TINYINT NOT NULL,
                 WineTypeId TINYINT NOT NULL,
                 CertifiedOrganic BOOLEAN DEFAULT 0 NOT NULL,
                 Varietals VARCHAR(100),
@@ -261,6 +270,9 @@ CREATE TABLE Wines (
                 Vinification TEXT(2000),
                 TerroirVineyardPractices TEXT(2000),
                 PressParagraph TEXT(6000),
+                Exporter VARCHAR(50),
+                LastPurchasePrice DECIMAL(8,2),
+                LastPurchaseDate DATE,
                 Created DATETIME NOT NULL,
                 CreatedBy VARCHAR(32) NOT NULL,
                 LastModified DATETIME NOT NULL,
@@ -270,9 +282,9 @@ CREATE TABLE Wines (
 
 ALTER TABLE Wines MODIFY COLUMN AccountingItemNo VARCHAR(15) COMMENT 'AccountEdge ID';
 
-ALTER TABLE Wines MODIFY COLUMN COLA_TTBID VARCHAR(15) COMMENT 'Either the TTB ID or ''Pending''';
+ALTER TABLE Wines MODIFY COLUMN COLA_TTB_ID VARCHAR(15) COMMENT 'Either the TTB ID or ''Pending''';
 
-ALTER TABLE Wines MODIFY COLUMN Vintage SMALLINT COMMENT '4 digit year';
+ALTER TABLE Wines MODIFY COLUMN Vintage SMALLINT COMMENT '4 digit year, -1 for NV (no vintage)';
 
 ALTER TABLE Wines MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
 
@@ -282,6 +294,10 @@ ALTER TABLE Wines MODIFY COLUMN UnitsPerCase SMALLINT COMMENT 'Units of wine inc
 Retail sales are sometimes by case and sometimes by unit';
 
 ALTER TABLE Wines MODIFY COLUMN CaseUnitId TINYINT COMMENT 'Type of unit in a case of this wine';
+
+ALTER TABLE Wines MODIFY COLUMN LastPurchasePrice DECIMAL(8, 2) COMMENT 'Price paid to exporter in euros for a case';
+
+ALTER TABLE Wines MODIFY COLUMN LastPurchaseDate DATE COMMENT 'Date of last purchase from the exporter';
 
 ALTER TABLE Wines MODIFY COLUMN CreatedBy VARCHAR(32) COMMENT 'User who created this record';
 
@@ -472,6 +488,12 @@ ALTER TABLE Orders_Wines MODIFY COLUMN CasePrice DECIMAL(8, 2) COMMENT 'Price fo
 
 ALTER TABLE Orders_Wines MODIFY COLUMN UnitPrice DECIMAL(8, 2) COMMENT 'Price for units (bottles, BiB, etc) in partial case ordered';
 
+
+ALTER TABLE Wines ADD CONSTRAINT lookupwinecolors_wines_fk
+FOREIGN KEY (WineColorId)
+REFERENCES LookupWineColors (WineColorId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
 
 ALTER TABLE Orders ADD CONSTRAINT retailers_orders_fk
 FOREIGN KEY (RetailerId)
