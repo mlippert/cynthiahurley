@@ -89,3 +89,84 @@ NJ_MultiCasePrice=if(@NJ_MultiCasePrice = '', NULL, @NJ_MultiCasePrice),
 NJ_MultiCaseQty=if(@NJ_MultiCaseQty = '', NULL, @NJ_MultiCaseQty),
 AE_Record_Id=if(@AE_Record_Id = '', NULL, @AE_Record_Id);
 
+
+/* We may need to create Producer records with python so that we can track differences */
+INSERT INTO Producers ()
+
+/* TODO
+define LookupWineColors table
+define LookupWineCountries table ???
+*/
+INSERT INTO Wines
+(
+    WineId,
+    AccountingItemNo,
+    COLA_TTBID,
+    UPC,
+    FullName,
+    Vintage,
+    Color,
+    WineTypeId,
+    CertifiedOrganic,
+    Varietals,
+    ABV,
+    Country,
+    Region,
+    Subregion,
+    Appellation,
+    ProducerId INT NOT NULL,
+    UnitsPerCase,
+    CaseUnitId TINYINT NOT NULL,
+    BottleColor,
+    ShelfTalkerText,
+    TastingNotes,
+    Vinification,
+    TerroirVineyardPractices,
+    PressParagraph,
+    Exporter,
+    LastPurchasePrice,
+    LastPurchaseDate,
+    Created,
+    CreatedBy,
+    LastModified,
+    LastModifiedBy
+)
+SELECT
+    LWM.WineId,
+    LWM.AccountingItemNo,
+    if(LWM.COLA_TTB_ID = '', 'Pending', LWM.COLA_TTB_ID),
+    if(LWM.UPC = '', NULL, LWM.UPC),
+    LWM.FullName,
+    LWM.Vintage,
+    LkupWC.WineColorId,
+    LkupWT.WineTypeId,
+    if( CertifiedOrganic = 'certified organic', TRUE, FALSE ),
+    LWM.Varietals,
+    LWM.ABV,
+    LWM.Country,
+    LWM.Region,
+    LWM.Subregion,
+    LWM.Appellation,
+    WP.ProducerId,
+    LWM.BottlesPerCase,
+    0,
+    LWM.BottleColor,
+    LWM.ShelfTalkerText,
+    LWM.TastingNotes,
+    LWM.Vinification,
+    LWM.TerroirVineyardPractices,
+    LWM.PressParagraph,
+    LWM.Exporter,
+    LWM.LastPurchasePrice,
+    LWM.LastPurchaseDate,
+    LWM.DateCreated,
+    'Legacy',
+    LWM.LastUpdated,
+    'Legacy'
+FROM LegacyWineMaster_1106 LWM
+INNER JOIN LookupWineTypes LkupWT
+  ON LWM.StillSparklingFortified = LkupWT.WineType
+INNER JOIN LookupWineColors LkupWC
+  ON LWM.Color = LkupWC.WineColor
+LEFT JOIN Producers WP
+  ON LWN.ProducerName = WP.Name
