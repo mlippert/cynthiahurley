@@ -24,6 +24,7 @@ import sys
 import logging
 import pprint
 from datetime import timedelta, date
+from contextlib import suppress
 
 # Third party imports
 import mariadb
@@ -37,6 +38,14 @@ default_db_user = 'chwuser'
 default_db_password = 'cynthiahurley'
 default_update_user = 'Gillian'
 
+
+
+class InterruptWithBlock(UserWarning):
+    """
+    To be used to interrupt the march of a with
+    see StackOverflow answer https://stackoverflow.com/a/69859356/2184226
+    and `with suppress(InterruptWithBlock) as _` use below
+    """
 
 class Wines:
     """
@@ -54,15 +63,15 @@ class Wines:
       - Name, item numbers, prices, producers, etc.
     """
 
-    # Select statement to retrieve unique fullnames from
-    _unique_producer_sql = ('SELECT WineId'
-                            ', ProducerName'
-                            ', ProducerDescription'
-                            ', ProducerCode'
-                            ', YearEstablished'
-                            ' FROM chw.LegacyWineMaster_1106'
-                            ' ORDER BY ProducerName ASC, LastUpdated ASC'
-                           )
+    # Select statement to retrieve producer's wines ordered by producer then descending dates
+    _legacy_wines_by_producer_sql = ('SELECT WineId'
+                                     ', ProducerName'
+                                     ', ProducerDescription'
+                                     ', ProducerCode'
+                                     ', YearEstablished'
+                                     ' FROM chw.LegacyWineMaster_1106'
+                                     ' ORDER BY ProducerName ASC, LastUpdated ASC'
+                                    )
 
     # Insert statement to create Producer record
     _insert_producer_sql = ('INSERT INTO chw.Producers'
@@ -74,7 +83,7 @@ class Wines:
                             ' VALUES (?, ?, ?, ?)'
                            )
 
-    # Insert statement to create EmailCustomers_LegacyEmailOrders record
+    # Insert statement to create Producers_LegacyWineMaster record
     _insert_producer_legacywine_sql = ('INSERT INTO chw.Producers_LegacyWineMaster'
                                        ' (ProducerId'
                                        ', WineId'
@@ -128,20 +137,25 @@ class Wines:
           has that unique ProducerName. Add a conversion note if the description, code or
           year established changed from the previous record.
         """
-        with (self._connection.cursor() as unique_producername_cursor,
-              self._connection.cursor(prepared=True) as legacy_producer_wine_cursor,
+        # Column indices
+        WineId              = 0
+        ProducerName        = 1
+        ProducerDescription = 2
+        ProducerCode        = 3
+        YearEstablished     = 4
+
+        with (suppress(InterruptWithBlock) as _,
+              self._connection.cursor() as legacy_wines_by_producer_cursor,
               self._connection.cursor(prepared=True) as insert_producer_cursor,
               self._connection.cursor(prepared=True) as insert_producer_legacywine_cursor):
 
-            #print(RetailOrders._unique_fullname_sql, file=sys.stdout)
-            #print(RetailOrders._legacy_customer_info_sql, file=sys.stdout)
-            #print(RetailOrders._insert_email_customer_sql, file=sys.stdout)
-            #print(RetailOrders._insert_customer_legacyorder_sql, file=sys.stdout)
+            legacy_wines_by_producer_cursor.execute(Wines._legacy_wines_by_producer_sql)
+            producer_wine_row = legacy_wines_by_producer_cursor.next();
+            if prev_producer_wine_row is None: raise InterruptWithBlock()
+            prev_producer_name = producer_wine_row[ProducerName]
 
-            customer_count = 0
-            needs_review = 0
-            unique_producername_cursor.execute(Wines._unique_producer_sql)
-            for producer_row in unique_producername_cursor:
+            for producer_wine_row in legacy_wines_by_producer_cursor:
+                # When the producer changes, process the previous producer
                 # Parse name into title, given_name, surname, suffix, manual_review_needed
                 parsed_name = self.parse_fullname(fullname_row[0])
 
