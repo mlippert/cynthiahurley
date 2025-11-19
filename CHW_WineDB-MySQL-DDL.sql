@@ -100,7 +100,7 @@ ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN AE_Record_Id INTEGER COMMENT 'Ac
 
 CREATE TABLE Retailers (
                 RetailerId INT AUTO_INCREMENT NOT NULL,
-                Name VARCHAR(200) NOT NULL,
+                Name VARCHAR(100) NOT NULL,
                 Email VARCHAR(100),
                 PRIMARY KEY (RetailerId)
 );
@@ -209,8 +209,8 @@ ALTER TABLE LookupCaseUnits MODIFY COLUMN LabelVolumeConvFactor DOUBLE COMMENT '
 
 
 CREATE TABLE Producers (
-                ProducerId INT NOT NULL,
-                Name VARCHAR(200) NOT NULL,
+                ProducerId INT AUTO_INCREMENT NOT NULL,
+                Name VARCHAR(100) NOT NULL,
                 Description TEXT(2000),
                 ProducerCode CHAR(3),
                 YearEstablished SMALLINT,
@@ -232,7 +232,7 @@ ALTER TABLE Producers_LegacyWineMaster MODIFY COLUMN ConversionNotes VARCHAR(250
 
 CREATE TABLE Distributors (
                 DistributorId INT AUTO_INCREMENT NOT NULL,
-                Name VARCHAR(200) NOT NULL,
+                Name VARCHAR(100) NOT NULL,
                 Email VARCHAR(200) NOT NULL,
                 PRIMARY KEY (DistributorId)
 );
