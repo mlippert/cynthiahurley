@@ -70,7 +70,7 @@ class Wines:
                                      ', ProducerCode'
                                      ', YearEstablished'
                                      ' FROM chw.LegacyWineMaster_1106'
-                                     ' ORDER BY ProducerName ASC, LastUpdated ASC'
+                                     ' ORDER BY ProducerName ASC, LastUpdated DESC'
                                     )
 
     # Insert statement to create Producer record
@@ -144,87 +144,48 @@ class Wines:
         ProducerCode        = 3
         YearEstablished     = 4
 
-        with (suppress(InterruptWithBlock) as _,
-              self._connection.cursor() as legacy_wines_by_producer_cursor,
+        with (self._connection.cursor() as legacy_wines_by_producer_cursor,
               self._connection.cursor(prepared=True) as insert_producer_cursor,
               self._connection.cursor(prepared=True) as insert_producer_legacywine_cursor):
 
             legacy_wines_by_producer_cursor.execute(Wines._legacy_wines_by_producer_sql)
-            producer_wine_row = legacy_wines_by_producer_cursor.next();
-            if prev_producer_wine_row is None: raise InterruptWithBlock()
-            prev_producer_name = producer_wine_row[ProducerName]
+            last_producer_name = ''
+            last_producer_id = -1
 
             for producer_wine_row in legacy_wines_by_producer_cursor:
-                # When the producer changes, process the previous producer
-                # Parse name into title, given_name, surname, suffix, manual_review_needed
-                parsed_name = self.parse_fullname(fullname_row[0])
+                # When the producer changes, process the new producer
+                producer_name = producer_wine_row[ProducerName]
+                wine_id = producer_wine_row[WineId]
+                conversion_notes = None
 
-                # Get Legacy order records for fullname
-                legacy_customer_info_cursor.execute(RetailOrders._legacy_customer_info_sql, (fullname_row[0],))
+                if producer_name != last_producer_name:
+                    # Insert new Producer record
+                    new_producer = (producer_name,
+                                    producer_wine_row[ProducerDescription],
+                                    producer_wine_row[ProducerCode],
+                                    producer_wine_row[YearEstablished],
+                                   )
 
-                # TODO: for now we'll just use the FirstDate and Email1 from the 1st legacy order
-                #       as the values for the new email customer record
-                customer_info = self._get_customer_info_from_legacy_orders(legacy_customer_info_cursor)
+                    insert_producer_cursor.execute(Wines._insert_producer_sql, new_producer)
+                    last_producer_id = insert_producer_cursor.lastrowid
+                    last_producer_name = producer_name
+                    prev_producer_description = producer_wine_row[ProducerDescription]
 
-                # Insert new Email Customer record
-                new_email_customer = (parsed_name['title'],
-                                      parsed_name['given_name'],
-                                      parsed_name['surname'],
-                                      parsed_name['suffix'],
-                                      None if len(customer_info['email']) == 0 else customer_info['email'][0],
-                                      customer_info['first_order_date'] if customer_info['first_order_date'] is not None else date(1970, 1, 1),
-                                      update_user,
-                                      customer_info['last_order_date'] if customer_info['last_order_date'] is not None else date(1970, 1, 1),
-                                      update_user
-                                     )
+                if producer_wine_row[ProducerDescription] != prev_producer_description:
+                    conversion_notes = 'Description changed'
 
-                #print(new_email_customer, file=sys.stdout)
-                insert_email_customer_cursor.execute(RetailOrders._insert_email_customer_sql, new_email_customer)
-                customer_id = insert_email_customer_cursor.lastrowid
-                name_needs_review = parsed_name['manual_review_needed']
-                email_needs_review = customer_info['email_needs_review']
-                conversion_notes = ('Email was changed in order ids: '
-                                    + ', '.join([str(id) for id in customer_info['email_changed_orderids']])
-                                    if len(customer_info['email_changed_orderids']) > 0 else None)
-                for order_id in customer_info['order_ids']:
-                    customer_legacyorder = (customer_id,
-                                            order_id,
-                                            name_needs_review,
-                                            email_needs_review,
-                                            conversion_notes
-                                           )
-                    #print(customer_legacyorder, file=sys.stdout)
-                    insert_customer_legacyorder_cursor.execute(RetailOrders._insert_customer_legacyorder_sql,
-                                                               customer_legacyorder)
+                producer_legacywine = (last_producer_id, wine_id, conversion_notes)
+                insert_producer_legacywine_cursor.execute(Wines._insert_producer_legacywine_sql,
+                                                          producer_legacywine)
 
-                #f = sys.stdout
-                #f.write(f'  {"":4} < {b[0]:4}: {b[1]:4}\n')
-                #print(new_email_customer, file=sys.stdout)
-                #print('!!' if parsed_name['manual_review_needed'] else '--',
-                #      fullname_row[0], '-->',
-                #      'T:"' + parsed_name['title'] + '"' if parsed_name['title'] is not None else '',
-                #      'F:"' + parsed_name['given_name'] + '"',
-                #      'L:"' + parsed_name['surname'] + '"',
-                #      'S:"' + parsed_name['suffix'] + '"' if parsed_name['suffix'] is not None else '',
-                #      'E:', customer_info['email'],
-                #      file=sys.stdout)
-
-                customer_count += 1
-                needs_review += 1 if parsed_name['manual_review_needed'] else 0
-
-            print('Total customers:', customer_count, 'Needs review:', needs_review)
         self._connection.commit()
 
 
 # Public action functions to be called by the CLI
 
-def do_create_customers_from_legacy(user):
-    retailOrders = RetailOrders()
-    retailOrders.create_customers_from_legacy()
-
-def do_write_top_customer_order_report():
-    retailOrders = RetailOrders()
-    retailOrders.write_top_customer_order_report()
+def do_create_producers_from_legacy(user):
+    wines = Wines()
+    wines.create_producers_from_legacy()
 
 
 def _test():
