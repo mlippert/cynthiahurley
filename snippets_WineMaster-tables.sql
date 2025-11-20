@@ -114,9 +114,9 @@ INSERT INTO Wines
     Region,
     Subregion,
     Appellation,
-    ProducerId INT NOT NULL,
+    ProducerId,
     UnitsPerCase,
-    CaseUnitId TINYINT NOT NULL,
+    CaseUnitId,
     BottleColor,
     ShelfTalkerText,
     TastingNotes,
@@ -140,9 +140,9 @@ SELECT
     LWM.Vintage,
     LkupWC.WineColorId,
     LkupWT.WineTypeId,
-    if( CertifiedOrganic = 'certified organic', TRUE, FALSE ),
+    if(CertifiedOrganic = 'certified organic', TRUE, FALSE),
     LWM.Varietals,
-    LWM.ABV,
+    if(LWM.ABV IS NULL, -1, LWM.ABV),
     LWM.Country,
     LWM.Region,
     LWM.Subregion,
@@ -159,7 +159,7 @@ SELECT
     LWM.Exporter,
     LWM.LastPurchasePrice,
     LWM.LastPurchaseDate,
-    LWM.DateCreated,
+    if(LWM.DateCreated IS NULL, LWM.LastUpdated, LWM.DateCreated),
     'Legacy',
     LWM.LastUpdated,
     'Legacy'
@@ -169,4 +169,4 @@ INNER JOIN LookupWineTypes LkupWT
 INNER JOIN LookupWineColors LkupWC
   ON LWM.Color = LkupWC.WineColor
 LEFT JOIN Producers WP
-  ON LWN.ProducerName = WP.Name
+  ON LWM.ProducerName = WP.Name
