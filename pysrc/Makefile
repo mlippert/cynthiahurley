@@ -18,8 +18,9 @@ LINT_LOG := ../logs/lint.log
 TEST_LOG := ../logs/test.log
 
 PYSOURCES = \
+	chwdata/chw_db.py                   \
 	chwdata/retail_orders.py            \
-	riffdata/riffdata.py                \
+	chwdata/wines.py                    \
 	visualize/meetings.py               \
 	visualize/utterance_duration.py     \
 	visualize/utterance_gap_len.py      \

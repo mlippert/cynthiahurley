@@ -23,21 +23,17 @@ Copyright       (c) 2025-present Michael Jay Lippert
 import sys
 import logging
 import pprint
+import re
 from datetime import timedelta, date
 from contextlib import suppress
 
 # Third party imports
-import mariadb
 
 # Local application imports
+from .chw_db import CHW_DB, mariadb
 
-default_domain = '127.0.0.1'
-default_port = 3306
-default_db_name = 'chw'
-default_db_user = 'chwuser'
-default_db_password = 'cynthiahurley'
+
 default_update_user = 'Gillian'
-
 
 
 class InterruptWithBlock(UserWarning):
@@ -47,7 +43,8 @@ class InterruptWithBlock(UserWarning):
     and `with suppress(InterruptWithBlock) as _` use below
     """
 
-class Wines:
+
+class Wines(CHW_DB):
     """
     An instance of Wines is created with the MariaDB
     domain, port and db name of the chw database to
@@ -75,7 +72,7 @@ class Wines:
 
     # Insert statement to create Producer record
     _insert_producer_sql = ('INSERT INTO chw.Producers'
-                            ' (Nmae'
+                            ' (Name'
                             ', Description'
                             ', ProducerCode'
                             ', YearEstablished'
@@ -92,37 +89,15 @@ class Wines:
                                        ' VALUES (?, ?, ?)'
                                       )
 
-    def __init__(self, *,
-                 domain=default_domain,
-                 port=default_port,
-                 db_name=default_db_name,
-                 db_user=default_db_user,
-                 db_password=default_db_password):
+    def __init__(self, **kwargs):
         """
         Initialize the Wines class, setting initial values for all instance variables
+
+        Specify the keyword parameter to override the default values of:
+        domain, port, db_name, db_user, db_password
         """
+        super().__init__(**kwargs)
         self.logger = logging.getLogger('CynthiaHurleyDB.Wines')
-
-        self._db_config = {'host':     domain,
-                           'port':     port,
-                           'user':     db_user,
-                           'password': db_password,
-                           'database': db_name
-                          }
-        try:
-            self._connection = mariadb.connect(**self._db_config)
-        except mariadb.Error as e:
-            print(f"An error occurred: {e}")
-            print('mariadb.onnect arguments:', self._db_config)
-            sys.exit(1)
-
-    def __del__(self):
-        """
-        Close the connection to the database
-        """
-        if self._connection:
-            self._connection.close()
-            print("Connection closed.", file=sys.stderr)
 
     def create_producers_from_legacy(self, update_user=default_update_user):
         """
@@ -144,6 +119,9 @@ class Wines:
         ProducerCode        = 3
         YearEstablished     = 4
 
+        re_year = re.compile(r'\d{4}$')
+        re_decade = re.compile(r'\d{4}s$')
+
         with (self._connection.cursor() as legacy_wines_by_producer_cursor,
               self._connection.cursor(prepared=True) as insert_producer_cursor,
               self._connection.cursor(prepared=True) as insert_producer_legacywine_cursor):
@@ -151,32 +129,54 @@ class Wines:
             legacy_wines_by_producer_cursor.execute(Wines._legacy_wines_by_producer_sql)
             last_producer_name = ''
             last_producer_id = -1
+            prev_producer_description = ''
 
             for producer_wine_row in legacy_wines_by_producer_cursor:
                 # When the producer changes, process the new producer
                 producer_name = producer_wine_row[ProducerName]
                 wine_id = producer_wine_row[WineId]
+                producer_description = producer_wine_row[ProducerDescription]
                 conversion_notes = None
 
                 if producer_name != last_producer_name:
                     # Insert new Producer record
+                    producer_code = producer_wine_row[ProducerCode]
+                    year_established = producer_wine_row[YearEstablished].strip()
+
+                    if re_year.match(year_established) is not None:
+                        year_established = int(year_established)
+                    elif year_established == '':
+                        year_established = None
+                    elif re_decade.match(year_established) is not None:
+                        year_established = int(year_established[:4])
+                        conversion_notes = 'year established is decade'
+
                     new_producer = (producer_name,
-                                    producer_wine_row[ProducerDescription],
-                                    producer_wine_row[ProducerCode],
-                                    producer_wine_row[YearEstablished],
+                                    producer_description,
+                                    None if producer_code == '' else producer_code,
+                                    year_established,
                                    )
 
-                    insert_producer_cursor.execute(Wines._insert_producer_sql, new_producer)
+                    try:
+                        insert_producer_cursor.execute(Wines._insert_producer_sql, new_producer)
+                    except mariadb.DataError as e:
+                        print(type(e))
+                        print(e.args)
+                        print(e)
+                        print(new_producer)
+                        raise e from None
+
                     last_producer_id = insert_producer_cursor.lastrowid
                     last_producer_name = producer_name
-                    prev_producer_description = producer_wine_row[ProducerDescription]
+                    prev_producer_description = producer_description
 
-                if producer_wine_row[ProducerDescription] != prev_producer_description:
+                if producer_description != prev_producer_description:
                     conversion_notes = 'Description changed'
 
                 producer_legacywine = (last_producer_id, wine_id, conversion_notes)
                 insert_producer_legacywine_cursor.execute(Wines._insert_producer_legacywine_sql,
                                                           producer_legacywine)
+                prev_producer_description = producer_description
 
         self._connection.commit()
 
