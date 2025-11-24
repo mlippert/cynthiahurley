@@ -24,6 +24,7 @@ import sys
 import logging
 import pprint
 import re
+import difflib
 from datetime import timedelta, date
 from contextlib import suppress
 
@@ -139,6 +140,12 @@ class Wines(CHW_DB):
                 conversion_notes = None
 
                 if producer_name != last_producer_name:
+                    if producer_name == 'Château Léoville Barton' or last_producer_name == 'Château Léoville Barton':
+                        print(repr(producer_name), '!=', repr(last_producer_name))
+                        print(len(producer_name), '!=', len(last_producer_name))
+                        print('\n'.join(difflib.ndiff([producer_name], [last_producer_name])))
+                        print('WineId:', wine_id)
+
                     # Insert new Producer record
                     producer_code = producer_wine_row[ProducerCode]
                     year_established = producer_wine_row[YearEstablished].strip()
