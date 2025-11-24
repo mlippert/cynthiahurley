@@ -101,11 +101,11 @@ INSERT INTO Wines
 (
     WineId,
     AccountingItemNo,
-    COLA_TTBID,
+    COLA_TTB_ID,
     UPC,
     FullName,
     Vintage,
-    Color,
+    WineColorId,
     WineTypeId,
     CertifiedOrganic,
     Varietals,
