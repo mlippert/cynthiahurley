@@ -31,6 +31,7 @@ from contextlib import suppress
 
 # Local application imports
 from .chw_db import CHW_DB, mariadb
+from .chw_sql import CHW_SQL
 
 
 default_update_user = 'Gillian'
@@ -98,6 +99,19 @@ class Wines(CHW_DB):
         """
         super().__init__(**kwargs)
         self.logger = logging.getLogger('CynthiaHurleyDB.Wines')
+
+    def load_legacy_table_from_csv(self):
+        """
+        """
+        DB_CNTR_DATADIR = '/tmp/data/infiles/'
+        CSV_FILENAME = 'WineMasterTable_11-06-xform.csv'
+        LEGACY_TABLE_SUFFIX = '_1106'
+        sql = CHW_SQL.get_legacy_wine_master_load_data({'suffix':  LEGACY_TABLE_SUFFIX,
+                                                        'csvfile': CSV_FILENAME,
+                                                        'datadir': DB_CNTR_DATADIR})
+
+        with (self._connection.cursor() as legacy_wines_load_data):
+            legacy_wines_load_data.execute(sql)
 
     def create_producers_from_legacy(self, update_user=default_update_user):
         """
