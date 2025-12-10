@@ -26,19 +26,16 @@ import pprint
 from datetime import timedelta, date
 
 # Third party imports
-import mariadb
 
 # Local application imports
+from .chw_db import CHW_DB, mariadb
+from .chw_sql import CHW_SQL
 
-default_domain = '127.0.0.1'
-default_port = 3306
-default_db_name = 'chw'
-default_db_user = 'chwuser'
-default_db_password = 'cynthiahurley'
+
 default_update_user = 'Gillian'
 
 
-class RetailOrders:
+class RetailOrders(CHW_DB):
     """
     An instance of RetailOrders is created with the MariaDB
     domain, port and db name of the chw database to
@@ -53,191 +50,31 @@ class RetailOrders:
     - Email customers and their orders
     """
 
-    # Select statement to retrieve unique fullnames from
-    _unique_fullname_sql = ('SELECT FullName, COUNT( FullName ) NumOrders '
-                            ' FROM chw.LegacyEmailOrders_1106'
-                            ' WHERE FullName != \'\''
-                            ' GROUP BY FullName'
-                            ' ORDER BY FullName ASC'
-                           )
-
-    # Select statement for Customer columns of ALL LegacyEmailOrders records with a matching FullName
-    _legacy_customer_info_columns = ('EmailOrderId',
-                                     'FirstDate',
-                                     'FullName',
-                                     'LastName',
-                                     'Email1',
-                                     'CompanyAptNo',
-                                     'Street',
-                                     'City',
-                                     'State',
-                                     'Zip',
-                                     'PhoneHome',
-                                     'PhoneWork',
-                                     'FaxNumber',
-                                     'CCVisa',
-                                     'CCAmex',
-                                     'CCMastercard',
-                                     'CC_ID'
-                                    )
-    _legacy_customer_info_sql = ('SELECT ' + ', '.join(_legacy_customer_info_columns) +
-                                 ' FROM chw.LegacyEmailOrders_1106'
-                                 ' WHERE FullName = ?'
-                                 ' ORDER BY FirstDate ASC'
-                                )
-
-    # Insert statement to create EmailCustomer record
-    _insert_email_customer_sql = ('INSERT INTO chw.EmailCustomers '
-                                  ' (Title'
-                                  ', GivenName'
-                                  ', Surname'
-                                  ', Suffix'
-                                  ', Email'
-                                  ', Created'
-                                  ', CreatedBy'
-                                  ', LastModified'
-                                  ', LastModifiedBy'
-                                  ')'
-                                  ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-                                 )
-
-    # Insert statement to create EmailCustomers_LegacyEmailOrders record
-    _insert_customer_legacyorder_sql = ('INSERT INTO chw.EmailCustomers_LegacyEmailOrders '
-                                        ' (EmailCustomerId'
-                                        ', EmailOrderId'
-                                        ', NameNeedsReview'
-                                        ', EmailNeedsReview'
-                                        ', ConversionNotes'
-                                        ')'
-                                        ' VALUES (?, ?, ?, ?, ?)'
-                                       )
-
-    _orders_of_top_customers_columns = ('EC.EmailCustomerId,',
-                                        'EC.GivenName',
-                                        'EC.Surname',
-                                        'EC.Email',
-                                        'LEO.FirstDate OrderDate',
-                                        'LEO.DelItemss',
-                                        'LEO.DelItem2',
-                                        'LEO.DelItem3',
-                                        'LEO.DelItem4',
-                                        'LEO.DelItem5',
-                                        'LEO.Vintage',
-                                        'LEO.Vintage2',
-                                        'LEO.Vintage3',
-                                        'LEO.Vintage4',
-                                        'LEO.Vintage5',
-                                        'LEO.Quantity',
-                                        'LEO.Quant2',
-                                        'LEO.Quant3',
-                                        'LEO.Quant4',
-                                        'LEO.Quant5'
-                                       )
-
-    _orders_of_top_customers2_sql = ('SELECT ' + ', '.join(_orders_of_top_customers_columns) +
-                                    'FROM chw.EmailCustomers EC'
-                                    'JOIN chw.EmailCustomers_LegacyEmailOrders EC_LEO'
-                                    '  ON EC.EmailCustomerId = EC_LEO.EmailCustomerId'
-                                    'JOIN chw.LegacyEmailOrders_1106 LEO'
-                                    '  ON LEO.EmailOrderId = EC_LEO.EmailOrderId'
-                                    'WHERE EC.EmailCustomerId IN'
-                                    '(10946, 10500, 10770, 11155, 9313, 13635, 10858, 12396, 13028, 11719, 11050, 13786, 11383, 11979, 11630, 9600, 11646)'
-                                    'ORDER BY EC.EmailCustomerId ASC, OrderDate ASC'
-                                   )
-
-    _top_customers_emails = ('kcweiner@texcrude.com',
-                             'Jack.Ende@uphs.upenn.edu',
-                             'jchilds@jwchilds.com',
-                             'lukecorsten@yahoo.com',
-                             'Steve.Ezell@landcorp.com',
-                             'Joseph.Losee@chp.edu',
-                             'philip.mengel@gmail.com',
-                             'njmoult@yahoo.com ',
-                             'BCLindsay@aol.com',
-                             'lewoolcott@gmail.com ',
-                             'tpotter@capdale.com',
-                             'michael.a.gangemi@gmail.com',
-                             'wagner@clearbrookadvisors.com',
-                             'alitt4383@aol.com',
-                             'byronagrant@gmail.com',
-                             'adupont@craneco.com',
-                             'cis@mosbacherproperties.com',
-                             'cek@mosbacherproperties.com'
-                            )
-    _orders_of_top_customers_sql = ('SELECT EC.EmailCustomerId'
-                                         ', EC.GivenName'
-                                         ', EC.Surname'
-                                         ', EC.Email'
-                                         ', LEO.PhoneHome'
-                                         ', LEO.FirstDate OrderDate'
-                                         ', U.EmailOrderId'
-                                         ', U.Item'
-                                         ', U.Vintage'
-                                         ', U.Quantity'
-                                   ' FROM ((SELECT EmailOrderId, DelItemss AS Item, Vintage, Quantity'
-                                          ' FROM LegacyEmailOrders_1106'
-                                          ' WHERE DelItemss != \'\''
-                                          ')'
-                                         ' UNION ALL'
-                                         ' (SELECT EmailOrderId, DelItem2, Vintage2, Quant2'
-                                          ' FROM LegacyEmailOrders_1106'
-                                          ' WHERE DelItem2 != \'\''
-                                          ')'
-                                         ' UNION ALL'
-                                         ' (SELECT EmailOrderId, DelItem3, Vintage3, Quant3'
-                                          ' FROM LegacyEmailOrders_1106'
-                                          ' WHERE DelItem3 != \'\''
-                                          ')'
-                                         ' UNION ALL'
-                                         ' (SELECT EmailOrderId, DelItem4, Vintage4, Quant4'
-                                          ' FROM LegacyEmailOrders_1106'
-                                          ' WHERE DelItem4 != \'\''
-                                          ')'
-                                         ' UNION ALL'
-                                         ' (SELECT EmailOrderId, DelItem5, Vintage5, Quant5'
-                                          ' FROM LegacyEmailOrders_1106'
-                                          ' WHERE DelItem5 != \'\''
-                                          ')'
-                                         ') AS U'
-                                   ' JOIN LegacyEmailOrders_1106 AS LEO ON U.EmailOrderId = LEO.EmailOrderId'
-                                   ' JOIN EmailCustomers_LegacyEmailOrders AS EC_LEO ON U.EmailOrderId = EC_LEO.EmailOrderId'
-                                   ' JOIN EmailCustomers AS EC ON EC_LEO.EmailCustomerId = EC.EmailCustomerId'
-                                   ' WHERE EC.Email IN (\'' + '\', \''.join(_top_customers_emails) + '\')' +
-                                   ' OR (EC.GivenName = \'Alexander\' AND EC.Surname = \'Kinsey\')'
-                                   ' ORDER BY Email ASC, OrderDate ASC'
-                                   )
-
-    def __init__(self, *,
-                 domain=default_domain,
-                 port=default_port,
-                 db_name=default_db_name,
-                 db_user=default_db_user,
-                 db_password=default_db_password):
+    def __init__(self, **kwargs):
         """
         Initialize the RetailOrders class, setting initial values for all instance variables
+
+        Specify the keyword parameter to override the default values of:
+        domain, port, db_name, db_user, db_password
         """
+        super().__init__(**kwargs)
         self.logger = logging.getLogger('CynthiaHurleyDB.RetailOrders')
 
-        self._db_config = {'host':     domain,
-                           'port':     port,
-                           'user':     db_user,
-                           'password': db_password,
-                           'database': db_name
-                          }
-        try:
-            self._connection = mariadb.connect(**self._db_config)
-        except mariadb.Error as e:
-            print(f"An error occurred: {e}")
-            print('mariadb.onnect arguments:', self._db_config)
-            sys.exit(1)
+    def load_legacy_table_from_csv(self):
+        """
+        Load the LegacyEmailOrders_1106 table from the
+        EmailWineOrders_11-06-xform.csv csv file mapped into
+        the mariadb container's /tmp/data/infiles/ directory
+        """
+        DB_CNTR_DATADIR = '/tmp/data/infiles/'
+        CSV_FILENAME = 'EmailWineOrders_11-06-xform.csv'
+        LEGACY_TABLE_SUFFIX = '_1106'
+        sql = CHW_SQL.get_legacy_email_orders_load_data({'suffix':  LEGACY_TABLE_SUFFIX,
+                                                         'csvfile': CSV_FILENAME,
+                                                         'datadir': DB_CNTR_DATADIR})
 
-    def __del__(self):
-        """
-        Close the connection to the database
-        """
-        if self._connection:
-            self._connection.close()
-            print("Connection closed.", file=sys.stderr)
+        with (self._connection.cursor() as legacy_email_orders_load_data):
+            legacy_email_orders_load_data.execute(sql)
 
     def create_customers_from_legacy(self, update_user=default_update_user):
         """
@@ -267,20 +104,20 @@ class RetailOrders:
               self._connection.cursor(prepared=True) as insert_email_customer_cursor,
               self._connection.cursor(prepared=True) as insert_customer_legacyorder_cursor):
 
-            #print(RetailOrders._unique_fullname_sql, file=sys.stdout)
-            #print(RetailOrders._legacy_customer_info_sql, file=sys.stdout)
-            #print(RetailOrders._insert_email_customer_sql, file=sys.stdout)
-            #print(RetailOrders._insert_customer_legacyorder_sql, file=sys.stdout)
+            # print(CHW_SQL.unique_fullname_sql, file=sys.stdout)
+            # print(CHW_SQL.legacy_customer_info_sql, file=sys.stdout)
+            # print(CHW_SQL.insert_email_customer_sql, file=sys.stdout)
+            # print(CHW_SQL.insert_customer_legacyorder_sql, file=sys.stdout)
 
             customer_count = 0
             needs_review = 0
-            unique_fullname_cursor.execute(RetailOrders._unique_fullname_sql)
+            unique_fullname_cursor.execute(CHW_SQL.unique_fullname_sql)
             for fullname_row in unique_fullname_cursor:
                 # Parse name into title, given_name, surname, suffix, manual_review_needed
                 parsed_name = self.parse_fullname(fullname_row[0])
 
                 # Get Legacy order records for fullname
-                legacy_customer_info_cursor.execute(RetailOrders._legacy_customer_info_sql, (fullname_row[0],))
+                legacy_customer_info_cursor.execute(CHW_SQL.legacy_customer_info_sql, (fullname_row[0],))
 
                 # TODO: for now we'll just use the FirstDate and Email1 from the 1st legacy order
                 #       as the values for the new email customer record
@@ -298,8 +135,8 @@ class RetailOrders:
                                       update_user
                                      )
 
-                #print(new_email_customer, file=sys.stdout)
-                insert_email_customer_cursor.execute(RetailOrders._insert_email_customer_sql, new_email_customer)
+                # print(new_email_customer, file=sys.stdout)
+                insert_email_customer_cursor.execute(CHW_SQL.insert_email_customer_sql, new_email_customer)
                 customer_id = insert_email_customer_cursor.lastrowid
                 name_needs_review = parsed_name['manual_review_needed']
                 email_needs_review = customer_info['email_needs_review']
@@ -313,21 +150,21 @@ class RetailOrders:
                                             email_needs_review,
                                             conversion_notes
                                            )
-                    #print(customer_legacyorder, file=sys.stdout)
-                    insert_customer_legacyorder_cursor.execute(RetailOrders._insert_customer_legacyorder_sql,
+                    # print(customer_legacyorder, file=sys.stdout)
+                    insert_customer_legacyorder_cursor.execute(CHW_SQL.insert_customer_legacyorder_sql,
                                                                customer_legacyorder)
 
-                #f = sys.stdout
-                #f.write(f'  {"":4} < {b[0]:4}: {b[1]:4}\n')
-                #print(new_email_customer, file=sys.stdout)
-                #print('!!' if parsed_name['manual_review_needed'] else '--',
-                #      fullname_row[0], '-->',
-                #      'T:"' + parsed_name['title'] + '"' if parsed_name['title'] is not None else '',
-                #      'F:"' + parsed_name['given_name'] + '"',
-                #      'L:"' + parsed_name['surname'] + '"',
-                #      'S:"' + parsed_name['suffix'] + '"' if parsed_name['suffix'] is not None else '',
-                #      'E:', customer_info['email'],
-                #      file=sys.stdout)
+                # f = sys.stdout
+                # f.write(f'  {"":4} < {b[0]:4}: {b[1]:4}\n')
+                # print(new_email_customer, file=sys.stdout)
+                # print('!!' if parsed_name['manual_review_needed'] else '--',
+                #       fullname_row[0], '-->',
+                #       'T:"' + parsed_name['title'] + '"' if parsed_name['title'] is not None else '',
+                #       'F:"' + parsed_name['given_name'] + '"',
+                #       'L:"' + parsed_name['surname'] + '"',
+                #       'S:"' + parsed_name['suffix'] + '"' if parsed_name['suffix'] is not None else '',
+                #       'E:', customer_info['email'],
+                #       file=sys.stdout)
 
                 customer_count += 1
                 needs_review += 1 if parsed_name['manual_review_needed'] else 0
@@ -372,7 +209,7 @@ class RetailOrders:
         customer_item_report_add_item  = '|                    | {7:56} | {8!s:>7} | {9:8} |\n'
 
         with self._connection.cursor() as top_customer_order_items_cursor:
-            top_customer_order_items_cursor.execute(RetailOrders._orders_of_top_customers_sql)
+            top_customer_order_items_cursor.execute(CHW_SQL.orders_of_top_customers_sql)
 
             # Write out Report header
             f.write('# Items Ordered by Customer\n\n')
@@ -423,7 +260,7 @@ class RetailOrders:
 
         # TODO: for now we'll just use the FirstDate and Email1 from the 1st legacy order
         #       as the values for the new email customer record
-        column_names = cls._legacy_customer_info_columns
+        column_names = CHW_SQL.legacy_customer_info_columns
 
         # get the first order (we expect them to be sorted ascending by FirstDate)
         # and there MUST be at least one to have extracted the fullname from
@@ -546,9 +383,17 @@ class RetailOrders:
         return emails
 
 
+# Public action functions to be called by the CLI
+
+def do_load_legacy_email_orders_from_csv(user):
+    retailOrders = RetailOrders()
+    retailOrders.load_legacy_table_from_csv()
+
+
 def do_create_customers_from_legacy(user):
     retailOrders = RetailOrders()
     retailOrders.create_customers_from_legacy()
+
 
 def do_write_top_customer_order_report():
     retailOrders = RetailOrders()

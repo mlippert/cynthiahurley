@@ -61,35 +61,6 @@ class Wines(CHW_DB):
       - Name, item numbers, prices, producers, etc.
     """
 
-    # Select statement to retrieve producer's wines ordered by producer then descending dates
-    _legacy_wines_by_producer_sql = ('SELECT WineId'
-                                     ', ProducerName'
-                                     ', ProducerDescription'
-                                     ', ProducerCode'
-                                     ', YearEstablished'
-                                     ' FROM chw.LegacyWineMaster_1106'
-                                     ' ORDER BY ProducerName ASC, LastUpdated DESC'
-                                    )
-
-    # Insert statement to create Producer record
-    _insert_producer_sql = ('INSERT INTO chw.Producers'
-                            ' (Name'
-                            ', Description'
-                            ', ProducerCode'
-                            ', YearEstablished'
-                            ')'
-                            ' VALUES (?, ?, ?, ?)'
-                           )
-
-    # Insert statement to create Producers_LegacyWineMaster record
-    _insert_producer_legacywine_sql = ('INSERT INTO chw.Producers_LegacyWineMaster'
-                                       ' (ProducerId'
-                                       ', WineId'
-                                       ', ConversionNotes'
-                                       ')'
-                                       ' VALUES (?, ?, ?)'
-                                      )
-
     def __init__(self, **kwargs):
         """
         Initialize the Wines class, setting initial values for all instance variables
@@ -102,6 +73,9 @@ class Wines(CHW_DB):
 
     def load_legacy_table_from_csv(self):
         """
+        Load the LegacyWineMaster_1106 table from the
+        WineMasterTable_11-06-xform.csv csv file mapped into
+        the mariadb container's /tmp/data/infiles/ directory
         """
         DB_CNTR_DATADIR = '/tmp/data/infiles/'
         CSV_FILENAME = 'WineMasterTable_11-06-xform.csv'
@@ -140,7 +114,7 @@ class Wines(CHW_DB):
               self._connection.cursor(prepared=True) as insert_producer_cursor,
               self._connection.cursor(prepared=True) as insert_producer_legacywine_cursor):
 
-            legacy_wines_by_producer_cursor.execute(Wines._legacy_wines_by_producer_sql)
+            legacy_wines_by_producer_cursor.execute(CHW_SQL.legacy_wines_by_producer_sql)
             last_producer_name = ''
             last_producer_id = -1
             prev_producer_description = ''
@@ -172,7 +146,7 @@ class Wines(CHW_DB):
                                    )
 
                     try:
-                        insert_producer_cursor.execute(Wines._insert_producer_sql, new_producer)
+                        insert_producer_cursor.execute(CHW_SQL.insert_producer_sql, new_producer)
                     except mariadb.DataError as e:
                         print(type(e))
                         print(e.args)
@@ -188,7 +162,7 @@ class Wines(CHW_DB):
                     conversion_notes = 'Description changed'
 
                 producer_legacywine = (last_producer_id, wine_id, conversion_notes)
-                insert_producer_legacywine_cursor.execute(Wines._insert_producer_legacywine_sql,
+                insert_producer_legacywine_cursor.execute(CHW_SQL.insert_producer_legacywine_sql,
                                                           producer_legacywine)
                 prev_producer_description = producer_description
 
@@ -196,6 +170,11 @@ class Wines(CHW_DB):
 
 
 # Public action functions to be called by the CLI
+
+def do_load_legacy_wine_master_from_csv(user):
+    wines = Wines()
+    wines.load_legacy_table_from_csv()
+
 
 def do_create_producers_from_legacy(user):
     wines = Wines()

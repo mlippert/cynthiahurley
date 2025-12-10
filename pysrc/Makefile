@@ -19,6 +19,7 @@ TEST_LOG := ../logs/test.log
 
 PYSOURCES = \
 	chwdata/chw_db.py                   \
+	chwdata/chw_sql.py                  \
 	chwdata/retail_orders.py            \
 	chwdata/wines.py                    \
 	visualize/meetings.py               \
