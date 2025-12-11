@@ -21,6 +21,7 @@ Copyright       (c) 2025-present Michael Jay Lippert
 
 # Standard library imports
 import sys
+import time
 import logging
 import pprint
 from datetime import timedelta, date
@@ -65,6 +66,11 @@ class RetailOrders(CHW_DB):
         Load the LegacyEmailOrders_1106 table from the
         EmailWineOrders_11-06-xform.csv csv file mapped into
         the mariadb container's /tmp/data/infiles/ directory
+
+        The mariadb cli give the following status after running this LOAD DATA
+        statement:
+        Query OK, 26538 rows affected, 83 warnings (0.296 sec)
+        Records: 26538  Deleted: 0  Skipped: 0  Warnings: 83
         """
         DB_CNTR_DATADIR = '/tmp/data/infiles/'
         CSV_FILENAME = 'EmailWineOrders_11-06-xform.csv'
@@ -74,7 +80,14 @@ class RetailOrders(CHW_DB):
                                                          'datadir': DB_CNTR_DATADIR})
 
         with (self._connection.cursor() as legacy_email_orders_load_data):
+            t = time.process_time()
             legacy_email_orders_load_data.execute(sql)
+            exectime = time.process_time() - t
+            rows_affected = legacy_email_orders_load_data.rowcount
+            warnings = legacy_email_orders_load_data.warnings
+            print(f'Load Data successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
+
+        self._connection.commit()
 
     def create_customers_from_legacy(self, update_user=default_update_user):
         """
@@ -385,7 +398,7 @@ class RetailOrders(CHW_DB):
 
 # Public action functions to be called by the CLI
 
-def do_load_legacy_email_orders_from_csv(user):
+def do_load_legacy_email_orders_from_csv():
     retailOrders = RetailOrders()
     retailOrders.load_legacy_table_from_csv()
 

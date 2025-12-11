@@ -20,12 +20,9 @@ Copyright       (c) 2025-present Michael Jay Lippert
 """
 
 # Standard library imports
-import sys
+import time
 import logging
-import pprint
 import re
-from datetime import timedelta, date
-from contextlib import suppress
 
 # Third party imports
 
@@ -85,7 +82,14 @@ class Wines(CHW_DB):
                                                         'datadir': DB_CNTR_DATADIR})
 
         with (self._connection.cursor() as legacy_wines_load_data):
+            t = time.process_time()
             legacy_wines_load_data.execute(sql)
+            exectime = time.process_time() - t
+            rows_affected = legacy_wines_load_data.rowcount
+            warnings = legacy_wines_load_data.warnings
+            print(f'Load Data successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
+
+        self._connection.commit()
 
     def create_producers_from_legacy(self, update_user=default_update_user):
         """
@@ -171,7 +175,7 @@ class Wines(CHW_DB):
 
 # Public action functions to be called by the CLI
 
-def do_load_legacy_wine_master_from_csv(user):
+def do_load_legacy_wine_master_from_csv():
     wines = Wines()
     wines.load_legacy_table_from_csv()
 

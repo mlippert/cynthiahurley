@@ -39,7 +39,7 @@ class CHW_SQL:
     # where parameters datadir, csvfile, suffix must be supplied.
     # used by get_legacy_wine_master_load_data method
     _legacy_email_orders_load_data_sql_fmt = """
-LOAD DATA LOCAL INFILE '{datadir}{csvfile}'
+LOAD DATA INFILE '{datadir}{csvfile}'
 REPLACE INTO TABLE LegacyEmailOrders{suffix}
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 IGNORE 1 LINES
@@ -89,11 +89,11 @@ CustDetails
 SET
 FirstDate=if(LENGTH(@FirstDate) < 9, NULL, @FirstDate),
 Subtotal=if(@Subtotal = '', NULL, @Subtotal),
-Vintage=if(@Vintage REGEXP '^[0-9]{4}$', @Vintage, NULL),
-Vintage2=if(@Vintage2 REGEXP '^[0-9]{4}$', @Vintage2, NULL),
-Vintage3=if(@Vintage3 REGEXP '^[0-9]{4}$', @Vintage3, NULL),
-Vintage4=if(@Vintage4 REGEXP '^[0-9]{4}$', @Vintage4, NULL),
-Vintage5=if(@Vintage5 REGEXP '^[0-9]{4}$', @Vintage5, NULL)
+Vintage=if(@Vintage REGEXP '^[0-9]{{4}}$', @Vintage, NULL),
+Vintage2=if(@Vintage2 REGEXP '^[0-9]{{4}}$', @Vintage2, NULL),
+Vintage3=if(@Vintage3 REGEXP '^[0-9]{{4}}$', @Vintage3, NULL),
+Vintage4=if(@Vintage4 REGEXP '^[0-9]{{4}}$', @Vintage4, NULL),
+Vintage5=if(@Vintage5 REGEXP '^[0-9]{{4}}$', @Vintage5, NULL)
 ;
 """
 
@@ -266,7 +266,7 @@ SELECT EC.EmailCustomerId
     # where parameters datadir, csvfile, suffix must be supplied.
     # used by get_legacy_wine_master_load_data method
     _legacy_wine_master_load_data_sql_fmt = """
-LOAD DATA LOCAL INFILE '{datadir}{csvfile}'
+LOAD DATA INFILE '{datadir}{csvfile}'
 REPLACE INTO TABLE LegacyWineMaster{suffix}
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 IGNORE 1 LINES
