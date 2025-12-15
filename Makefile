@@ -124,6 +124,10 @@ pull-images : ## Update base docker images
 show-ps : ## Show all docker containers w/ limited fields
 	$(CNTR_CLI) ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Image}}'
 
+# NOTE: some filesystem permissions **may** also need to be set, both locally and in the container
+setup-use-data-infiles: ## setup permissions so that LOAD FILE and INTO OUTFILE statements will work
+	echo "GRANT FILE ON *.* TO chwuser; exit;" | bin/chwdb-cli.sh --user=root --password=finewine --db="" --quiet
+
 ## Help documentation à la https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 ## if you want the help sorted rather than in the order of occurrence, pipe the grep to sort and pipe that to awk
 help :
