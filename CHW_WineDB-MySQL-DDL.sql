@@ -1,4 +1,32 @@
 
+CREATE TABLE LookupWineAppellations (
+                WineAppellationId SMALLINT NOT NULL,
+                AppellationName VARCHAR(80) NOT NULL,
+                PRIMARY KEY (WineAppellationId)
+);
+
+
+CREATE TABLE LookupWineSubregions (
+                WineSubregionId TINYINT AUTO_INCREMENT NOT NULL,
+                SubregionName VARCHAR(30) NOT NULL,
+                PRIMARY KEY (WineSubregionId)
+);
+
+
+CREATE TABLE LookupWineRegions (
+                WineRegionId TINYINT AUTO_INCREMENT NOT NULL,
+                RegionName VARCHAR(30) NOT NULL,
+                PRIMARY KEY (WineRegionId)
+);
+
+
+CREATE TABLE LookupWineCountries (
+                WineCountryId TINYINT AUTO_INCREMENT NOT NULL,
+                CountryName VARCHAR(20) NOT NULL,
+                PRIMARY KEY (WineCountryId)
+);
+
+
 CREATE TABLE LookupWineColors (
                 WineColorId TINYINT AUTO_INCREMENT NOT NULL,
                 WineColor VARCHAR(10) NOT NULL,
@@ -190,22 +218,20 @@ ALTER TABLE LookupCCIssuers MODIFY COLUMN ShortName VARCHAR(8) COMMENT 'Abbrevia
 CREATE TABLE LookupCaseUnits (
                 CaseUnitId TINYINT AUTO_INCREMENT NOT NULL,
                 Name VARCHAR(30) NOT NULL,
-                VolumeInMilliliters INT DEFAULT 750 NOT NULL,
                 UnitType VARCHAR(15) DEFAULT 'bottle' NOT NULL,
                 VolumeUnitsOnLabel VARCHAR(15) DEFAULT 'ml' NOT NULL,
-                LabelVolumeConvFactor DOUBLE PRECISION DEFAULT 1.0 NOT NULL,
+                VolumeInLabelUnits DECIMAL(6,2) NOT NULL,
+                VolumeInMilliliters INT DEFAULT 750 NOT NULL,
                 PRIMARY KEY (CaseUnitId)
 );
 
 ALTER TABLE LookupCaseUnits MODIFY COLUMN Name VARCHAR(30) COMMENT 'Composite description of the Unit, e.g. Bottle 750ml, Can 20oz, BiB 500ml';
 
-ALTER TABLE LookupCaseUnits MODIFY COLUMN VolumeInMilliliters INTEGER COMMENT 'Volume in this unit in milliliters';
-
 ALTER TABLE LookupCaseUnits MODIFY COLUMN UnitType VARCHAR(15) COMMENT 'Type of unit: bottle, can, BiB (bag in box)';
 
 ALTER TABLE LookupCaseUnits MODIFY COLUMN VolumeUnitsOnLabel VARCHAR(15) COMMENT 'Volume units name (e.g ml, Liter) shown on label, and in name.';
 
-ALTER TABLE LookupCaseUnits MODIFY COLUMN LabelVolumeConvFactor DOUBLE COMMENT 'Conversion factor to divide VolumeInMilliliters by to get qty of UnitsOnLabel eg divide by 1000 to get Liters';
+ALTER TABLE LookupCaseUnits MODIFY COLUMN VolumeInMilliliters INTEGER COMMENT 'Volume in this unit in milliliters';
 
 
 CREATE TABLE Producers (
@@ -267,10 +293,10 @@ CREATE TABLE Wines (
                 CertifiedOrganic BOOLEAN DEFAULT 0 NOT NULL,
                 Varietals VARCHAR(100),
                 ABV DECIMAL(5,2) NOT NULL,
-                Country VARCHAR(100) NOT NULL,
-                Region VARCHAR(100),
-                Subregion VARCHAR(100),
-                Appellation VARCHAR(100),
+                WineCountryId TINYINT NOT NULL,
+                WineRegionId TINYINT,
+                WineSubregionId TINYINT,
+                WineAppellationId SMALLINT,
                 ProducerId INT NOT NULL,
                 UnitsPerCase SMALLINT NOT NULL,
                 CaseUnitId TINYINT NOT NULL,
@@ -498,6 +524,30 @@ ALTER TABLE Orders_Wines MODIFY COLUMN CasePrice DECIMAL(8, 2) COMMENT 'Price fo
 
 ALTER TABLE Orders_Wines MODIFY COLUMN UnitPrice DECIMAL(8, 2) COMMENT 'Price for units (bottles, BiB, etc) in partial case ordered';
 
+
+ALTER TABLE Wines ADD CONSTRAINT lookupwineappellations_wines_fk
+FOREIGN KEY (WineAppellationId)
+REFERENCES LookupWineAppellations (WineAppellationId)
+ON DELETE SET NULL
+ON UPDATE NO ACTION;
+
+ALTER TABLE Wines ADD CONSTRAINT lookupwinesubregions_wines_fk
+FOREIGN KEY (WineSubregionId)
+REFERENCES LookupWineSubregions (WineSubregionId)
+ON DELETE SET NULL
+ON UPDATE NO ACTION;
+
+ALTER TABLE Wines ADD CONSTRAINT lookupwineregions_wines_fk
+FOREIGN KEY (WineRegionId)
+REFERENCES LookupWineRegions (WineRegionId)
+ON DELETE SET NULL
+ON UPDATE NO ACTION;
+
+ALTER TABLE Wines ADD CONSTRAINT lookupwinecountries_wines_fk
+FOREIGN KEY (WineCountryId)
+REFERENCES LookupWineCountries (WineCountryId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
 
 ALTER TABLE Wines ADD CONSTRAINT lookupwinecolors_wines_fk
 FOREIGN KEY (WineColorId)
