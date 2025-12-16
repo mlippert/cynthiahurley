@@ -25,7 +25,9 @@ import click
 from chwdata.retail_orders import (do_load_legacy_email_orders_from_csv,
                                    do_write_top_customer_order_report,
                                    do_create_customers_from_legacy)
-from chwdata.wines import do_load_legacy_wine_master_from_csv, do_create_producers_from_legacy
+from chwdata.wines import (do_load_legacy_wine_master_from_csv,
+                           do_create_producers_from_legacy,
+                           do_setup_lookup_table_records)
 
 
 @click.command()
@@ -67,6 +69,23 @@ def load_legacy_wine_master_from_csv():
 
 
 @click.command()
+def setup_wine_lookup_tables():
+    """
+    Insert the standard records into empty wine lookup tables
+
+    \b
+    - LookupWineColors
+    - LookupWineTypes
+    - LookupCaseUnits
+    - LookupWineCountries
+    - LookupWineRegions
+    - LookupWineSubregions
+    - LookupWineAppellations
+    """
+    do_setup_lookup_table_records()
+
+
+@click.command()
 def write_top_customer_order_report():
     """
     Write out the top customer order item report (to stdout)
@@ -75,17 +94,11 @@ def write_top_customer_order_report():
 
 
 @click.command()
-@click.option('--user', '-u', type=click.Choice(['Legacy', 'Gillian', 'Mike']), default='Legacy',
-              required=False, help='User name for CreatedBy and LastModifiedBy fields')
-def import_legacy_producers(user):
+def import_legacy_producers():
     """
     Create producers from the legacy wine master table
-
-    \b
-    options:
-    user    - user name for CreatedBy and LastModifiedBy fields. Default: Legacy
     """
-    do_create_producers_from_legacy(user=user)
+    do_create_producers_from_legacy()
 
 
 @click.group()
@@ -103,6 +116,7 @@ cli.add_command(write_top_customer_order_report)
 cli.add_command(import_legacy_producers)
 cli.add_command(load_legacy_email_orders_from_csv)
 cli.add_command(load_legacy_wine_master_from_csv)
+cli.add_command(setup_wine_lookup_tables)
 
 
 if __name__ == '__main__':

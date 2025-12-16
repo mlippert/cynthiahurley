@@ -81,17 +81,17 @@ class Wines(CHW_DB):
                                                         'csvfile': CSV_FILENAME,
                                                         'datadir': DB_CNTR_DATADIR})
 
-        with (self._connection.cursor() as legacy_wines_load_data):
+        with (self._connection.cursor() as legacy_wines_load_data_cursor):
             t = time.process_time()
-            legacy_wines_load_data.execute(sql)
+            legacy_wines_load_data_cursor.execute(sql)
             exectime = time.process_time() - t
-            rows_affected = legacy_wines_load_data.rowcount
-            warnings = legacy_wines_load_data.warnings
+            rows_affected = legacy_wines_load_data_cursor.rowcount
+            warnings = legacy_wines_load_data_cursor.warnings
             print(f'Load Data successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
 
         self._connection.commit()
 
-    def create_producers_from_legacy(self, update_user=default_update_user):
+    def create_producers_from_legacy(self):
         """
         Create producers from LegacyWineMaster
         - Find all unique ProducerNames
@@ -172,17 +172,65 @@ class Wines(CHW_DB):
 
         self._connection.commit()
 
+    def setup_lookup_table_records(self):
+        """
+        Initialize the Wine related Lookup tables
+        - LookupWineColors
+        - LookupWineTypes
+        - LookupCaseUnits
+        - LookupWineCountries
+        - LookupWineRegions
+        - LookupWineSubregions
+        - LookupWineAppellations
+        """
+        # TODO: set this flag from an argument
+        show_warnings = False
+        init_lookup_table_stmts = (('LookupWineColors', CHW_SQL.insert_lookup_wine_colors_sql),
+                                   ('LookupWineTypes', CHW_SQL.insert_lookup_wine_types_sql),
+                                   ('LookupCaseUnits', CHW_SQL.insert_lookup_case_units_sql),
+                                   ('LookupWineCountries', CHW_SQL.insert_lookup_wine_countries_sql),
+                                   ('LookupWineRegions', CHW_SQL.insert_lookup_wine_regions_sql),
+                                   ('LookupWineSubregions', CHW_SQL.insert_lookup_wine_subregions_sql),
+                                   ('LookupWineAppellations', CHW_SQL.insert_lookup_wine_appellations_sql),
+                                  )
+
+        with (self._connection.cursor() as init_lookup_table_cursor):
+            for table_name, sql in init_lookup_table_stmts:
+                init_lookup_table_cursor.execute(sql)
+
+                rows_affected = init_lookup_table_cursor.rowcount
+                warnings = init_lookup_table_cursor.warnings
+                print(f'Init table {table_name} successful, {rows_affected} rows affected, {warnings} warnings')
+                if show_warnings and warnings > 0:
+                    self.print_cursor_warnings(init_lookup_table_cursor)
+
+                init_lookup_table_cursor.connection.commit()
+
+    @staticmethod
+    def print_cursor_warnings(cursor):
+        """
+        Print the warnings from the last execution of the given cursor
+        """
+        for severity, code, msg in cursor.connection.show_warnings():
+            print(severity, code, msg)
+
 
 # Public action functions to be called by the CLI
+
 
 def do_load_legacy_wine_master_from_csv():
     wines = Wines()
     wines.load_legacy_table_from_csv()
 
 
-def do_create_producers_from_legacy(user):
+def do_create_producers_from_legacy():
     wines = Wines()
     wines.create_producers_from_legacy()
+
+
+def do_setup_lookup_table_records():
+    wines = Wines()
+    wines.setup_lookup_table_records()
 
 
 def _test():

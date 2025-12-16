@@ -35,7 +35,7 @@ class CHW_SQL:
     be more easily read.
     """
 
-    # Format string to create a Sql Load Data statement to load the legacy wine master table
+    # Format string to create a Sql Load Data statement to load the legacy email orders table
     # where parameters datadir, csvfile, suffix must be supplied.
     # used by get_legacy_wine_master_load_data method
     _legacy_email_orders_load_data_sql_fmt = """
@@ -262,6 +262,256 @@ SELECT EC.EmailCustomerId
 """
 )
 
+    ############################
+    #
+    # Wine Table sql statements
+    #
+    ############################
+
+    # Insert statements to set up wine related lookup tables
+    insert_lookup_wine_colors_sql = """
+INSERT IGNORE INTO LookupWineColors
+VALUES (-1, 'TBD'), (1, 'White'), (2, 'Red'), (3, 'Rosé')
+"""
+
+    insert_lookup_wine_types_sql = """
+INSERT IGNORE INTO LookupWineTypes
+VALUES (-1, 'TBD'), (1, 'Still'), (2, 'Sparkling'), (3, 'Fortified')
+"""
+
+    insert_lookup_case_units_sql = """
+INSERT IGNORE INTO LookupCaseUnits
+VALUES (-1,'Unknown',          'unknown', 'ml',      0.0,    0),
+       (1, 'Bottle 750ml',     'bottle',  'ml',    750.0,  750),
+       (2, 'Magnum 1.5 Liter', 'bottle',  'Liter',   1.5, 1500),
+       (3, 'Bottle 375ml',     'bottle',  'ml',    375.0,  375),
+       (4, 'BiB 3 Liter',      'BiB',     'Liter',   3.0, 3000),
+       (5, 'BiB 6 Liter',      'BiB',     'Liter',   6.0, 6000),
+       (6, 'Can 250ml',        'can',     'ml',    250.0,  250),
+       (7, 'Can 500ml',        'can',     'ml',    500.0,  500)
+"""
+
+    insert_lookup_wine_countries_sql = """
+INSERT IGNORE INTO LookupWineCountries
+VALUES (1, 'France'), (2, 'Germany'), (3, 'Italy'), (4, 'Spain')
+"""
+
+    insert_lookup_wine_regions_sql = """
+INSERT IGNORE INTO LookupWineRegions
+VALUES (1, 'Alsace'),
+       (2, 'Bordeaux'),
+       (3, 'Burgundy'),
+       (4, 'Castile-Léon'),
+       (5, 'Catalonia'),
+       (6, 'Champagne'),
+       (7, 'Corsica'),
+       (8, 'Galicia'),
+       (9, 'Languedoc'),
+       (10, 'Loire'),
+       (11, 'Penedes'),
+       (12, 'Piedmont'),
+       (13, 'Provence'),
+       (14, 'Rhein'),
+       (15, 'Rhône'),
+       (16, 'Rias Baixas'),
+       (17, 'Ribera del Duero'),
+       (18, 'Rioja'),
+       (19, 'Roussillon'),
+       (20, 'Southwest')
+"""
+
+    insert_lookup_wine_subregions_sql = """
+INSERT IGNORE INTO LookupWineSubregions
+VALUES (1, 'Beaujolais'),
+       (2, 'Beaujolais Cru'),
+       (3, 'Chablis'),
+       (4, 'Cote Chalonnaise'),
+       (5, 'Cote de Beaune'),
+       (6, 'Côte de Nuits'),
+       (7, 'Langhe'),
+       (8, 'Limoux'),
+       (9, 'Mâconnais'),
+       (10, 'Northern Rhône'),
+       (11, 'Sauternes'),
+       (12, 'Southern Rhône'),
+       (13, 'Val do Salnes')
+"""
+
+    insert_lookup_wine_appellations_sql = """
+INSERT IGNORE INTO LookupWineAppellations
+VALUES (1, 'Alsace'),
+       (2, 'AOP-Languedoc'),
+       (3, 'Bararesco'),
+       (4, 'Barbaresco'),
+       (5, 'Barbera d\\\'Alba'),
+       (6, 'Barbera d\\\'Asti'),
+       (7, 'Barolo'),
+       (8, 'Beaujolais'),
+       (9, 'Beaujolais Villages'),
+       (10, 'Beaune 1er Cru Les Teurons'),
+       (11, 'Bierzo'),
+       (12, 'Blanquette de Limoux'),
+       (13, 'Bordeaux'),
+       (14, 'Bordeaux Blanc'),
+       (15, 'Bordeaux Superieur'),
+       (16, 'Bordeaux Superieur Rouge'),
+       (17, 'Bordeaux Superieure'),
+       (18, 'Bourgogne'),
+       (19, 'Bourgogne Aligoté'),
+       (20, 'Cahors'),
+       (21, 'Cairanne'),
+       (22, 'Canon Fronsac'),
+       (23, 'Castillon Côtes de Bordeaux'),
+       (24, 'Cava'),
+       (25, 'Chablis'),
+       (26, 'Chablis 1er Cru Forets'),
+       (27, 'Chablis 1er Cru Homme Mort'),
+       (28, 'Chablis 1er Cru Montee de Tonnerre'),
+       (29, 'Chablis 1er Cru Vaillons'),
+       (30, 'Chablis Grand Cru Grenouilles'),
+       (31, 'Chambolle Musigny'),
+       (32, 'Champagne, 1er Cru'),
+       (33, 'Champagne, Cramant'),
+       (34, 'Champagne, Grand Cru'),
+       (35, 'Chassagne Montrachet'),
+       (36, 'Chassagne Montrachet 1er Cru les Chaumées'),
+       (37, 'Chassagne Montrachet 1er Cru les Chevenottes'),
+       (38, 'Chassagne Montrachet 1er Cru les Embrazées'),
+       (39, 'Chassagne Montrachet 1er Cru les Macherelles'),
+       (40, 'Châteauneuf du Pape'),
+       (41, 'Chinon'),
+       (42, 'Chiroubles'),
+       (43, 'Collines Rhodaniennes'),
+       (44, 'Conca de Barbera'),
+       (45, 'Condrieu'),
+       (46, 'Cornas'),
+       (47, 'Cote de Brouilly'),
+       (48, 'Côte Rotie'),
+       (49, 'Coteaux d\\\'Aix-en-Provence'),
+       (50, 'Coteaux de Languedoc'),
+       (51, 'Côtes de Bourg'),
+       (52, 'Côtes de Gascogne'),
+       (53, 'Côtes du Rhône'),
+       (54, 'Côtes du Rhône Villages'),
+       (55, 'Côtes du Rhône Villages Cairanne'),
+       (56, 'Côtes du Rhône Villages Seguret'),
+       (57, 'Côtes du Rhône Villages Visan'),
+       (58, 'Cotes du Roussillon Villages'),
+       (59, 'Crémant de Limoux'),
+       (60, 'Crozes Hermitage'),
+       (61, 'Faugeres'),
+       (62, 'Francs Côtes de Bordeaux'),
+       (63, 'Fronsac'),
+       (64, 'Gevrey Chambertin'),
+       (65, 'Gevrey Chambertin 1er Cru Combe aux Moines'),
+       (66, 'Gevrey Chambertin 1er Cru les Cazetiers'),
+       (67, 'Gigondas'),
+       (68, 'Grand Cru Batard Montrachet'),
+       (69, 'Grand Cru Bienvenues Batard Montrachet'),
+       (70, 'Grand Cru Bonnes Mares'),
+       (71, 'Grand Cru Chambertin'),
+       (72, 'Grand Cru Chambertin Clos de Beze'),
+       (73, 'Grand Cru Champagne, Bouzy'),
+       (74, 'Grand Cru Champagne, Cramant'),
+       (75, 'Grand Cru Chevalier Montrachet'),
+       (76, 'Grand Cru Clos Vougeot'),
+       (77, 'Grand Cru Corton Charlemagne'),
+       (78, 'Grand Cru Criots Batard Montrachet'),
+       (79, 'Grand Cru Echezeaux'),
+       (80, 'Grand Cru Latricieres Chambertin'),
+       (81, 'Grand Cru Le Montrachet'),
+       (82, 'Graves'),
+       (83, 'Haut-Medoc'),
+       (84, 'Hermitage'),
+       (85, 'IGP Cotes Catalanes'),
+       (86, 'IGP-Saint Guilhem Le Désert'),
+       (87, 'Lalande de Pomerol'),
+       (88, 'Langhe'),
+       (89, 'Mâcon Villages'),
+       (90, 'Mâcon-Solutré'),
+       (91, 'Madiran'),
+       (92, 'Margaux'),
+       (93, 'Maury Sec'),
+       (94, 'Medoc'),
+       (95, 'Mercurey 1er Cru les Crets'),
+       (96, 'Meursault'),
+       (97, 'Meursault 1er Cru Clos Richemont'),
+       (98, 'Meursault 1er Cru les Charmes'),
+       (99, 'Meursault 1er Cru les Genevrieres'),
+       (100, 'Meursault 1er Cru les Gouttes D\\\'Or'),
+       (101, 'Meursault 1er Cru les Perrieres'),
+       (102, 'Meursault 1er Cru les Poruzots'),
+       (103, 'Minervois'),
+       (104, 'Montagny'),
+       (105, 'Montagny 1er Cru'),
+       (106, 'Monthelie'),
+       (107, 'Monthelie 1er Cru Clou de Chenes'),
+       (108, 'Morgon'),
+       (109, 'Moulis'),
+       (110, 'Muscadet Sevre-et-Maine'),
+       (111, 'Pacherenc du Vin Bilh'),
+       (112, 'Patrimonio'),
+       (113, 'Pauillac'),
+       (114, 'Pays d\\\'Oc'),
+       (115, 'Penedes'),
+       (116, 'Pessac Leognan'),
+       (117, 'Petit Chablis'),
+       (118, 'Pic Saint Loup'),
+       (119, 'Pomerol'),
+       (120, 'Pommard'),
+       (121, 'Pommard 1er Cru les Rugiens'),
+       (122, 'Pouilly Fuisse'),
+       (123, 'Pouilly Fume'),
+       (124, 'Pouilly-Fuissé'),
+       (125, 'Pouilly-Loché'),
+       (126, 'Priorat'),
+       (127, 'Puisseguin Saint-Emilion'),
+       (128, 'Puligny Montrachet'),
+       (129, 'Puligny Montrachet 1er Cru Clos de la Mouchere'),
+       (130, 'Puligny Montrachet 1er Cru les Caillerets'),
+       (131, 'Puligny Montrachet 1er Cru les Combettes'),
+       (132, 'Puligny Montrachet 1er Cru les Folatieres'),
+       (133, 'Puligny Montrachet 1er Cru les Perrieres'),
+       (134, 'Puligny Montrachet 1er Cru les Pucelles'),
+       (135, 'Rasteau'),
+       (136, 'Régnié'),
+       (137, 'Rias Baixas'),
+       (138, 'Ribeira Sacra'),
+       (139, 'Rioja'),
+       (140, 'Rueda'),
+       (141, 'Rully'),
+       (142, 'Rully 1er Cru Gresigny'),
+       (143, 'Rully 1er Cru Preaux'),
+       (144, 'Saint-Aubin'),
+       (145, 'Saint-Aubin 1er Cru Clos du Meix'),
+       (146, 'Saint-Estephe'),
+       (147, 'Saint-Romain'),
+       (148, 'Sancerre'),
+       (149, 'Saumur'),
+       (150, 'Saumur Champigny'),
+       (151, 'Sauternes'),
+       (152, 'Savigny les Beaune 1er Cru les Vergelesses'),
+       (153, 'St Joseph'),
+       (154, 'St. Chinian'),
+       (155, 'St. Emilion'),
+       (156, 'St. Joseph'),
+       (157, 'St. Julien'),
+       (158, 'St. Nicolas de Bourgueil'),
+       (159, 'St. Veran'),
+       (160, 'Terrasses du Larzac'),
+       (161, 'Vin de France'),
+       (162, 'Vino de Mesa'),
+       (163, 'Viré-Clessé'),
+       (164, 'Volnay'),
+       (165, 'Volnay 1er Cru les Caillerets'),
+       (166, 'Volnay 1er Cru les Champans'),
+       (167, 'Volnay 1er Cru les Chevrets'),
+       (168, 'Volnay 1er Cru les Fremiets'),
+       (169, 'Volnay 1er Cru les Santenots'),
+       (170, 'Volnay 1er Cru Roncerets'),
+       (171, 'Vouvray')
+"""
+
     # Format string to create a Sql Load Data statement to load the legacy wine master table
     # where parameters datadir, csvfile, suffix must be supplied.
     # used by get_legacy_wine_master_load_data method
@@ -382,8 +632,89 @@ INSERT INTO chw.Producers_LegacyWineMaster
     , ConversionNotes
     )
  VALUES (?, ?, ?)
+;
 """
 
+    # Format string to create insert statement to create Wines records
+    # from LegacyWineMaster records
+    # where parameter suffix must be supplied.
+    # used by get_insert_wines_from_legacy method
+    insert_wines_from_legacy_sql_fmt = """
+INSERT INTO Wines
+(
+    WineId,
+    AccountingItemNo,
+    COLA_TTB_ID,
+    UPC,
+    FullName,
+    Vintage,
+    WineColorId,
+    WineTypeId,
+    CertifiedOrganic,
+    Varietals,
+    ABV,
+    Country,
+    Region,
+    Subregion,
+    Appellation,
+    ProducerId,
+    UnitsPerCase,
+    CaseUnitId,
+    BottleColor,
+    ShelfTalkerText,
+    TastingNotes,
+    Vinification,
+    TerroirVineyardPractices,
+    PressParagraph,
+    Exporter,
+    LastPurchasePrice,
+    LastPurchaseDate,
+    Created,
+    CreatedBy,
+    LastModified,
+    LastModifiedBy
+)
+SELECT
+    LWM.WineId,
+    LWM.AccountingItemNo,
+    if(LWM.COLA_TTB_ID = '', 'Pending', LWM.COLA_TTB_ID),
+    if(LWM.UPC = '', NULL, LWM.UPC),
+    LWM.FullName,
+    LWM.Vintage,
+    LkupWC.WineColorId,
+    LkupWT.WineTypeId,
+    if(CertifiedOrganic = 'certified organic', TRUE, FALSE),
+    LWM.Varietals,
+    if(LWM.ABV IS NULL, -1, LWM.ABV),
+    LWM.Country,
+    LWM.Region,
+    LWM.Subregion,
+    LWM.Appellation,
+    WP.ProducerId,
+    LWM.BottlesPerCase,
+    0,
+    LWM.BottleColor,
+    LWM.ShelfTalkerText,
+    LWM.TastingNotes,
+    LWM.Vinification,
+    LWM.TerroirVineyardPractices,
+    LWM.PressParagraph,
+    LWM.Exporter,
+    LWM.LastPurchasePrice,
+    LWM.LastPurchaseDate,
+    if(LWM.DateCreated IS NULL, LWM.LastUpdated, LWM.DateCreated),
+    'Legacy',
+    LWM.LastUpdated,
+    'Legacy'
+FROM LegacyWineMaster{suffix} LWM
+INNER JOIN LookupWineTypes LkupWT
+  ON LWM.StillSparklingFortified = LkupWT.WineType
+INNER JOIN LookupWineColors LkupWC
+  ON LWM.Color = LkupWC.WineColor
+LEFT JOIN Producers WP
+  ON LWM.ProducerName = WP.Name
+;
+"""
 
     @classmethod
     def get_legacy_email_orders_load_data(cls, params):
@@ -406,3 +737,14 @@ INSERT INTO chw.Producers_LegacyWineMaster
         into the sql format string being returned.
         """
         return cls._legacy_wine_master_load_data_sql_fmt.format(**params)
+
+    @classmethod
+    def get_insert_wines_from_legacy(cls, params):
+        """
+        Returns the sql statement to insert records in the Wines table from
+        the LegacyWineMaster table with the given suffix.
+
+        params is a dictionary with a suffix key to be inserted
+        into the sql format string being returned.
+        """
+        return cls.insert_wines_from_legacy_sql_fmt.format(**params)
