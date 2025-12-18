@@ -6,12 +6,20 @@ CREATE TABLE LookupWineAppellations (
 );
 
 
+CREATE UNIQUE INDEX lookupwineappellations_appellationname_idx
+ ON LookupWineAppellations
+ ( AppellationName );
+
 CREATE TABLE LookupWineSubregions (
                 WineSubregionId TINYINT AUTO_INCREMENT NOT NULL,
                 SubregionName VARCHAR(30) NOT NULL,
                 PRIMARY KEY (WineSubregionId)
 );
 
+
+CREATE UNIQUE INDEX lookupwinesubregions_subregionname_idx
+ ON LookupWineSubregions
+ ( SubregionName );
 
 CREATE TABLE LookupWineRegions (
                 WineRegionId TINYINT AUTO_INCREMENT NOT NULL,
@@ -20,12 +28,20 @@ CREATE TABLE LookupWineRegions (
 );
 
 
+CREATE UNIQUE INDEX lookupwineregions_regionname_idx
+ ON LookupWineRegions
+ ( RegionName );
+
 CREATE TABLE LookupWineCountries (
                 WineCountryId TINYINT AUTO_INCREMENT NOT NULL,
                 CountryName VARCHAR(20) NOT NULL,
                 PRIMARY KEY (WineCountryId)
 );
 
+
+CREATE UNIQUE INDEX lookupwinecountries_countryname_idx
+ ON LookupWineCountries
+ ( CountryName );
 
 CREATE TABLE LookupWineColors (
                 WineColorId TINYINT AUTO_INCREMENT NOT NULL,
@@ -35,6 +51,10 @@ CREATE TABLE LookupWineColors (
 
 ALTER TABLE LookupWineColors MODIFY COLUMN WineColor VARCHAR(10) COMMENT 'White, Red or Rosé';
 
+
+CREATE UNIQUE INDEX lookupwinecolors_winecolor_idx
+ ON LookupWineColors
+ ( WineColor );
 
 CREATE TABLE LegacyWineMaster_1106 (
                 WineId INT NOT NULL,
@@ -203,6 +223,10 @@ ALTER TABLE LookupWineTypes COMMENT 'Still, Sparkling or Fortified';
 ALTER TABLE LookupWineTypes MODIFY COLUMN WineType VARCHAR(10) COMMENT 'Still, Sparkling or Fortified';
 
 
+CREATE UNIQUE INDEX lookupwinetypes_winetype_idx
+ ON LookupWineTypes
+ ( WineType );
+
 CREATE TABLE LookupCCIssuers (
                 CCIssuerId TINYINT AUTO_INCREMENT NOT NULL,
                 Name VARCHAR(20) NOT NULL,
@@ -245,6 +269,10 @@ CREATE TABLE Producers (
 
 ALTER TABLE Producers COMMENT 'A wine producer';
 
+
+CREATE UNIQUE INDEX producers_name_idx
+ ON Producers
+ ( Name );
 
 CREATE TABLE Producers_LegacyWineMaster (
                 ProducerId INT NOT NULL,
