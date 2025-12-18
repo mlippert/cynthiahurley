@@ -27,7 +27,8 @@ from chwdata.retail_orders import (do_load_legacy_email_orders_from_csv,
                                    do_create_customers_from_legacy)
 from chwdata.wines import (do_load_legacy_wine_master_from_csv,
                            do_create_producers_from_legacy,
-                           do_setup_lookup_table_records)
+                           do_setup_lookup_table_records,
+                           do_create_wines_from_legacy)
 
 
 @click.command()
@@ -101,6 +102,17 @@ def import_legacy_producers():
     do_create_producers_from_legacy()
 
 
+@click.command()
+def create_wines_from_legacy():
+    """
+    Create records in the Wines table from the legacy wine master table
+
+    The producers must have already been imported, and the wine lookup
+    tables initialized.
+    """
+    do_create_wines_from_legacy()
+
+
 @click.group()
 def cli():
     """Run CHW database actions
@@ -117,6 +129,7 @@ cli.add_command(import_legacy_producers)
 cli.add_command(load_legacy_email_orders_from_csv)
 cli.add_command(load_legacy_wine_master_from_csv)
 cli.add_command(setup_wine_lookup_tables)
+cli.add_command(create_wines_from_legacy)
 
 
 if __name__ == '__main__':

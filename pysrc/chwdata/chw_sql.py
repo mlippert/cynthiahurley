@@ -653,10 +653,10 @@ INSERT INTO Wines
     CertifiedOrganic,
     Varietals,
     ABV,
-    Country,
-    Region,
-    Subregion,
-    Appellation,
+    WineCountryId,
+    WineRegionId,
+    WineSubregionId,
+    WineAppellationId,
     ProducerId,
     UnitsPerCase,
     CaseUnitId,
@@ -681,18 +681,18 @@ SELECT
     if(LWM.UPC = '', NULL, LWM.UPC),
     LWM.FullName,
     LWM.Vintage,
-    LkupWC.WineColorId,
+    LkupWClr.WineColorId,
     LkupWT.WineTypeId,
     if(CertifiedOrganic = 'certified organic', TRUE, FALSE),
     LWM.Varietals,
     if(LWM.ABV IS NULL, -1, LWM.ABV),
-    LWM.Country,
-    LWM.Region,
-    LWM.Subregion,
-    LWM.Appellation,
+    LkupWCntry.WineCountryId,
+    LkupWR.WineRegionId,
+    LkupWSR.WineSubregionId,
+    LkupWA.WineAppellationId,
     WP.ProducerId,
     LWM.BottlesPerCase,
-    0,
+    -1,
     LWM.BottleColor,
     LWM.ShelfTalkerText,
     LWM.TastingNotes,
@@ -709,8 +709,16 @@ SELECT
 FROM LegacyWineMaster{suffix} LWM
 INNER JOIN LookupWineTypes LkupWT
   ON LWM.StillSparklingFortified = LkupWT.WineType
-INNER JOIN LookupWineColors LkupWC
-  ON LWM.Color = LkupWC.WineColor
+INNER JOIN LookupWineColors LkupWClr
+  ON LWM.Color = LkupWClr.WineColor
+INNER JOIN LookupWineCountries LkupWCntry
+  ON LWM.Country = LkupWCntry.CountryName
+LEFT JOIN LookupWineRegions LkupWR
+  ON LWM.Region = LkupWR.RegionName
+LEFT JOIN LookupWineSubregions LkupWSR
+  ON LWM.Subregion = LkupWSR.SubregionName
+LEFT JOIN LookupWineAppellations LkupWA
+  ON LWM.Appellation = LkupWA.AppellationName
 LEFT JOIN Producers WP
   ON LWM.ProducerName = WP.Name
 ;

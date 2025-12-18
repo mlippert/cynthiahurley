@@ -118,6 +118,9 @@ class Wines(CHW_DB):
               self._connection.cursor(prepared=True) as insert_producer_cursor,
               self._connection.cursor(prepared=True) as insert_producer_legacywine_cursor):
 
+            starttime = time.process_time()
+            producers_added = 0
+            producer_note_cnt = 0
             legacy_wines_by_producer_cursor.execute(CHW_SQL.legacy_wines_by_producer_sql)
             last_producer_name = ''
             last_producer_id = -1
@@ -151,6 +154,7 @@ class Wines(CHW_DB):
 
                     try:
                         insert_producer_cursor.execute(CHW_SQL.insert_producer_sql, new_producer)
+                        producers_added += 1
                     except mariadb.DataError as e:
                         print(type(e))
                         print(e.args)
@@ -165,10 +169,16 @@ class Wines(CHW_DB):
                 if producer_description != prev_producer_description:
                     conversion_notes = 'Description changed'
 
+                if conversion_notes is not None:
+                    producer_note_cnt += 1
+
                 producer_legacywine = (last_producer_id, wine_id, conversion_notes)
                 insert_producer_legacywine_cursor.execute(CHW_SQL.insert_producer_legacywine_sql,
                                                           producer_legacywine)
                 prev_producer_description = producer_description
+
+            exectime = time.process_time() - starttime
+            print(f'Insert producers from legacy successful, {producers_added} rows affected, {producer_note_cnt} notes ({exectime:.3f} secs)')
 
         self._connection.commit()
 
@@ -183,7 +193,7 @@ class Wines(CHW_DB):
         - LookupWineSubregions
         - LookupWineAppellations
         """
-        # TODO: set this flag from an argument
+        # TODO: set this flag from a parameter
         show_warnings = False
         init_lookup_table_stmts = (('LookupWineColors', CHW_SQL.insert_lookup_wine_colors_sql),
                                    ('LookupWineTypes', CHW_SQL.insert_lookup_wine_types_sql),
@@ -205,6 +215,32 @@ class Wines(CHW_DB):
                     self.print_cursor_warnings(init_lookup_table_cursor)
 
                 init_lookup_table_cursor.connection.commit()
+
+    def create_wines_from_legacy(self):
+        """
+        Create wine records in the Wines table from the LegacyWineMaster
+
+        Producer records must have already been created and lookup tables
+        populated.
+        """
+        # TODO: set this flag from a parameter
+        show_warnings = True
+
+        LEGACY_TABLE_SUFFIX = '_1106'
+        sql = CHW_SQL.get_insert_wines_from_legacy({'suffix':  LEGACY_TABLE_SUFFIX})
+
+        with (self._connection.cursor() as insert_wines_from_legacy_cursor):
+            t = time.process_time()
+            insert_wines_from_legacy_cursor.execute(sql)
+            exectime = time.process_time() - t
+
+            rows_affected = insert_wines_from_legacy_cursor.rowcount
+            warnings = insert_wines_from_legacy_cursor.warnings
+            print(f'Insert wines from legacy successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
+            if show_warnings and warnings > 0:
+                self.print_cursor_warnings(insert_wines_from_legacy_cursor)
+
+        self._connection.commit()
 
     @staticmethod
     def print_cursor_warnings(cursor):
@@ -231,6 +267,11 @@ def do_create_producers_from_legacy():
 def do_setup_lookup_table_records():
     wines = Wines()
     wines.setup_lookup_table_records()
+
+
+def do_create_wines_from_legacy():
+    wines = Wines()
+    wines.create_wines_from_legacy()
 
 
 def _test():
