@@ -4,10 +4,10 @@ GRANT FILE ON *.* TO chwuser;
 
 /*
  * Load the LegacyWineMaster_NNNN table from a delimited file in the "infiles" directory
- * NNNN == 1106 as of the last update of the snippet
+ * NNNN == 1218 as of the last update of the snippet
  */
-LOAD DATA LOCAL INFILE '/tmp/data/infiles/WineMasterTable_11-06-xform.csv'
-REPLACE INTO TABLE LegacyWineMaster_1106
+LOAD DATA LOCAL INFILE '/tmp/data/infiles/WineMasterTable_12-18-xform.csv'
+REPLACE INTO TABLE LegacyWineMaster_1218
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 IGNORE 1 LINES
 (
@@ -93,9 +93,12 @@ AE_Record_Id=if(@AE_Record_Id = '', NULL, @AE_Record_Id);
 /* We may need to create Producer records with python so that we can track differences */
 INSERT INTO Producers ()
 
+/* Add a constraint on some Wines columns limiting them to specific values */
+ALTER TABLE Wines ADD CONSTRAINT Wines_UnitsPerCase_chk CHECK (UnitsPerCase IN (1, 3, 6, 12, 24, 48));
+ALTER TABLE Wines ADD CONSTRAINT Wines_BottleColor_chk CHECK (BottleColor IN ('Brown', 'Green', 'Clear', 'CAN')); /* NULL allowed */
+
 /* TODO
-define LookupWineColors table
-define LookupWineCountries table ???
+python code to set CaseUnitId?
 */
 INSERT INTO Wines
 (
@@ -104,6 +107,7 @@ INSERT INTO Wines
     COLA_TTB_ID,
     UPC,
     FullName,
+    WineName,
     Vintage,
     WineColorId,
     WineTypeId,
@@ -137,6 +141,7 @@ SELECT
     if(LWM.COLA_TTB_ID = '', 'Pending', LWM.COLA_TTB_ID),
     if(LWM.UPC = '', NULL, LWM.UPC),
     LWM.FullName,
+    LWM.WineName,
     LWM.Vintage,
     LkupWC.WineColorId,
     LkupWT.WineTypeId,
@@ -150,7 +155,7 @@ SELECT
     WP.ProducerId,
     LWM.BottlesPerCase,
     0,
-    LWM.BottleColor,
+    if(LWM.BottleColor = '', NULL, LWM.BottleColor),
     LWM.ShelfTalkerText,
     LWM.TastingNotes,
     LWM.Vinification,
@@ -163,7 +168,7 @@ SELECT
     'Legacy',
     LWM.LastUpdated,
     'Legacy'
-FROM LegacyWineMaster_1106 LWM
+FROM LegacyWineMaster_1218 LWM
 INNER JOIN LookupWineTypes LkupWT
   ON LWM.StillSparklingFortified = LkupWT.WineType
 INNER JOIN LookupWineColors LkupWC
