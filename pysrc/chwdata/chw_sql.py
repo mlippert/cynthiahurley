@@ -94,7 +94,6 @@ Vintage2=if(@Vintage2 REGEXP '^[0-9]{{4}}$', @Vintage2, NULL),
 Vintage3=if(@Vintage3 REGEXP '^[0-9]{{4}}$', @Vintage3, NULL),
 Vintage4=if(@Vintage4 REGEXP '^[0-9]{{4}}$', @Vintage4, NULL),
 Vintage5=if(@Vintage5 REGEXP '^[0-9]{{4}}$', @Vintage5, NULL)
-;
 """
 
     # Select statement to retrieve unique email customer fullnames from
@@ -602,7 +601,6 @@ NJ_MultiCaseQty=if(@NJ_MultiCaseQty = '', NULL, @NJ_MultiCaseQty),
 AE_Record_Id=if(@AE_Record_Id = '', NULL, @AE_Record_Id),
 TariffDiscount=if(@TariffDiscount = '', NULL, @TariffDiscount),
 WineName=if(@WineName = '', NULL, @WineName)
-;
 """
 
     # Select statement to retrieve producer's wines ordered by producer then descending dates
@@ -614,7 +612,6 @@ SELECT WineId
      , YearEstablished
   FROM chw.LegacyWineMaster{suffix}
  ORDER BY ProducerName ASC, LastUpdated DESC
-;
 """
 
     # Insert statement to create Producer record
@@ -626,7 +623,6 @@ INSERT INTO chw.Producers
     , YearEstablished
     )
  VALUES (?, ?, ?, ?)
-;
 """
 
     # Insert statement to create Producers_LegacyWineMaster record
@@ -637,7 +633,6 @@ INSERT INTO chw.Producers_LegacyWineMaster
     , ConversionNotes
     )
  VALUES (?, ?, ?)
-;
 """
 
     # Format string to create insert statement to create Wines records
@@ -728,7 +723,50 @@ LEFT JOIN LookupWineAppellations LkupWA
   ON LWM.Appellation = LkupWA.AppellationName
 LEFT JOIN Producers WP
   ON LWM.ProducerName = WP.Name
-;
+"""
+
+    # Format string to create insert statement to create WinePricing records
+    # from LegacyWineMaster records
+    # where parameter suffix must be supplied.
+    # used by get_insert_winepricing_from_legacy method
+    _insert_winepricing_from_legacy_sql_fmt = """
+INSERT INTO WinePricing
+(
+    WineId,
+    Available,
+    SoldOut,
+    PriceListSection,
+    PriceListNotes,
+    FOBPrice,
+    FOB_MA,
+    FOB_ARB,
+    ARB_Comment,
+    NY_Wholesale,
+    NY_MultiCasePrice,
+    NY_MultiCaseQty,
+    NJ_Wholesale,
+    NJ_MultiCasePrice,
+    NJ_MultiCaseQty,
+    PriceNotes
+)
+SELECT
+    LWM.WineId,
+    if(LWM.Excluded != '', FALSE, TRUE),
+    if(LWM.SoldOut != '', TRUE, FALSE),
+    LWM.PriceListSection,
+    LWM.PriceListNotes,
+    LWM.FOBPrice,
+    LWM.FOB_MA,
+    LWM.FOB_ARB,
+    LWM.ARB_Comment,
+    LWM.NY_Wholesale,
+    LWM.NY_MultiCasePrice,
+    LWM.NY_MultiCaseQty,
+    LWM.NJ_Wholesale,
+    LWM.NJ_MultiCasePrice,
+    LWM.NJ_MultiCaseQty,
+    LWM.PriceNotes
+FROM LegacyWineMaster{suffix} LWM
 """
 
     @classmethod
@@ -774,3 +812,14 @@ LEFT JOIN Producers WP
         into the sql format string being returned.
         """
         return cls._insert_wines_from_legacy_sql_fmt.format(**params)
+
+    @classmethod
+    def get_insert_winepricing_from_legacy_sql(cls, params):
+        """
+        Returns the sql statement to insert records in the WinePricing table from
+        the LegacyWineMaster table with the given suffix.
+
+        params is a dictionary with a suffix key to be inserted
+        into the sql format string being returned.
+        """
+        return cls._insert_winepricing_from_legacy_sql_fmt.format(**params)

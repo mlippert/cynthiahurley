@@ -175,3 +175,43 @@ INNER JOIN LookupWineColors LkupWC
   ON LWM.Color = LkupWC.WineColor
 LEFT JOIN Producers WP
   ON LWM.ProducerName = WP.Name
+
+
+
+INSERT INTO WinePricing
+(
+    WineId,
+    Available,
+    SoldOut,
+    PriceListSection,
+    PriceListNotes,
+    FOBPrice,
+    FOB_MA,
+    FOB_ARB,
+    ARB_Comment,
+    NY_Wholesale,
+    NY_MultiCasePrice,
+    NY_MultiCaseQty,
+    NJ_Wholesale,
+    NJ_MultiCasePrice,
+    NJ_MultiCaseQty,
+    PriceNotes
+)
+SELECT
+    LWM.WineId,
+    if(LWM.Excluded != '', FALSE, TRUE),
+    if(LWM.SoldOut != '', TRUE, FALSE),
+    LWM.PriceListSection,
+    LWM.PriceListNotes,
+    LWM.FOBPrice,
+    LWM.FOB_MA,
+    LWM.FOB_ARB,
+    LWM.ARB_Comment,
+    LWM.NY_Wholesale,
+    LWM.NY_MultiCasePrice,
+    LWM.NY_MultiCaseQty,
+    LWM.NJ_Wholesale,
+    LWM.NJ_MultiCasePrice,
+    LWM.NJ_MultiCaseQty,
+    LWM.PriceNotes
+FROM LegacyWineMaster_1218 LWM
