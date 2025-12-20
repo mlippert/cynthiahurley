@@ -579,7 +579,9 @@ NJ_CurrentPricing,
 MA_CurrentPricing,
 FrontLabelFilename,
 BackLabelFilename,
-COLA_PDF_Filename
+COLA_PDF_Filename,
+@TariffDiscount,
+@WineName
 )
 SET
 Vintage=if(@Vintage = 'NV', -1, @Vintage),
@@ -597,17 +599,20 @@ NY_MultiCaseQty=if(@NY_MultiCaseQty = '', NULL, @NY_MultiCaseQty),
 NJ_Wholesale=if(@NJ_Wholesale = '', NULL, @NJ_Wholesale),
 NJ_MultiCasePrice=if(@NJ_MultiCasePrice = '', NULL, @NJ_MultiCasePrice),
 NJ_MultiCaseQty=if(@NJ_MultiCaseQty = '', NULL, @NJ_MultiCaseQty),
-AE_Record_Id=if(@AE_Record_Id = '', NULL, @AE_Record_Id);
+AE_Record_Id=if(@AE_Record_Id = '', NULL, @AE_Record_Id),
+TariffDiscount=if(@TariffDiscount = '', NULL, @TariffDiscount),
+WineName=if(@WineName = '', NULL, @WineName)
+;
 """
 
     # Select statement to retrieve producer's wines ordered by producer then descending dates
-    legacy_wines_by_producer_sql = """
+    _legacy_wines_by_producer_sql_fmt = """
 SELECT WineId
      , ProducerName
      , ProducerDescription
      , ProducerCode
      , YearEstablished
-  FROM chw.LegacyWineMaster_1106
+  FROM chw.LegacyWineMaster{suffix}
  ORDER BY ProducerName ASC, LastUpdated DESC
 ;
 """
@@ -639,7 +644,7 @@ INSERT INTO chw.Producers_LegacyWineMaster
     # from LegacyWineMaster records
     # where parameter suffix must be supplied.
     # used by get_insert_wines_from_legacy method
-    insert_wines_from_legacy_sql_fmt = """
+    _insert_wines_from_legacy_sql_fmt = """
 INSERT INTO Wines
 (
     WineId,
@@ -647,6 +652,7 @@ INSERT INTO Wines
     COLA_TTB_ID,
     UPC,
     FullName,
+    WineName,
     Vintage,
     WineColorId,
     WineTypeId,
@@ -680,6 +686,7 @@ SELECT
     if(LWM.COLA_TTB_ID = '', 'Pending', LWM.COLA_TTB_ID),
     if(LWM.UPC = '', NULL, LWM.UPC),
     LWM.FullName,
+    LWM.WineName,
     LWM.Vintage,
     LkupWClr.WineColorId,
     LkupWT.WineTypeId,
@@ -693,7 +700,7 @@ SELECT
     WP.ProducerId,
     LWM.BottlesPerCase,
     -1,
-    LWM.BottleColor,
+    if(LWM.BottleColor = '', NULL, LWM.BottleColor),
     LWM.ShelfTalkerText,
     LWM.TastingNotes,
     LWM.Vinification,
@@ -747,7 +754,18 @@ LEFT JOIN Producers WP
         return cls._legacy_wine_master_load_data_sql_fmt.format(**params)
 
     @classmethod
-    def get_insert_wines_from_legacy(cls, params):
+    def get_legacy_wines_by_producer_sql(cls, params):
+        """
+        Returns the sql statement to select the producer columns from
+        the LegacyWineMaster table with the given suffix.
+
+        params is a dictionary with a suffix key to be inserted
+        into the sql format string being returned.
+        """
+        return cls._legacy_wines_by_producer_sql_fmt.format(**params)
+
+    @classmethod
+    def get_insert_wines_from_legacy_sql(cls, params):
         """
         Returns the sql statement to insert records in the Wines table from
         the LegacyWineMaster table with the given suffix.
@@ -755,4 +773,4 @@ LEFT JOIN Producers WP
         params is a dictionary with a suffix key to be inserted
         into the sql format string being returned.
         """
-        return cls.insert_wines_from_legacy_sql_fmt.format(**params)
+        return cls._insert_wines_from_legacy_sql_fmt.format(**params)

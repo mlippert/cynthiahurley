@@ -58,6 +58,11 @@ class Wines(CHW_DB):
       - Name, item numbers, prices, producers, etc.
     """
 
+    # Constants used to configure the Wine SQL statements
+    DB_CNTR_DATADIR = '/tmp/data/infiles/'
+    LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_12-18-xform.csv'
+    LEGACY_WINE_TABLE_SUFFIX = '_1218'
+
     def __init__(self, **kwargs):
         """
         Initialize the Wines class, setting initial values for all instance variables
@@ -74,22 +79,26 @@ class Wines(CHW_DB):
         WineMasterTable_11-06-xform.csv csv file mapped into
         the mariadb container's /tmp/data/infiles/ directory
         """
-        DB_CNTR_DATADIR = '/tmp/data/infiles/'
-        CSV_FILENAME = 'WineMasterTable_11-06-xform.csv'
-        LEGACY_TABLE_SUFFIX = '_1106'
-        sql = CHW_SQL.get_legacy_wine_master_load_data({'suffix':  LEGACY_TABLE_SUFFIX,
-                                                        'csvfile': CSV_FILENAME,
-                                                        'datadir': DB_CNTR_DATADIR})
+        sql = CHW_SQL.get_legacy_wine_master_load_data({'suffix':  Wines.LEGACY_WINE_TABLE_SUFFIX,
+                                                        'csvfile': Wines.LEGACY_WINE_CSV_FILENAME,
+                                                        'datadir': Wines.DB_CNTR_DATADIR})
 
-        with (self._connection.cursor() as legacy_wines_load_data_cursor):
-            t = time.process_time()
-            legacy_wines_load_data_cursor.execute(sql)
-            exectime = time.process_time() - t
-            rows_affected = legacy_wines_load_data_cursor.rowcount
-            warnings = legacy_wines_load_data_cursor.warnings
-            print(f'Load Data successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
+        try:
+            with (self._connection.cursor() as legacy_wines_load_data_cursor):
+                t = time.process_time()
+                legacy_wines_load_data_cursor.execute(sql)
+                exectime = time.process_time() - t
+                rows_affected = legacy_wines_load_data_cursor.rowcount
+                warnings = legacy_wines_load_data_cursor.warnings
+                print(f'Load Data successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
 
-        self._connection.commit()
+            self._connection.commit()
+        except mariadb.DataError as e:
+            print(type(e))
+            print(e.args)
+            print(e)
+            print(sql)
+            raise e from None
 
     def create_producers_from_legacy(self):
         """
@@ -114,6 +123,8 @@ class Wines(CHW_DB):
         re_year = re.compile(r'\d{4}$')
         re_decade = re.compile(r'\d{4}s$')
 
+        legacy_wines_by_producer_sql = CHW_SQL.get_legacy_wines_by_producer_sql({'suffix':  Wines.LEGACY_WINE_TABLE_SUFFIX})
+
         with (self._connection.cursor() as legacy_wines_by_producer_cursor,
               self._connection.cursor(prepared=True) as insert_producer_cursor,
               self._connection.cursor(prepared=True) as insert_producer_legacywine_cursor):
@@ -121,7 +132,7 @@ class Wines(CHW_DB):
             starttime = time.process_time()
             producers_added = 0
             producer_note_cnt = 0
-            legacy_wines_by_producer_cursor.execute(CHW_SQL.legacy_wines_by_producer_sql)
+            legacy_wines_by_producer_cursor.execute(legacy_wines_by_producer_sql)
             last_producer_name = ''
             last_producer_id = -1
             prev_producer_description = ''
@@ -226,21 +237,28 @@ class Wines(CHW_DB):
         # TODO: set this flag from a parameter
         show_warnings = True
 
-        LEGACY_TABLE_SUFFIX = '_1106'
-        sql = CHW_SQL.get_insert_wines_from_legacy({'suffix':  LEGACY_TABLE_SUFFIX})
+        sql = CHW_SQL.get_insert_wines_from_legacy_sql({'suffix':  Wines.LEGACY_WINE_TABLE_SUFFIX})
 
-        with (self._connection.cursor() as insert_wines_from_legacy_cursor):
-            t = time.process_time()
-            insert_wines_from_legacy_cursor.execute(sql)
-            exectime = time.process_time() - t
+        try:
+            with (self._connection.cursor() as insert_wines_from_legacy_cursor):
+                t = time.process_time()
+                insert_wines_from_legacy_cursor.execute(sql)
+                exectime = time.process_time() - t
 
-            rows_affected = insert_wines_from_legacy_cursor.rowcount
-            warnings = insert_wines_from_legacy_cursor.warnings
-            print(f'Insert wines from legacy successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
-            if show_warnings and warnings > 0:
-                self.print_cursor_warnings(insert_wines_from_legacy_cursor)
+                rows_affected = insert_wines_from_legacy_cursor.rowcount
+                warnings = insert_wines_from_legacy_cursor.warnings
+                print(f'Insert wines from legacy successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
+                if show_warnings and warnings > 0:
+                    self.print_cursor_warnings(insert_wines_from_legacy_cursor)
 
-        self._connection.commit()
+            self._connection.commit()
+        except mariadb.Error as e:
+            print(type(e))
+            print(e.args)
+            print(e)
+            print(sql)
+            # We don't need the stacktrace output, so don't reraise the exception
+            # raise e from None
 
     @staticmethod
     def print_cursor_warnings(cursor):
