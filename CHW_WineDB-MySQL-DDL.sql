@@ -56,7 +56,7 @@ CREATE UNIQUE INDEX lookupwinecolors_winecolor_idx
  ON LookupWineColors
  ( WineColor );
 
-CREATE TABLE LegacyWineMaster_1106 (
+CREATE TABLE LegacyWineMaster_1218 (
                 WineId INT NOT NULL,
                 AccountingItemNo VARCHAR(11),
                 NYPPItemNo VARCHAR(17),
@@ -87,7 +87,7 @@ CREATE TABLE LegacyWineMaster_1106 (
                 ProducerDescription TEXT(1269),
                 ProducerCode CHAR(3),
                 YearEstablished VARCHAR(27),
-                Exporter VARCHAR(12),
+                Exporter VARCHAR(30),
                 NJ_AssignedUPC VARCHAR(13),
                 NJ_BrandRegNo VARCHAR(6),
                 LastPurchasePrice DECIMAL(8,2),
@@ -114,36 +114,38 @@ CREATE TABLE LegacyWineMaster_1106 (
                 NJ_CurrentPricing VARCHAR(30),
                 MA_CurrentPricing VARCHAR(29),
                 FrontLabelFilename VARCHAR(86),
-                BackLabelFilename VARCHAR(53),
+                BackLabelFilename VARCHAR(69),
                 COLA_PDF_Filename VARCHAR(70),
+                TariffDiscount TINYINT,
+                WineName VARCHAR(86),
                 PRIMARY KEY (WineId)
 );
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN Vintage SMALLINT COMMENT '4 digit year';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN Vintage SMALLINT COMMENT '4 digit year';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volume';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volume';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN CaseUnitType VARCHAR(7) COMMENT 'Bottle, Can, BiB';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN CaseUnitType VARCHAR(7) COMMENT 'Bottle, Can, BiB';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN LastPurchasePrice DECIMAL(8, 2) COMMENT 'Price/case paid to producer in Euros';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN LastPurchasePrice DECIMAL(8, 2) COMMENT 'Price/case paid to producer in Euros';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN SoldOut CHAR(1) COMMENT 'True(1)-sold out, False(0)-in stock';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN SoldOut CHAR(1) COMMENT 'True(1)-sold out, False(0)-in stock';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'Free on board (FOB) is the wine price for a case that includes all costs up to being lifted onto a ship.';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'Free on board (FOB) is the wine price for a case that includes all costs up to being lifted onto a ship.';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN FOB_MA DECIMAL(8, 2) COMMENT 'FOB in MA which the Arborway price is discounted from';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN FOB_MA DECIMAL(8, 2) COMMENT 'FOB in MA which the Arborway price is discounted from';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN FOB_ARB DECIMAL(8, 2) COMMENT 'discounted FOB price negotiated w/ Arborway';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN FOB_ARB DECIMAL(8, 2) COMMENT 'discounted FOB price negotiated w/ Arborway';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN ARB_Comment VARCHAR(250) COMMENT 'Explanation for Arborway price when overridden from std discount';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN ARB_Comment VARCHAR(250) COMMENT 'Explanation for Arborway price when overridden from std discount';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN NY_Wholesale DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NY';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN NY_Wholesale DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NY';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN NJ_Wholesale DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NJ';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN NJ_Wholesale DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NJ';
 
-ALTER TABLE LegacyWineMaster_1106 MODIFY COLUMN AE_Record_Id INTEGER COMMENT 'Account Edge record Id';
+ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN AE_Record_Id INTEGER COMMENT 'Account Edge record Id';
 
 
 CREATE TABLE Retailers (
@@ -315,6 +317,7 @@ CREATE TABLE Wines (
                 COLA_TTB_ID VARCHAR(15) DEFAULT 'Pending' NOT NULL,
                 UPC VARCHAR(13),
                 FullName VARCHAR(150) NOT NULL,
+                WineName VARCHAR(150),
                 Vintage SMALLINT,
                 WineColorId TINYINT NOT NULL,
                 WineTypeId TINYINT NOT NULL,
@@ -585,7 +588,7 @@ ON UPDATE NO ACTION;
 
 ALTER TABLE Producers_LegacyWineMaster ADD CONSTRAINT legacywinemaster_1106_producers_legacywinemaster_fk
 FOREIGN KEY (WineId)
-REFERENCES LegacyWineMaster_1106 (WineId)
+REFERENCES LegacyWineMaster_1218 (WineId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
