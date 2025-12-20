@@ -392,7 +392,7 @@ CREATE TABLE WinePricing (
                 Available BOOLEAN DEFAULT 0 NOT NULL,
                 SoldOut BOOLEAN DEFAULT 0 NOT NULL,
                 PriceListSection VARCHAR(50),
-                PriceListNotes VARCHAR(80),
+                PriceListNotes VARCHAR(160),
                 FOBPrice DECIMAL(8,2),
                 FOB_MA DECIMAL(8,2),
                 FOB_ARB DECIMAL(8,2) DEFAULT FOBPrice,
@@ -402,7 +402,7 @@ CREATE TABLE WinePricing (
                 NY_MultiCaseQty TINYINT,
                 NJ_Wholesale DECIMAL(8,2),
                 NJ_MultiCasePrice DECIMAL(8,2),
-                NJ_MiltiCaseQty TINYINT,
+                NJ_MultiCaseQty TINYINT,
                 PriceNotes VARCHAR(250),
                 PRIMARY KEY (WineId)
 );
@@ -427,7 +427,7 @@ ALTER TABLE WinePricing MODIFY COLUMN NJ_Wholesale DECIMAL(8, 2) COMMENT 'NJ dis
 
 ALTER TABLE WinePricing MODIFY COLUMN NJ_MultiCasePrice DECIMAL(8, 2) COMMENT 'NJ multi case break retailer price';
 
-ALTER TABLE WinePricing MODIFY COLUMN NJ_MiltiCaseQty TINYINT COMMENT 'NJ min # of cases to get multi case price';
+ALTER TABLE WinePricing MODIFY COLUMN NJ_MultiCaseQty TINYINT COMMENT 'NJ min # of cases to get multi case price';
 
 
 CREATE TABLE EmailCustomers (

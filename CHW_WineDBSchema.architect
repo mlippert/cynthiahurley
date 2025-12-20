@@ -631,7 +631,7 @@ Retail sales are sometimes by case and sometimes by unit</remarks>
     <column id="COL185" populated="true" UUID="00b5c00a-14cb-4342-82b0-9788a0807301" autoIncrement="false" autoIncrementSequenceName="WinePricing_PriceListSection_seq" defaultValue="" name="PriceListSection" nullable="1" physicalName="PriceListSection" precision="50" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>
     </column>
-    <column id="COL186" populated="true" UUID="feadec1f-e5d6-4717-88f2-7f40653fca6d" autoIncrement="false" autoIncrementSequenceName="WinePricing_PriceListNotes_seq" defaultValue="" name="PriceListNotes" nullable="1" physicalName="PriceListNotes" precision="80" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+    <column id="COL186" populated="true" UUID="feadec1f-e5d6-4717-88f2-7f40653fca6d" autoIncrement="false" autoIncrementSequenceName="WinePricing_PriceListNotes_seq" defaultValue="" name="PriceListNotes" nullable="1" physicalName="PriceListNotes" precision="160" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>
     </column>
     <column id="COL187" populated="true" UUID="bb4fd74e-eed4-4c2f-97bd-8cab8f3d1097" autoIncrement="false" autoIncrementSequenceName="WinePricing_FOBPrice_seq" defaultValue="" name="FOBPrice" nullable="1" physicalName="FOBPrice" precision="8" referenceCount="1" scale="2" sourceDataTypeName="UserDefinedSQLType" type="3" userDefinedTypeUUID="cc1304ea-628a-4fc5-a84a-06ba14759152" >
@@ -661,7 +661,7 @@ Retail sales are sometimes by case and sometimes by unit</remarks>
     <column id="COL195" populated="true" UUID="5bae25c1-964f-46c0-b246-779624caedca" autoIncrement="false" autoIncrementSequenceName="WinePricing_NJ_MultiCasePrice_seq" defaultValue="" name="NJ_MultiCasePrice" nullable="1" physicalName="NJ_MultiCasePrice" precision="8" referenceCount="1" scale="2" sourceDataTypeName="UserDefinedSQLType" type="3" userDefinedTypeUUID="cc1304ea-628a-4fc5-a84a-06ba14759152" >
      <remarks>NJ multi case break retailer price</remarks>
     </column>
-    <column id="COL196" populated="true" UUID="c855a1f4-a5a9-4d7a-baeb-eeee8280cf0b" autoIncrement="false" autoIncrementSequenceName="WinePricing_NJ_MiltiCaseQty_seq" defaultValue="" name="NJ_MiltiCaseQty" nullable="1" physicalName="NJ_MiltiCaseQty" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-6" userDefinedTypeUUID="608a1d2c-c960-44ac-b1f3-503aba0a5b7b" >
+    <column id="COL196" populated="true" UUID="c855a1f4-a5a9-4d7a-baeb-eeee8280cf0b" autoIncrement="false" autoIncrementSequenceName="WinePricing_NJ_MultiCaseQty_seq" defaultValue="" name="NJ_MultiCaseQty" nullable="1" physicalName="NJ_MultiCaseQty" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-6" userDefinedTypeUUID="608a1d2c-c960-44ac-b1f3-503aba0a5b7b" >
      <remarks>NJ min # of cases to get multi case price</remarks>
     </column>
     <column id="COL197" populated="true" UUID="43bf3f5a-9e86-49ab-8b0d-30ed75f4b720" autoIncrement="false" autoIncrementSequenceName="WinePricing_PriceNotes_seq" defaultValue="" name="PriceNotes" nullable="1" physicalName="PriceNotes" precision="250" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
@@ -1360,7 +1360,7 @@ along w/ notes about conversion</remarks>
  <ddl-generator type="ca.sqlpower.architect.ddl.MySqlDDLGenerator" allow-connection="false"> </ddl-generator>
  <liquibase-settings useSeparateChangeSets="false" generateId="false" idStart="1"/>
  <create-kettle-job-settings filePath="" jobName="" schemaName="" kettleJoinType="0" savingToFile="true" />
- <play-pen zoom="1.4387532568304404" viewportX="0" viewportY="0" relationship-style="rectilinear" names-displayLogicalNames="true" showPrimaryTag="true" showForeignTag="true" showAlternateTag="true" columnVisibility="ALL" relationshipLabelVisibility="true">
+ <play-pen zoom="1.4387532568304404" viewportX="259" viewportY="0" relationship-style="rectilinear" names-displayLogicalNames="true" showPrimaryTag="true" showForeignTag="true" showAlternateTag="true" columnVisibility="ALL" relationshipLabelVisibility="true">
   <table-pane table-ref="TAB48" x="22" y="20" bgColor="0xbfd6ff" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB61" x="894" y="23" bgColor="0xbfd6ff" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB96" x="22" y="454" bgColor="0xc7d0df" fgColor="0x000000" rounded="false" dashed="false"/>
