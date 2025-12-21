@@ -290,6 +290,36 @@ class Wines(CHW_DB):
             # We don't need the stacktrace output, so don't reraise the exception
             # raise e from None
 
+    def create_winepurchases_from_legacy(self):
+        """
+        Create wine records in the WinePurchases table from the LegacyWineMaster
+        """
+        # TODO: set this flag from a parameter
+        show_warnings = True
+
+        sql = CHW_SQL.get_insert_winepurchases_from_legacy_sql({'suffix':  Wines.LEGACY_WINE_TABLE_SUFFIX})
+
+        try:
+            with (self._connection.cursor() as insert_winepurchases_from_legacy_cursor):
+                t = time.process_time()
+                insert_winepurchases_from_legacy_cursor.execute(sql)
+                exectime = time.process_time() - t
+
+                rows_affected = insert_winepurchases_from_legacy_cursor.rowcount
+                warnings = insert_winepurchases_from_legacy_cursor.warnings
+                print(f'Insert winepurchases from legacy successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
+                if show_warnings and warnings > 0:
+                    self.print_cursor_warnings(insert_winepurchases_from_legacy_cursor)
+
+            self._connection.commit()
+        except mariadb.Error as e:
+            print(type(e))
+            print(e.args)
+            print(e)
+            print(sql)
+            # We don't need the stacktrace output, so don't reraise the exception
+            # raise e from None
+
     @staticmethod
     def print_cursor_warnings(cursor):
         """
@@ -325,6 +355,11 @@ def do_create_wines_from_legacy():
 def do_create_winepricing_from_legacy():
     wines = Wines()
     wines.create_winepricing_from_legacy()
+
+
+def do_create_winepurchases_from_legacy():
+    wines = Wines()
+    wines.create_winepurchases_from_legacy()
 
 
 def _test():

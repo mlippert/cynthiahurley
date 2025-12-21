@@ -29,7 +29,8 @@ from chwdata.wines import (do_load_legacy_wine_master_from_csv,
                            do_create_producers_from_legacy,
                            do_setup_lookup_table_records,
                            do_create_wines_from_legacy,
-                           do_create_winepricing_from_legacy)
+                           do_create_winepricing_from_legacy,
+                           do_create_winepurchases_from_legacy)
 
 
 @click.command()
@@ -122,6 +123,14 @@ def create_winepricing_from_legacy():
     do_create_winepricing_from_legacy()
 
 
+@click.command()
+def create_winepurchases_from_legacy():
+    """
+    Create records in the WinePurchases table from the legacy wine master table
+    """
+    do_create_winepurchases_from_legacy()
+
+
 @click.group()
 def cli():
     """Run CHW database actions
@@ -140,6 +149,7 @@ cli.add_command(load_legacy_wine_master_from_csv)
 cli.add_command(setup_wine_lookup_tables)
 cli.add_command(create_wines_from_legacy)
 cli.add_command(create_winepricing_from_legacy)
+cli.add_command(create_winepurchases_from_legacy)
 
 
 if __name__ == '__main__':

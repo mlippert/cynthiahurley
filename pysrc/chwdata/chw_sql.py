@@ -668,8 +668,6 @@ INSERT INTO Wines
     TerroirVineyardPractices,
     PressParagraph,
     Exporter,
-    LastPurchasePrice,
-    LastPurchaseDate,
     Created,
     CreatedBy,
     LastModified,
@@ -702,8 +700,6 @@ SELECT
     LWM.TerroirVineyardPractices,
     LWM.PressParagraph,
     LWM.Exporter,
-    LWM.LastPurchasePrice,
-    LWM.LastPurchaseDate,
     if(LWM.DateCreated IS NULL, LWM.LastUpdated, LWM.DateCreated),
     'Legacy',
     LWM.LastUpdated,
@@ -769,6 +765,28 @@ SELECT
 FROM LegacyWineMaster{suffix} LWM
 """
 
+    # Format string to create insert statement to create WinePurchases records
+    # from LegacyWineMaster records
+    # where parameter suffix must be supplied.
+    # used by get_insert_winepurchases_from_legacy method
+    # NOTE: Currently handle and convert integer discount percentages to fractional values
+    _insert_winepurchases_from_legacy_sql_fmt = """
+INSERT INTO WinePurchases
+(
+    WineId,
+    PurchaseDate,
+    PurchasePrice,
+    TariffDiscount
+)
+SELECT
+    LWM.WineId,
+    LWM.LastPurchaseDate,
+    LWM.LastPurchasePrice,
+    if(LWM.TariffDiscount >= 1, LWM.TariffDiscount / 100, LWM.TariffDiscount)
+FROM LegacyWineMaster{suffix} LWM
+WHERE LWM.LastPurchaseDate IS NOT NULL
+"""
+
     @classmethod
     def get_legacy_email_orders_load_data(cls, params):
         """
@@ -823,3 +841,14 @@ FROM LegacyWineMaster{suffix} LWM
         into the sql format string being returned.
         """
         return cls._insert_winepricing_from_legacy_sql_fmt.format(**params)
+
+    @classmethod
+    def get_insert_winepurchases_from_legacy_sql(cls, params):
+        """
+        Returns the sql statement to insert records in the WinePurchases table from
+        the LegacyWineMaster table with the given suffix.
+
+        params is a dictionary with a suffix key to be inserted
+        into the sql format string being returned.
+        """
+        return cls._insert_winepurchases_from_legacy_sql_fmt.format(**params)
