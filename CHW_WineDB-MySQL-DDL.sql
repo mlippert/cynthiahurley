@@ -338,8 +338,6 @@ CREATE TABLE Wines (
                 TerroirVineyardPractices TEXT(2000),
                 PressParagraph TEXT(6000),
                 Exporter VARCHAR(50),
-                LastPurchasePrice DECIMAL(8,2),
-                LastPurchaseDate DATE,
                 Created DATETIME NOT NULL,
                 CreatedBy VARCHAR(32) NOT NULL,
                 LastModified DATETIME NOT NULL,
@@ -362,13 +360,24 @@ Retail sales are sometimes by case and sometimes by unit';
 
 ALTER TABLE Wines MODIFY COLUMN CaseUnitId TINYINT COMMENT 'Type of unit in a case of this wine';
 
-ALTER TABLE Wines MODIFY COLUMN LastPurchasePrice DECIMAL(8, 2) COMMENT 'Price paid to exporter in euros for a case';
-
-ALTER TABLE Wines MODIFY COLUMN LastPurchaseDate DATE COMMENT 'Date of last purchase from the exporter';
-
 ALTER TABLE Wines MODIFY COLUMN CreatedBy VARCHAR(32) COMMENT 'User who created this record';
 
 ALTER TABLE Wines MODIFY COLUMN LastModifiedBy VARCHAR(32) COMMENT 'User who last modified this record';
+
+
+CREATE TABLE WinePurchases (
+                WineId INT NOT NULL,
+                PurchaseDate DATE NOT NULL,
+                PurchasePrice DECIMAL(8,2) NOT NULL,
+                TariffDiscount DECIMAL(3,2),
+                PRIMARY KEY (WineId, PurchaseDate)
+);
+
+ALTER TABLE WinePurchases COMMENT 'Track costs for purchases of a wine';
+
+ALTER TABLE WinePurchases MODIFY COLUMN PurchasePrice DECIMAL(8, 2) COMMENT 'Exporter/Producer''s price, for a case of the wine in Euros, for the purchase on this date';
+
+ALTER TABLE WinePurchases MODIFY COLUMN TariffDiscount DECIMAL(3, 2) COMMENT 'Discount % from the Producer on this purchase  to share tariff cost. null unconfirmed, 0 confirmed no discount';
 
 
 CREATE TABLE NJ_Distribution (
@@ -653,6 +662,12 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE NJ_Distribution ADD CONSTRAINT wines_nj_distribution_fk
+FOREIGN KEY (WineId)
+REFERENCES Wines (WineId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE WinePurchases ADD CONSTRAINT wines_winepurchases_fk
 FOREIGN KEY (WineId)
 REFERENCES Wines (WineId)
 ON DELETE NO ACTION
