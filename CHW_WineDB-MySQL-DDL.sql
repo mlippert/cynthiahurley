@@ -248,6 +248,7 @@ CREATE TABLE LookupCaseUnits (
                 VolumeUnitsOnLabel VARCHAR(15) DEFAULT 'ml' NOT NULL,
                 VolumeInLabelUnits DECIMAL(6,2) NOT NULL,
                 VolumeInMilliliters INT DEFAULT 750 NOT NULL,
+                LegacyBottleSize VARCHAR(18) NOT NULL,
                 PRIMARY KEY (CaseUnitId)
 );
 
@@ -259,6 +260,12 @@ ALTER TABLE LookupCaseUnits MODIFY COLUMN VolumeUnitsOnLabel VARCHAR(15) COMMENT
 
 ALTER TABLE LookupCaseUnits MODIFY COLUMN VolumeInMilliliters INTEGER COMMENT 'Volume in this unit in milliliters';
 
+ALTER TABLE LookupCaseUnits MODIFY COLUMN LegacyBottleSize VARCHAR(18) COMMENT 'For join to create wine record from LegacyWineMaster, delete when no longer needed';
+
+
+CREATE UNIQUE INDEX lookupcaseunits_legacybottlesize_idx
+ ON LookupCaseUnits
+ ( LegacyBottleSize );
 
 CREATE TABLE Producers (
                 ProducerId INT AUTO_INCREMENT NOT NULL,

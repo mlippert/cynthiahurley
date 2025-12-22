@@ -280,14 +280,14 @@ VALUES (-1, 'TBD'), (1, 'Still'), (2, 'Sparkling'), (3, 'Fortified')
 
     insert_lookup_case_units_sql = """
 INSERT IGNORE INTO LookupCaseUnits
-VALUES (-1,'Unknown',          'unknown', 'ml',      0.0,    0),
-       (1, 'Bottle 750ml',     'bottle',  'ml',    750.0,  750),
-       (2, 'Magnum 1.5 Liter', 'bottle',  'Liter',   1.5, 1500),
-       (3, 'Bottle 375ml',     'bottle',  'ml',    375.0,  375),
-       (4, 'BiB 3 Liter',      'BiB',     'Liter',   3.0, 3000),
-       (5, 'BiB 6 Liter',      'BiB',     'Liter',   6.0, 6000),
-       (6, 'Can 250ml',        'can',     'ml',    250.0,  250),
-       (7, 'Can 500ml',        'can',     'ml',    500.0,  500)
+VALUES (-1,'Unknown',          'unknown', 'ml',      0.0,    0, '--'),
+       (1, 'Bottle 750ml',     'bottle',  'ml',    750.0,  750, '750ml'),
+       (2, 'Magnum 1.5 Liter', 'bottle',  'Liter',   1.5, 1500, '1.5 Liter (Magnum)'),
+       (3, 'Bottle 375ml',     'bottle',  'ml',    375.0,  375, '375ml'),
+       (4, 'BiB 3 Liter',      'BiB',     'Liter',   3.0, 3000, '3 Liter'),
+       (5, 'BiB 6 Liter',      'BiB',     'Liter',   6.0, 6000, '6 Liter'),
+       (6, 'Can 250ml',        'can',     'ml',    250.0,  250, '250ml'),
+       (7, 'Can 500ml',        'can',     'ml',    500.0,  500, '500ml')
 """
 
     insert_lookup_wine_countries_sql = """
@@ -692,7 +692,7 @@ SELECT
     LkupWA.WineAppellationId,
     WP.ProducerId,
     LWM.BottlesPerCase,
-    -1,
+    LkupCsU.CaseUnitId,
     if(LWM.BottleColor = '', NULL, LWM.BottleColor),
     LWM.ShelfTalkerText,
     LWM.TastingNotes,
@@ -711,6 +711,8 @@ INNER JOIN LookupWineColors LkupWClr
   ON LWM.Color = LkupWClr.WineColor
 INNER JOIN LookupWineCountries LkupWCntry
   ON LWM.Country = LkupWCntry.CountryName
+INNER JOIN LookupCaseUnits LkupCsU
+  ON LWM.BottleSize = LkupCsU.LegacyBottleSize
 LEFT JOIN LookupWineRegions LkupWR
   ON LWM.Region = LkupWR.RegionName
 LEFT JOIN LookupWineSubregions LkupWSR
