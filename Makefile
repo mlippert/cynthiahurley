@@ -52,12 +52,14 @@ run : ## run the main python script
 
 init : install build ## run install, build; intended for initializing a fresh repo clone
 
+# in order to build the mariadb connector/c wheel on an ubuntu system (VER=3.14):
+# apt install gcc python3.14-dev libmariadd-dev
 install : VER ?= 3
 install : ## create python3 virtual env, install requirements (define VER for other than python3)
 	@python$(VER) -m venv venv
-	@ln -s venv/bin/activate activate
-	@source activate                        ; \
-	pip install --upgrade pip setuptools    ; \
+	-@ln -s venv/bin/activate activate
+	@source activate                            ; \
+	pip install --upgrade pip setuptools wheel  ; \
 	pip install -r requirements.txt
 
 build : lint ## build the chwdata cli

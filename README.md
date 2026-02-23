@@ -66,6 +66,14 @@ targets will start and stop the `chw-mariadb` service (container).
 There is a bash script `bin/chwdb-cli.sh` which will run the mariadb cli in the running
 chw-mariadb service container.
 
+To use this repository on Ubuntu with podman and python 3.14:
+
+1. Add an apt source file for the deadsnakes repo that will supply python3.14
+2. sudo apt update
+3. sudo apt install python3.14 python3.14-venv python3.14-dev gcc libmariadb-dev podman podman-compose
+4. make install VER=3.14 in the root of this repository
+5. podman pull docker.io/library/mariadb:latest
+
 ## Resources
 
 - Database naming conventions article from [SQLShack][SQLShack conventions] proposes singular
