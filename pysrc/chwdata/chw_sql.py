@@ -99,7 +99,7 @@ Vintage5=if(@Vintage5 REGEXP '^[0-9]{{4}}$', @Vintage5, NULL)
     # Select statement to retrieve unique email customer fullnames from
     unique_fullname_sql = """
 SELECT FullName, COUNT( FullName ) NumOrders
-  FROM chw.LegacyEmailOrders_1106
+  FROM chw.LegacyEmailOrders_0219
  WHERE FullName != ''
  GROUP BY FullName
  ORDER BY FullName ASC
@@ -125,7 +125,7 @@ SELECT FullName, COUNT( FullName ) NumOrders
                                     'CC_ID'
                                    )
     legacy_customer_info_sql = ('SELECT ' + ', '.join(legacy_customer_info_columns) +
-                                ' FROM chw.LegacyEmailOrders_1106'
+                                ' FROM chw.LegacyEmailOrders_0219'
                                 ' WHERE FullName = ?'
                                 ' ORDER BY FirstDate ASC'
                                )
@@ -186,7 +186,7 @@ INSERT INTO chw.EmailCustomers_LegacyEmailOrders
 FROM chw.EmailCustomers EC
 JOIN chw.EmailCustomers_LegacyEmailOrders EC_LEO
   ON EC.EmailCustomerId = EC_LEO.EmailCustomerId
-JOIN chw.LegacyEmailOrders_1106 LEO
+JOIN chw.LegacyEmailOrders_0219 LEO
   ON LEO.EmailOrderId = EC_LEO.EmailOrderId
 WHERE EC.EmailCustomerId IN
 (10946, 10500, 10770, 11155, 9313, 13635, 10858, 12396, 13028, 11719, 11050, 13786, 11383, 11979,
@@ -228,31 +228,31 @@ SELECT EC.EmailCustomerId
      , U.Vintage
      , U.Quantity
  FROM ((SELECT EmailOrderId, DelItems AS Item, Vintage, Quantity
-        FROM LegacyEmailOrders_1106
+        FROM LegacyEmailOrders_0219
         WHERE DelItems != ''
        )
        UNION ALL
        (SELECT EmailOrderId, DelItem2, Vintage2, Quant2
-        FROM LegacyEmailOrders_1106
+        FROM LegacyEmailOrders_0219
         WHERE DelItem2 != ''
        )
        UNION ALL
        (SELECT EmailOrderId, DelItem3, Vintage3, Quant3
-        FROM LegacyEmailOrders_1106
+        FROM LegacyEmailOrders_0219
         WHERE DelItem3 != ''
        )
        UNION ALL
        (SELECT EmailOrderId, DelItem4, Vintage4, Quant4
-        FROM LegacyEmailOrders_1106
+        FROM LegacyEmailOrders_0219
         WHERE DelItem4 != ''
        )
        UNION ALL
        (SELECT EmailOrderId, DelItem5, Vintage5, Quant5
-        FROM LegacyEmailOrders_1106
+        FROM LegacyEmailOrders_0219
         WHERE DelItem5 != ''
        )
       ) AS U
- JOIN LegacyEmailOrders_1106 AS LEO ON U.EmailOrderId = LEO.EmailOrderId
+ JOIN LegacyEmailOrders_0219 AS LEO ON U.EmailOrderId = LEO.EmailOrderId
  JOIN EmailCustomers_LegacyEmailOrders AS EC_LEO ON U.EmailOrderId = EC_LEO.EmailOrderId
  JOIN EmailCustomers AS EC ON EC_LEO.EmailCustomerId = EC.EmailCustomerId
  WHERE EC.Email IN ('""" + "', '".join(_top_customers_emails) + """')

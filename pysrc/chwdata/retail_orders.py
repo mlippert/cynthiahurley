@@ -63,18 +63,18 @@ class RetailOrders(CHW_DB):
 
     def load_legacy_table_from_csv(self):
         """
-        Load the LegacyEmailOrders_1106 table from the
-        EmailWineOrders_11-06-xform.csv csv file mapped into
+        Load the LegacyEmailOrders_0219 table from the
+        EmailWineOrders_02-19-xform.csv csv file mapped into
         the mariadb container's /tmp/data/infiles/ directory
 
-        The mariadb cli give the following status after running this LOAD DATA
-        statement:
+        The mariadb cli gave the following status after running this LOAD DATA
+        statement (for the _11-06-xform.csv):
         Query OK, 26538 rows affected, 83 warnings (0.296 sec)
         Records: 26538  Deleted: 0  Skipped: 0  Warnings: 83
         """
         DB_CNTR_DATADIR = '/tmp/data/infiles/'
-        CSV_FILENAME = 'EmailWineOrders_11-06-xform.csv'
-        LEGACY_TABLE_SUFFIX = '_1106'
+        CSV_FILENAME = 'EmailWineOrders_02-19-xform.csv'
+        LEGACY_TABLE_SUFFIX = '_0219'
         sql = CHW_SQL.get_legacy_email_orders_load_data({'suffix':  LEGACY_TABLE_SUFFIX,
                                                          'csvfile': CSV_FILENAME,
                                                          'datadir': DB_CNTR_DATADIR})

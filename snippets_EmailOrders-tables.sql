@@ -68,7 +68,7 @@ where the new Subtotal and AdditionalCharges columns are used. TotalRetailCharge
 seen and left at whatever value it had in the copied order that was modified to be the
 new order.
 */
-UPDATE LegacyEmailOrders_1106 SET TotalRetailCharge = NULL WHERE Subtotal IS NOT NULL;
+UPDATE LegacyEmailOrders_0219 SET TotalRetailCharge = NULL WHERE Subtotal IS NOT NULL;
 
 /*
 Notes about LegacyEmailOrders_1002

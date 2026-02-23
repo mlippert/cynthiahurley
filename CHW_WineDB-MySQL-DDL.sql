@@ -158,7 +158,7 @@ CREATE TABLE Retailers (
 ALTER TABLE Retailers COMMENT 'Retailers fullfil the email customers orders';
 
 
-CREATE TABLE LegacyEmailOrders_1106 (
+CREATE TABLE LegacyEmailOrders_0219 (
                 EmailOrderId INT NOT NULL,
                 OrderNumber VARCHAR(10),
                 FirstDate DATE,
@@ -191,27 +191,27 @@ CREATE TABLE LegacyEmailOrders_1106 (
                 DelItem2 VARCHAR(106),
                 Vintage2 SMALLINT,
                 Quant3 VARCHAR(34),
-                DelItem3 VARCHAR(71),
+                DelItem3 VARCHAR(74),
                 Vintage3 SMALLINT,
                 Quant4 VARCHAR(36),
                 DelItem4 VARCHAR(73),
                 Vintage4 SMALLINT,
                 Quant5 VARCHAR(22),
-                DelItem5 VARCHAR(70),
+                DelItem5 VARCHAR(88),
                 Vintage5 SMALLINT,
-                CustDetails TEXT(1153),
+                CustDetails TEXT(1214),
                 PRIMARY KEY (EmailOrderId)
 );
 
-ALTER TABLE LegacyEmailOrders_1106 MODIFY COLUMN OrderNumber VARCHAR(10) COMMENT 'Accounting system''s order number that includes this order';
+ALTER TABLE LegacyEmailOrders_0219 MODIFY COLUMN OrderNumber VARCHAR(10) COMMENT 'Accounting system''s order number that includes this order';
 
-ALTER TABLE LegacyEmailOrders_1106 MODIFY COLUMN Subtotal DECIMAL(8, 2) COMMENT 'Subtotal of the wine order before S&H';
+ALTER TABLE LegacyEmailOrders_0219 MODIFY COLUMN Subtotal DECIMAL(8, 2) COMMENT 'Subtotal of the wine order before S&H';
 
-ALTER TABLE LegacyEmailOrders_1106 MODIFY COLUMN AdditionalCharges VARCHAR(120) COMMENT 'Describe charges that will be added to subtotal';
+ALTER TABLE LegacyEmailOrders_0219 MODIFY COLUMN AdditionalCharges VARCHAR(120) COMMENT 'Describe charges that will be added to subtotal';
 
 
-CREATE INDEX legacyemailorders_1106_fullname_idx
- ON LegacyEmailOrders_1106
+CREATE INDEX legacyemailorders_0219_fullname_idx
+ ON LegacyEmailOrders_0219
  ( FullName );
 
 CREATE TABLE LookupWineTypes (
@@ -614,9 +614,9 @@ REFERENCES Retailers (RetailerId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-ALTER TABLE EmailCustomers_LegacyEmailOrders ADD CONSTRAINT legacyemailorders_1106_emailcustomer_legacyemailorders_fk
+ALTER TABLE EmailCustomers_LegacyEmailOrders ADD CONSTRAINT legacyemailorders_0219_emailcustomer_legacyemailorders_fk
 FOREIGN KEY (EmailOrderId)
-REFERENCES LegacyEmailOrders_1106 (EmailOrderId)
+REFERENCES LegacyEmailOrders_0219 (EmailOrderId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
