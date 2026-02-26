@@ -48,6 +48,7 @@ WHITE=`tput -Txterm setaf 7`
 GLOB='*'
 declare -a RECIPIENTS=(
         mlippert255@gmail.com\
+        gillian@cynthiahurley.com\
     )
 
 
