@@ -63,7 +63,7 @@
     <column id="COL16" populated="true" UUID="4d9ec62b-475e-4197-bf2b-b03962f8cdad" autoIncrement="true" autoIncrementSequenceName="Orders_OrderId_seq" defaultValue="" name="OrderId" nullable="0" physicalName="OrderId" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
      <remarks></remarks>
     </column>
-    <column id="COL17" populated="true" UUID="5aa584dd-fbfb-42c3-9df0-922e6fc0e05d" autoIncrement="false" autoIncrementSequenceName="Orders_CampaignId_seq" defaultValue="" name="CampaignId" nullable="0" physicalName="CampaignId" precision="8" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="1" userDefinedTypeUUID="67ddc63f-5541-4dd1-9236-632d9d155e80" >
+    <column id="COL17" populated="true" UUID="5aa584dd-fbfb-42c3-9df0-922e6fc0e05d" autoIncrement="false" autoIncrementSequenceName="Orders_CampaignId_seq" defaultValue="" name="CampaignId" nullable="0" physicalName="CampaignId" precision="8" referenceCount="2" scale="0" sourceDataTypeName="UserDefinedSQLType" type="1" userDefinedTypeUUID="67ddc63f-5541-4dd1-9236-632d9d155e80" >
      <remarks></remarks>
     </column>
     <column id="COL18" populated="true" UUID="16bd84bb-5478-4da0-8223-9c20c40de842" autoIncrement="false" autoIncrementSequenceName="Orders_OrderDate_seq" defaultValue="" name="OrderDate" nullable="0" physicalName="OrderDate" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="91" userDefinedTypeUUID="ee349be3-6af2-46e1-b305-975f5354b009" >
@@ -375,6 +375,9 @@ e.g. WB (web form), EM (email), SP (special)</remarks>
    <relationship id="REL116" populated="true" UUID="8d3b794a-94fb-4d8e-9951-6079a3828cfe" deferrability="7" deleteRule="3" fk-table-ref="TAB99" fkCardinality="7" identifying="true" name="Campaigns_Campaign_Wine_Offerings_fk" physicalName="Campaigns_Campaign_Wine_Offerings_fk" pk-table-ref="TAB89" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP117" populated="true" UUID="3eb0c022-bf4f-4eef-aaf6-456564383d8e" fk-column-ref="COL100" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL90" />
    </relationship>
+   <relationship id="REL118" populated="true" UUID="aba8cb11-909c-4010-8923-a3d1e00a0e6e" deferrability="7" deleteRule="3" fk-table-ref="TAB15" fkCardinality="7" identifying="false" name="Campaigns_Orders_fk" physicalName="Campaigns_Orders_fk" pk-table-ref="TAB89" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP119" populated="true" UUID="612332aa-5135-4379-8645-7d1a5ac9b865" fk-column-ref="COL17" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL90" />
+   </relationship>
   </relationships>
  </target-database>
  <ddl-generator type="ca.sqlpower.architect.ddl.GenericDDLGenerator" allow-connection="true"> </ddl-generator>
@@ -395,6 +398,7 @@ e.g. WB (web form), EM (email), SP (special)</remarks>
   <table-link relationship-ref="REL112" pkConnection="0.1527777777777778" fkConnection="0.39543726235741444" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="72"/>
   <table-link relationship-ref="REL116" pkConnection="0.6666666666666666" fkConnection="0.39759036144578314" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="40"/>
   <table-link relationship-ref="REL114" pkConnection="0.8958333333333334" fkConnection="0.5542168674698795" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="20"/>
+  <table-link relationship-ref="REL118" pkConnection="0.36" fkConnection="0.7738095238095238" rLineColor="0x333333" pkLabelText="" fkLabelText="" orientation="18"/>
  </play-pen>
  <critic-manager>
   <critic-grouping platformType="Generic" enabled="true">
