@@ -69,7 +69,9 @@ NJ_CurrentPricing,
 MA_CurrentPricing,
 FrontLabelFilename,
 BackLabelFilename,
-COLA_PDF_Filename
+COLA_PDF_Filename,
+@TariffDiscount,
+WineName
 )
 SET
 Vintage=if(@Vintage = 'NV', -1, @Vintage),
@@ -87,7 +89,8 @@ NY_MultiCaseQty=if(@NY_MultiCaseQty = '', NULL, @NY_MultiCaseQty),
 NJ_Wholesale=if(@NJ_Wholesale = '', NULL, @NJ_Wholesale),
 NJ_MultiCasePrice=if(@NJ_MultiCasePrice = '', NULL, @NJ_MultiCasePrice),
 NJ_MultiCaseQty=if(@NJ_MultiCaseQty = '', NULL, @NJ_MultiCaseQty),
-AE_Record_Id=if(@AE_Record_Id = '', NULL, @AE_Record_Id);
+AE_Record_Id=if(@AE_Record_Id = '', NULL, @AE_Record_Id),
+TariffDiscount=if(@TariffDiscount = '', NULL, @TariffDiscount);
 
 
 /* We may need to create Producer records with python so that we can track differences */
