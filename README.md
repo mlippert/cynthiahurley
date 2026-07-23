@@ -74,6 +74,21 @@ To use this repository on Ubuntu with podman and python 3.14:
 4. make install VER=3.14 in the root of this repository
 5. podman pull docker.io/library/mariadb:latest
 
+### Using LibreOffice Base with the MariaDB CHW database
+
+There is an *.odb LibreOffice Base file checked in which is configured to use the JDBC MariaDB
+driver to connect to the MariaDB running in the container started by make.
+
+To install the MariaDB driver on linux:
+1. Download the latest driver from
+   [here on mariadb.com](https://mariadb.com/docs/connectors/mariadb-connector-j/about-mariadb-connector-j)
+2. Copy it to `/usr/share/java`, it should be named w/ the version number i.e. `mariadb-java-client-3.5.9.jar`
+3. Create a base named symbolic link in `/usr/share/java` to that latest version
+   `sudo ln -s mariadb-java-client-3.5.9.jar mariadb-java-client.jar`
+
+I believe if you want to use LibreOffice Base in Windows to do this, you will need to use the ODBC driver
+and configure that in the *.odb file.
+
 ## Resources
 
 - Database naming conventions article from [SQLShack][SQLShack conventions] proposes singular
