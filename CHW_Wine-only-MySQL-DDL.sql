@@ -36,7 +36,7 @@ CREATE UNIQUE INDEX lookupwinecountries_countryname_idx
  ON LookupWineCountries
  ( CountryName );
 
-CREATE TABLE LegacyWineMaster_1218 (
+CREATE TABLE LegacyWineMaster_0729 (
                 WineId INT NOT NULL,
                 AccountingItemNo VARCHAR(11),
                 NYPPItemNo VARCHAR(17),
@@ -44,7 +44,11 @@ CREATE TABLE LegacyWineMaster_1218 (
                 COLA_TTB_ID VARCHAR(15),
                 UPC VARCHAR(13),
                 FullName VARCHAR(114),
+                WineCode CHAR(5),
+                WineName VARCHAR(86),
+                EndOfWine BOOLEAN NOT NULL,
                 Vintage SMALLINT,
+                EndOfVintage BOOLEAN NOT NULL,
                 Color VARCHAR(5),
                 StillSparklingFortified VARCHAR(9),
                 CertifiedOrganic VARCHAR(19),
@@ -63,32 +67,72 @@ CREATE TABLE LegacyWineMaster_1218 (
                 Vinification TEXT(1146),
                 TerroirVineyardPractices TEXT(1359),
                 PressParagraph TEXT(4660),
+                ProducerCode CHAR(3),
                 ProducerName VARCHAR(58),
                 ProducerDescription TEXT(1269),
-                ProducerCode CHAR(3),
                 YearEstablished VARCHAR(27),
                 Exporter VARCHAR(30),
+                LOA_Date DATE,
+                LOA_Comment VARCHAR(125),
+                Multiple_LOAs BOOLEAN NOT NULL,
+                StatesAuthorized VARCHAR(150),
+                StatesAuthConfirmationDate DATE,
                 NJ_AssignedUPC VARCHAR(13),
                 NJ_BrandRegNo VARCHAR(6),
-                LastPurchasePrice DECIMAL(8,2),
-                LastPurchaseDate DATE,
+                CT_BrandRegNo VARCHAR(12),
+                CT_BrandRegExpDate DATE,
+                BrandRegNotes VARCHAR(250),
+                Elysia_InternalId VARCHAR(7),
+                Elysia_WineName VARCHAR(120),
+                Elysia_UnitPack VARCHAR(50),
+                Elysia_AlcoholClass VARCHAR(13),
+                Elysia_AlcoholType VARCHAR(24),
+                Elysia_NY_Direct VARCHAR(36) NOT NULL,
+                LastPurchasePrice_PO DECIMAL(8,2),
+                LastPurchaseDate_PO DATE,
+                LastPurchasePrice_AE DECIMAL(8,2) NOT NULL,
+                LastPurchase_AE_ImportDate DATE,
+                PurchaseType VARCHAR(8),
+                LPP_Change BOOLEAN NOT NULL,
+                TariffDiscount TINYINT,
+                EstArrival DATE,
                 DateCreated DATE,
                 LastUpdated DATETIME,
-                Excluded VARCHAR(24),
-                SoldOut CHAR(1),
+                Active BOOLEAN NOT NULL,
+                Available BOOLEAN NOT NULL,
+                Excluded BOOLEAN NOT NULL,
+                SoldOut BOOLEAN NOT NULL,
+                OnOrder BOOLEAN NOT NULL,
+                ComingSoon BOOLEAN NOT NULL,
+                Closeout BOOLEAN NOT NULL,
                 PriceListSection VARCHAR(39),
                 PriceListNotes VARCHAR(144),
                 FOBPrice DECIMAL(8,2),
+                FOB_Change BOOLEAN NOT NULL,
                 FOB_MA DECIMAL(8,2),
                 FOB_ARB DECIMAL(8,2),
                 ARB_Comment VARCHAR(250),
                 NY_Wholesale DECIMAL(8,2),
-                NY_MultiCasePrice DECIMAL(8,2),
-                NY_MultiCaseQty TINYINT,
+                NY_MultiCasePrice1 DECIMAL(8,2),
+                NY_MultiCaseQty1 TINYINT,
+                NY_MultiCasePrice2 DECIMAL(8,2),
+                NY_MultiCaseQty2 TINYINT,
+                NY_MultiCasePrice3 DECIMAL(8,2),
+                NY_MultiCaseQty3 TINYINT,
                 NJ_Wholesale DECIMAL(8,2),
-                NJ_MultiCasePrice DECIMAL(8,2),
-                NJ_MultiCaseQty TINYINT,
-                PriceNotes VARCHAR(250),
+                NJ_MultiCasePrice1 DECIMAL(8,2),
+                NJ_MultiCaseQty1 TINYINT,
+                NJ_MultiCasePrice2 DECIMAL(8,2),
+                NJ_MultiCaseQty2 TINYINT,
+                NJ_MultiCasePrice3 DECIMAL(8,2),
+                NJ_MultiCaseQty3 TINYINT,
+                Exclude_NY BOOLEAN NOT NULL,
+                Exclude_NJ BOOLEAN NOT NULL,
+                PriceNotes TEXT(2000),
+                BoillotRetailDTC DECIMAL(8,2),
+                PricingSpecials VARCHAR(250),
+                PricingNeedsReview BOOLEAN NOT NULL,
+                PricingChangeAnnounce BOOLEAN NOT NULL,
                 AE_Record_Id INT,
                 NY_CurrentPricing VARCHAR(42),
                 NJ_CurrentPricing VARCHAR(30),
@@ -96,36 +140,59 @@ CREATE TABLE LegacyWineMaster_1218 (
                 FrontLabelFilename VARCHAR(86),
                 BackLabelFilename VARCHAR(69),
                 COLA_PDF_Filename VARCHAR(70),
-                TariffDiscount TINYINT,
-                WineName VARCHAR(86),
+                LOA_PDF_Filename VARCHAR(85),
                 PRIMARY KEY (WineId)
 );
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN Vintage SMALLINT COMMENT '4 digit year';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN WineCode CHAR(5) COMMENT 'Code that identifies the Wine this is an instance of. 3 char producer code + 2 chars for specific wine';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN EndOfWine BOOLEAN COMMENT 'Additional Wine can no longer be purchased';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volume';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN Vintage SMALLINT COMMENT '4 digit year';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN CaseUnitType VARCHAR(7) COMMENT 'Bottle, Can, BiB';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN EndOfVintage BOOLEAN COMMENT 'Additional Wine of this vintage can no longer be purchased';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN LastPurchasePrice DECIMAL(8, 2) COMMENT 'Price/case paid to producer in Euros';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN SoldOut CHAR(1) COMMENT 'True(1)-sold out, False(0)-in stock';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volume';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'Free on board (FOB) is the wine price for a case that includes all costs up to being lifted onto a ship.';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN CaseUnitType VARCHAR(7) COMMENT 'Bottle, Can, BiB';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN FOB_MA DECIMAL(8, 2) COMMENT 'FOB in MA which the Arborway price is discounted from';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN StatesAuthorized VARCHAR(150) COMMENT '2 char state abbrevs separated by newlines';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN FOB_ARB DECIMAL(8, 2) COMMENT 'discounted FOB price negotiated w/ Arborway';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN Elysia_InternalId VARCHAR(7) COMMENT 'Assigned by Elysia after adding item, unique to wine+vintage';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN ARB_Comment VARCHAR(250) COMMENT 'Explanation for Arborway price when overridden from std discount';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN Elysia_WineName VARCHAR(120) COMMENT 'wine name + vintage';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN NY_Wholesale DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NY';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN Elysia_NY_Direct VARCHAR(36) COMMENT 'FOB & cs brk prices in 1 field separated by commas';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN NJ_Wholesale DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NJ';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN LastPurchasePrice_PO DECIMAL(8, 2) COMMENT 'Price/case paid to producer in Euros';
 
-ALTER TABLE LegacyWineMaster_1218 MODIFY COLUMN AE_Record_Id INTEGER COMMENT 'Account Edge record Id';
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN LastPurchasePrice_AE DECIMAL(8, 2) COMMENT 'Price/case paid to producer in Euros converted to $ when paid in by Accounting';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN PurchaseType VARCHAR(8) COMMENT 'New Wine, New Vtg, Restock';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN LPP_Change BOOLEAN COMMENT 'Last purchase PO price changed from the one before';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN SoldOut BOOLEAN COMMENT 'True(1)-sold out, False(0)-in stock';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'Free on board (FOB) is the wine price for a case that includes all costs up to being lifted onto a ship.';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN FOB_MA DECIMAL(8, 2) COMMENT 'FOB in MA which the Arborway price is discounted from';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN FOB_ARB DECIMAL(8, 2) COMMENT 'discounted FOB price negotiated w/ Arborway';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN ARB_Comment VARCHAR(250) COMMENT 'Explanation for Arborway price when overridden from std discount';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN NY_Wholesale DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NY';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN NJ_Wholesale DECIMAL(8, 2) COMMENT '"wholesale" price that is price posted in NJ';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN Exclude_NY BOOLEAN COMMENT 'Wine may not be sold in NY';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN Exclude_NJ BOOLEAN COMMENT 'Wine may not be sold in NJ';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN AE_Record_Id INTEGER COMMENT 'Account Edge record Id';
 
 
 CREATE TABLE LookupWineSubregions (
@@ -209,7 +276,8 @@ CREATE TABLE Wines (
                 WineId INT AUTO_INCREMENT NOT NULL,
                 COLA_TTB_ID VARCHAR(15) DEFAULT 'Pending' NOT NULL,
                 UPC VARCHAR(13),
-                WineName VARCHAR(150),
+                WineCode CHAR(5) NOT NULL,
+                WineName VARCHAR(150) NOT NULL,
                 WineColorId TINYINT NOT NULL,
                 WineTypeId TINYINT NOT NULL,
                 CertifiedOrganic BOOLEAN DEFAULT 0 NOT NULL,
@@ -236,6 +304,8 @@ CREATE TABLE Wines (
 
 ALTER TABLE Wines MODIFY COLUMN COLA_TTB_ID VARCHAR(15) COMMENT 'Either the TTB ID or ''Pending''';
 
+ALTER TABLE Wines MODIFY COLUMN WineCode CHAR(5) COMMENT 'Unique alternate key, 3 char producer code + 2 char to specify wine';
+
 ALTER TABLE Wines MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
 
 ALTER TABLE Wines MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volume';
@@ -244,6 +314,10 @@ ALTER TABLE Wines MODIFY COLUMN CreatedBy VARCHAR(32) COMMENT 'User who created 
 
 ALTER TABLE Wines MODIFY COLUMN LastModifiedBy VARCHAR(32) COMMENT 'User who last modified this record';
 
+
+CREATE UNIQUE INDEX akwinecode
+ ON Wines
+ ( WineCode );
 
 CREATE TABLE WineItems (
                 WineItemId INT AUTO_INCREMENT NOT NULL,
@@ -364,7 +438,7 @@ ON UPDATE NO ACTION;
 
 ALTER TABLE Producers_LegacyWineMaster ADD CONSTRAINT legacywinemaster_1106_producers_legacywinemaster_fk
 FOREIGN KEY (WineId)
-REFERENCES LegacyWineMaster_1218 (WineId)
+REFERENCES LegacyWineMaster_0729 (WineId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
