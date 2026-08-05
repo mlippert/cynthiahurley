@@ -98,8 +98,8 @@ INSERT INTO Producers ()
 
 /* Add a constraint on some Wines columns limiting them to specific values */
 ALTER TABLE Wines ADD CONSTRAINT Wines_ABV_chk CHECK (ABV IN (-1, 11.5, 12, 12.25, 12.5, 12.75, 13, 13.25, 13.5, 13.75, 13.88, 14, 14.1, 14.2, 14.25, 14.5, 14.75, 15, 15.2, 15.25, 15.5, 16));
-ALTER TABLE Wines ADD CONSTRAINT Wines_UnitsPerCase_chk CHECK (UnitsPerCase IN (1, 3, 6, 12, 24, 48));
 ALTER TABLE Wines ADD CONSTRAINT Wines_BottleColor_chk CHECK (BottleColor IN ('Brown', 'Green', 'Clear', 'CAN')); /* NULL allowed */
+ALTER TABLE WineItems ADD CONSTRAINT WineItems_UnitsPerCase_chk CHECK (UnitsPerCase IN (1, 3, 6, 12, 24, 48));
 
 /* TODO
 python code to set CaseUnitId?
