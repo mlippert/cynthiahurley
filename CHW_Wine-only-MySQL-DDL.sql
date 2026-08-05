@@ -1,4 +1,14 @@
 
+CREATE TABLE LookupUSStates (
+                StatePostalAbbrev CHAR(2) NOT NULL,
+                StateFullName VARCHAR(30) NOT NULL,
+                StateStdAbbrev VARCHAR(15) NOT NULL,
+                PRIMARY KEY (StatePostalAbbrev)
+);
+
+ALTER TABLE LookupUSStates MODIFY COLUMN StatePostalAbbrev CHAR(2) COMMENT '2 character US State abbreviation';
+
+
 CREATE TABLE LookupCaseUnits (
                 CaseUnitId TINYINT AUTO_INCREMENT NOT NULL,
                 Name VARCHAR(30) NOT NULL,
@@ -96,8 +106,6 @@ CREATE TABLE LegacyWineMaster_0729 (
                 LPP_Change BOOLEAN NOT NULL,
                 TariffDiscount TINYINT,
                 EstArrival DATE,
-                DateCreated DATE,
-                LastUpdated DATETIME,
                 Active BOOLEAN NOT NULL,
                 Available BOOLEAN NOT NULL,
                 Excluded BOOLEAN NOT NULL,
@@ -105,6 +113,10 @@ CREATE TABLE LegacyWineMaster_0729 (
                 OnOrder BOOLEAN NOT NULL,
                 ComingSoon BOOLEAN NOT NULL,
                 Closeout BOOLEAN NOT NULL,
+                WesternInventory_Cases SMALLINT,
+                WesternInventory_Bottles TINYINT,
+                WesternInventory_SyncTimestamp DATETIME,
+                WesternInventory_ChangedTimestamp DATETIME,
                 PriceListSection VARCHAR(39),
                 PriceListNotes VARCHAR(144),
                 FOBPrice DECIMAL(8,2),
@@ -141,6 +153,8 @@ CREATE TABLE LegacyWineMaster_0729 (
                 BackLabelFilename VARCHAR(69),
                 COLA_PDF_Filename VARCHAR(70),
                 LOA_PDF_Filename VARCHAR(85),
+                DateCreated DATE,
+                LastUpdated DATETIME,
                 PRIMARY KEY (WineId)
 );
 
@@ -175,6 +189,10 @@ ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN PurchaseType VARCHAR(8) COMMENT 
 ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN LPP_Change BOOLEAN COMMENT 'Last purchase PO price changed from the one before';
 
 ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN SoldOut BOOLEAN COMMENT 'True(1)-sold out, False(0)-in stock';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN WesternInventory_SyncTimestamp TIMESTAMP COMMENT 'TS when the western cases/bottles was last synced with Western API';
+
+ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN WesternInventory_ChangedTimestamp TIMESTAMP COMMENT 'TS when the sync w/ Western changed the # of bottles/cases';
 
 ALTER TABLE LegacyWineMaster_0729 MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'Free on board (FOB) is the wine price for a case that includes all costs up to being lifted onto a ship.';
 
