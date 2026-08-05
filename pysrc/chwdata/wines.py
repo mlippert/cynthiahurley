@@ -203,6 +203,7 @@ class Wines(CHW_DB):
         - LookupWineRegions
         - LookupWineSubregions
         - LookupWineAppellations
+        - LookupUSStates
         """
         # TODO: set this flag from a parameter
         show_warnings = False
@@ -213,6 +214,7 @@ class Wines(CHW_DB):
                                    ('LookupWineRegions', CHW_SQL.insert_lookup_wine_regions_sql),
                                    ('LookupWineSubregions', CHW_SQL.insert_lookup_wine_subregions_sql),
                                    ('LookupWineAppellations', CHW_SQL.insert_lookup_wine_appellations_sql),
+                                   ('LookupUSStates', CHW_SQL.insert_lookup_us_states_sql),
                                   )
 
         with (self._connection.cursor() as init_lookup_table_cursor):
