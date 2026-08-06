@@ -54,3 +54,46 @@ exported. Although if there are no new fields, that is unnecessary.
 
 In addition the SQL statement in the variable `_legacy_wine_master_load_data_sql_fmt`
 for importing the CSV file in the python file chwdata/chw_sql.py will need to be updated.
+
+### Format the Date & Timestamp columns
+
+In order to correctly interpret the dates and timestamps they should be changed to a
+recognizable format, and I've found that for Dates YYYY-MM-DD (which is ISO 8601) and
+for Timestamps YYYY-MM-DD"T"HH:MM:SS (which is ISO 8601)
+
+Format these Date columns:
+
+- DateCreated
+- LastPurchaseDate_PO
+- EstArrival
+- CT_BrandRegExpDate
+- LastPurchase_AE_ImportDate
+- LOA_Date
+- StatesAuthConfirmationDate
+
+Format these Timestamp columns:
+
+- LastUpdated
+
+### Export to csv
+
+In LibreOffice Calc
+
+- Select  File Save As...
+- Change the Filter field to: `Text CSV (.csv)`
+- Check `Edit filter settings` in order to get then next dialog after clicking Save to set Field Options
+    - Character set: UTF-8
+    - Field delimiter: |
+    - String delimiter: "
+    - Check Save cell content as shown
+
+### Edit and Transform the saved csv to prepare for Loading into the table
+
+Delete all the lines above the target column names line
+Delete the last 5 lines of the file: 2 empty rows, 1 description row, then 2 rows w/ the max char calculations
+
+#### Run the transform-for-infile.awk script
+
+It does the following:
+
+- Convert newlines within a column to \n so every record is on a single line
