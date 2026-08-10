@@ -60,8 +60,8 @@ class Wines(CHW_DB):
 
     # Constants used to configure the Wine SQL statements
     DB_CNTR_DATADIR = '/tmp/data/infiles/'
-    LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_12-18-xform.csv'
-    LEGACY_WINE_TABLE_SUFFIX = '_1218'
+    LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_08-06-xform.csv'
+    LEGACY_WINE_TABLE_SUFFIX = '_0806'
 
     def __init__(self, **kwargs):
         """
