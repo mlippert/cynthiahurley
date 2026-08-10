@@ -63,23 +63,26 @@ for Timestamps YYYY-MM-DD"T"HH:MM:SS (which is ISO 8601)
 
 Format these Date columns:
 
-- DateCreated
-- LastPurchaseDate_PO
-- EstArrival
-- CT_BrandRegExpDate
-- LastPurchase_AE_ImportDate
 - LOA_Date
 - StatesAuthConfirmationDate
+- CT_BrandRegExpDate
+- LastPurchaseDate_PO
+- LastPurchase_AE_ImportDate
+- EstArrival
+    - fix wineId 3010 which is a string
+- DateCreated
 
 Format these Timestamp columns:
 
+- WesternInventory_SyncTimestamp
+- WesternInventory_UpdatedTimestamp
 - LastUpdated
 
 ### Export to csv
 
 In LibreOffice Calc
 
-- Select  File Save As...
+- Select Save a Copy...
 - Change the Filter field to: `Text CSV (.csv)`
 - Check `Edit filter settings` in order to get then next dialog after clicking Save to set Field Options
     - Character set: UTF-8
@@ -97,3 +100,28 @@ Delete the last 5 lines of the file: 2 empty rows, 1 description row, then 2 row
 It does the following:
 
 - Convert newlines within a column to \n so every record is on a single line
+
+Example command:
+
+```sh
+gawk -f ../bin/transform-for-infile.awk WineMasterTable_08-06.csv > WineMasterTable_08-06-xform.csv
+```
+
+## Create a MariaDB database for importing the legacy table and normalizing it
+
+**These instructions are still a WIP**
+
+The Makefile has targets for bringing up a Mariadb container (by default using podman).
+The docker-compose.yml file specifies binding to directories in `data/mariadb` and `data/infiles`.
+The Makefile has a target `setup-use-data-infiles` that will configure the chwuser to be allowed
+to read and write from the `data/infiles` directory.
+
+The python code in pysrc provides a CLI that had commands to work on the mariadb database. You run
+commands using .`/chw-action`, you can see help using `./chw-action --help`
+
+There is also a script that makes it easy to start the mariadb cli inside the running container
+`bin/chwdb-cli.sh`. Currently you need to run this and then execute SQL commands found in
+`CHW_Wine-only-MySQL-DDL.sql` to create the tables defined in the schema.
+
+Once those tables are created, you can exit the mariadb cli and use `./chw-action` to load the
+csv file from `data/infiles` and also to populate the Lookup tables.
