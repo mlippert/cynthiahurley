@@ -278,14 +278,18 @@ CREATE UNIQUE INDEX lookupwineappellations_appellationname_idx
 
 CREATE TABLE Producers (
                 ProducerId INT AUTO_INCREMENT NOT NULL,
-                Name VARCHAR(100) NOT NULL,
-                Description TEXT(2000),
                 ProducerCode CHAR(3),
+                Name VARCHAR(100) NOT NULL,
+                ShortName VARCHAR(100) NOT NULL,
+                Description TEXT(2000),
                 YearEstablished SMALLINT,
+                Exporter VARCHAR(50),
                 PRIMARY KEY (ProducerId)
 );
 
 ALTER TABLE Producers COMMENT 'A wine producer';
+
+ALTER TABLE Producers MODIFY COLUMN ShortName VARCHAR(100) COMMENT 'Producer Name included in full wine name';
 
 
 CREATE UNIQUE INDEX producers_name_idx
@@ -302,19 +306,16 @@ CREATE TABLE Wines (
                 WineTypeId TINYINT NOT NULL,
                 CertifiedOrganic BOOLEAN DEFAULT 0 NOT NULL,
                 Varietals VARCHAR(100),
-                ABV DECIMAL(5,2) NOT NULL,
                 WineCountryId TINYINT NOT NULL,
                 WineRegionId TINYINT,
                 WineSubregionId TINYINT,
                 WineAppellationId SMALLINT,
                 ProducerId INT NOT NULL,
-                BottleColor VARCHAR(15),
                 ShelfTalkerText TEXT(2000),
                 TastingNotes TEXT(2000),
                 Vinification TEXT(2000),
                 TerroirVineyardPractices TEXT(2000),
                 PressParagraph TEXT(6000),
-                Exporter VARCHAR(50),
                 Created DATETIME NOT NULL,
                 CreatedBy VARCHAR(32) NOT NULL,
                 LastModified DATETIME NOT NULL,
@@ -327,8 +328,6 @@ ALTER TABLE Wines MODIFY COLUMN COLA_TTB_ID VARCHAR(15) COMMENT 'Either the TTB 
 ALTER TABLE Wines MODIFY COLUMN WineCode CHAR(5) COMMENT 'Unique alternate key, 3 char producer code + 2 char to specify wine';
 
 ALTER TABLE Wines MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
-
-ALTER TABLE Wines MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volume';
 
 ALTER TABLE Wines MODIFY COLUMN CreatedBy VARCHAR(32) COMMENT 'User who created this record';
 
@@ -345,8 +344,10 @@ CREATE TABLE WineItems (
                 FullName VARCHAR(150) NOT NULL,
                 WineId INT NOT NULL,
                 Vintage SMALLINT NOT NULL,
+                ABV DECIMAL(5,2) NOT NULL,
                 UnitsPerCase SMALLINT NOT NULL,
                 CaseUnitId TINYINT NOT NULL,
+                BottleColor VARCHAR(15),
                 PRIMARY KEY (WineItemId)
 );
 
@@ -355,6 +356,8 @@ ALTER TABLE WineItems COMMENT 'A given wine may have multiple variations, differ
 ALTER TABLE WineItems MODIFY COLUMN AccountingItemNo VARCHAR(15) COMMENT 'AccountEdge ID';
 
 ALTER TABLE WineItems MODIFY COLUMN Vintage SMALLINT COMMENT '4 digit year, -1 for NV (no vintage)';
+
+ALTER TABLE WineItems MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volume';
 
 ALTER TABLE WineItems MODIFY COLUMN UnitsPerCase SMALLINT COMMENT 'Units of wine include various size bottles, boxes and cans
 Retail sales are sometimes by case and sometimes by unit';
@@ -431,15 +434,18 @@ ALTER TABLE Producers_LegacyWineMaster MODIFY COLUMN ConversionNotes VARCHAR(250
 
 CREATE TABLE WinePurchases (
                 WineItemId INT NOT NULL,
-                PurchaseDate DATE NOT NULL,
-                PurchasePrice DECIMAL(8,2) NOT NULL,
+                PurchaseDate_PO DATE NOT NULL,
+                PurchasePrice_PO DECIMAL(8,2) NOT NULL,
+                PurchasePrice_AE DECIMAL(8,2),
                 TariffDiscount DECIMAL(3,2),
-                PRIMARY KEY (WineItemId, PurchaseDate)
+                PRIMARY KEY (WineItemId, PurchaseDate_PO)
 );
 
 ALTER TABLE WinePurchases COMMENT 'Track costs for purchases of a wine';
 
-ALTER TABLE WinePurchases MODIFY COLUMN PurchasePrice DECIMAL(8, 2) COMMENT 'Exporter/Producer''s price, for a case of the wine in Euros, for the purchase on this date';
+ALTER TABLE WinePurchases MODIFY COLUMN PurchasePrice_PO DECIMAL(8, 2) COMMENT 'Exporter/Producer''s price, for a case of the wine in Euros, for the purchase on this date';
+
+ALTER TABLE WinePurchases MODIFY COLUMN PurchasePrice_AE DECIMAL(8, 2) COMMENT 'Purchase price in US dollars after conversion in the Account Edge system';
 
 ALTER TABLE WinePurchases MODIFY COLUMN TariffDiscount DECIMAL(3, 2) COMMENT 'Discount % from the Producer on this purchase  to share tariff cost. null unconfirmed, 0 confirmed no discount';
 
