@@ -316,6 +316,9 @@ CREATE TABLE Wines (
                 Vinification TEXT(2000),
                 TerroirVineyardPractices TEXT(2000),
                 PressParagraph TEXT(6000),
+                EndOfWine BOOLEAN DEFAULT FALSE NOT NULL,
+                PriceListSection VARCHAR(50),
+                PriceListNotes VARCHAR(160),
                 Created DATETIME NOT NULL,
                 CreatedBy VARCHAR(32) NOT NULL,
                 LastModified DATETIME NOT NULL,
@@ -328,6 +331,8 @@ ALTER TABLE Wines MODIFY COLUMN COLA_TTB_ID VARCHAR(15) COMMENT 'Either the TTB 
 ALTER TABLE Wines MODIFY COLUMN WineCode CHAR(5) COMMENT 'Unique alternate key, 3 char producer code + 2 char to specify wine';
 
 ALTER TABLE Wines MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
+
+ALTER TABLE Wines MODIFY COLUMN EndOfWine BOOLEAN COMMENT 'Additional Wine can no longer be purchased';
 
 ALTER TABLE Wines MODIFY COLUMN CreatedBy VARCHAR(32) COMMENT 'User who created this record';
 
@@ -348,6 +353,14 @@ CREATE TABLE WineItems (
                 UnitsPerCase SMALLINT NOT NULL,
                 CaseUnitId TINYINT NOT NULL,
                 BottleColor VARCHAR(15),
+                Active BOOLEAN NOT NULL,
+                Available BOOLEAN NOT NULL,
+                SoldOut BOOLEAN NOT NULL,
+                OnOrder BOOLEAN NOT NULL,
+                ComingSoon BOOLEAN NOT NULL,
+                Closeout BOOLEAN NOT NULL,
+                EndOfVintage BOOLEAN DEFAULT FALSE NOT NULL,
+                AE_Record_Id INT,
                 PRIMARY KEY (WineItemId)
 );
 
@@ -362,48 +375,59 @@ ALTER TABLE WineItems MODIFY COLUMN ABV DECIMAL(5, 2) COMMENT 'Alcohol % by volu
 ALTER TABLE WineItems MODIFY COLUMN UnitsPerCase SMALLINT COMMENT 'Units of wine include various size bottles, boxes and cans
 Retail sales are sometimes by case and sometimes by unit';
 
+ALTER TABLE WineItems MODIFY COLUMN Available BOOLEAN COMMENT 'If a wine is not available it should be excluded from the list of wines for sale (True(1)-available, False(0)-excluded)';
+
+ALTER TABLE WineItems MODIFY COLUMN SoldOut BOOLEAN COMMENT 'True(1)-sold out, False(0)-in stock';
+
+ALTER TABLE WineItems MODIFY COLUMN EndOfVintage BOOLEAN COMMENT 'Additional Wine of this vintage can no longer be purchased';
+
+ALTER TABLE WineItems MODIFY COLUMN AE_Record_Id INTEGER COMMENT 'AccountEdge record Id for this wine sku';
+
 
 CREATE TABLE WinePricing (
                 WineItemId INT NOT NULL,
-                Available BOOLEAN DEFAULT 0 NOT NULL,
-                SoldOut BOOLEAN DEFAULT 0 NOT NULL,
-                PriceListSection VARCHAR(50),
-                PriceListNotes VARCHAR(160),
                 FOBPrice DECIMAL(8,2),
                 FOB_MA DECIMAL(8,2),
                 FOB_ARB DECIMAL(8,2) DEFAULT FOBPrice,
                 ARB_Comment VARCHAR(250),
-                NY_Wholesale DECIMAL(8,2),
-                NY_MultiCasePrice DECIMAL(8,2),
-                NY_MultiCaseQty TINYINT,
-                NJ_Wholesale DECIMAL(8,2),
-                NJ_MultiCasePrice DECIMAL(8,2),
-                NJ_MultiCaseQty TINYINT,
+                BoillotRetailDTC DECIMAL(8,2),
                 PriceNotes VARCHAR(250),
+                Specials VARCHAR(250),
+                NeedsReview BOOLEAN NOT NULL,
+                ChangeAnnounce BOOLEAN NOT NULL,
                 PRIMARY KEY (WineItemId)
 );
 
 ALTER TABLE WinePricing COMMENT 'Interim table to gather existing wine pricing fields';
 
-ALTER TABLE WinePricing MODIFY COLUMN Available BOOLEAN COMMENT 'If a wine is not available it should be excluded from the list of wines for sale (True(1)-available, False(0)-excluded)';
-
-ALTER TABLE WinePricing MODIFY COLUMN SoldOut BOOLEAN COMMENT 'True(1)-sold out, False(0)-in stock';
-
 ALTER TABLE WinePricing MODIFY COLUMN FOBPrice DECIMAL(8, 2) COMMENT 'case price for distributors, null if not set yet for new wine';
 
 ALTER TABLE WinePricing MODIFY COLUMN FOB_ARB DECIMAL(8, 2) COMMENT 'discounted FOB price negotiated w/ Arborway';
 
-ALTER TABLE WinePricing MODIFY COLUMN NY_Wholesale DECIMAL(8, 2) COMMENT 'NY distributor price for retailers';
 
-ALTER TABLE WinePricing MODIFY COLUMN NY_MultiCasePrice DECIMAL(8, 2) COMMENT 'NY multi case break retailer price';
+CREATE TABLE WineWholesalePricing (
+                WineItemId INT NOT NULL,
+                StatePostalAbbrev CHAR(2) NOT NULL,
+                WholesalePrice DECIMAL(8,2) NOT NULL,
+                PRIMARY KEY (WineItemId, StatePostalAbbrev)
+);
 
-ALTER TABLE WinePricing MODIFY COLUMN NY_MultiCaseQty TINYINT COMMENT 'NY min # of cases to get multi case price';
+ALTER TABLE WineWholesalePricing MODIFY COLUMN StatePostalAbbrev CHAR(2) COMMENT '2 character US State abbreviation';
 
-ALTER TABLE WinePricing MODIFY COLUMN NJ_Wholesale DECIMAL(8, 2) COMMENT 'NJ distributor price for retailers';
+ALTER TABLE WineWholesalePricing MODIFY COLUMN WholesalePrice DECIMAL(8, 2) COMMENT 'State distributor price for retailers';
 
-ALTER TABLE WinePricing MODIFY COLUMN NJ_MultiCasePrice DECIMAL(8, 2) COMMENT 'NJ multi case break retailer price';
 
-ALTER TABLE WinePricing MODIFY COLUMN NJ_MultiCaseQty TINYINT COMMENT 'NJ min # of cases to get multi case price';
+CREATE TABLE WineWholesaleCaseBreaks (
+                WineItemId INT NOT NULL,
+                StatePostalAbbrev CHAR(2) NOT NULL,
+                CaseQty TINYINT NOT NULL,
+                Price DECIMAL(8,2) NOT NULL,
+                PRIMARY KEY (WineItemId, StatePostalAbbrev, CaseQty)
+);
+
+ALTER TABLE WineWholesaleCaseBreaks MODIFY COLUMN StatePostalAbbrev CHAR(2) COMMENT '2 character US State abbreviation';
+
+ALTER TABLE WineWholesaleCaseBreaks MODIFY COLUMN CaseQty TINYINT COMMENT 'Number of cases to purchase to get the case break price';
 
 
 CREATE TABLE NJ_Distribution (
@@ -437,6 +461,7 @@ CREATE TABLE WinePurchases (
                 PurchaseDate_PO DATE NOT NULL,
                 PurchasePrice_PO DECIMAL(8,2) NOT NULL,
                 PurchasePrice_AE DECIMAL(8,2),
+                PurchaseType VARCHAR(8),
                 TariffDiscount DECIMAL(3,2),
                 PRIMARY KEY (WineItemId, PurchaseDate_PO)
 );
@@ -447,8 +472,16 @@ ALTER TABLE WinePurchases MODIFY COLUMN PurchasePrice_PO DECIMAL(8, 2) COMMENT '
 
 ALTER TABLE WinePurchases MODIFY COLUMN PurchasePrice_AE DECIMAL(8, 2) COMMENT 'Purchase price in US dollars after conversion in the Account Edge system';
 
+ALTER TABLE WinePurchases MODIFY COLUMN PurchaseType VARCHAR(8) COMMENT 'New Wine, New Vtg, Restock';
+
 ALTER TABLE WinePurchases MODIFY COLUMN TariffDiscount DECIMAL(3, 2) COMMENT 'Discount % from the Producer on this purchase  to share tariff cost. null unconfirmed, 0 confirmed no discount';
 
+
+ALTER TABLE WineWholesalePricing ADD CONSTRAINT lookupusstates_winewholesalepricing_fk
+FOREIGN KEY (StatePostalAbbrev)
+REFERENCES LookupUSStates (StatePostalAbbrev)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
 
 ALTER TABLE WineItems ADD CONSTRAINT lookupcaseunits_wineitems_fk
 FOREIGN KEY (CaseUnitId)
@@ -531,5 +564,17 @@ ON UPDATE NO ACTION;
 ALTER TABLE WinePricing ADD CONSTRAINT wineitems_winepricing_fk
 FOREIGN KEY (WineItemId)
 REFERENCES WineItems (WineItemId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE WineWholesalePricing ADD CONSTRAINT winepricing_winewholesalepricing_fk
+FOREIGN KEY (WineItemId)
+REFERENCES WinePricing (WineItemId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE WineWholesaleCaseBreaks ADD CONSTRAINT winewholesalepricing_winewholesalecasebreaks_fk
+FOREIGN KEY (StatePostalAbbrev, WineItemId)
+REFERENCES WineWholesalePricing (StatePostalAbbrev, WineItemId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
