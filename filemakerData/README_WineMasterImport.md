@@ -125,3 +125,54 @@ There is also a script that makes it easy to start the mariadb cli inside the ru
 
 Once those tables are created, you can exit the mariadb cli and use `./chw-action` to load the
 csv file from `data/infiles` and also to populate the Lookup tables.
+
+#### Populate the wine lookup tables
+
+Populate the following lookup tables (should be all of them):
+
+- LookupWineColors
+- LookupWineTypes
+- LookupCaseUnits
+- LookupWineCountries
+- LookupWineRegions
+- LookupWineSubregions
+- LookupWineAppellations
+- LookupUSStates
+
+Run this command from the cynthiahurley repository root directory:
+
+```sh
+./chw-action setup-wine-lookup-tables
+```
+
+#### Create producer records from the data in the legacy wine master table
+
+Currently this is done by creating a producer by grouping the wine master records
+by `ProducerName`, in ascending order by `LastUpdated`. The other producer fields,
+`ProducerCode`, `ProducerDescription`, `YearEstablished` will be taken from the
+_last_, ie latest, wine master record for that producer name.
+
+A record associated the created producer record with each matching legacy wine record
+is created in `Producers_LegacyWineMaster`. This table also has a column for conversion
+notes. The conversion notes capture when the other column values changed from the previous
+wine master record, and also if the year established represented a decade rather than a year.
+
+Run this command from the cynthiahurley repository root directory:
+
+```sh
+./chw-action import-legacy-producers
+```
+
+#### Create wine records AND wine item records from the data in the legacy wine master table
+
+The lookup tables should be populated and producer records created before running this step.
+
+Identifying unique wines from the legacy wine master is done by...
+- A WineCode identifies a unique wine.
+- For wines without a WineCode...
+
+Run this command from the cynthiahurley repository root directory:
+
+```sh
+./chw-action create-wines-from-legacy
+```
