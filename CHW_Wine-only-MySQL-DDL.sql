@@ -296,6 +296,27 @@ CREATE UNIQUE INDEX producers_name_idx
  ON Producers
  ( Name );
 
+CREATE TABLE ProducerLOAs (
+                ProducerId INT NOT NULL,
+                LOA_Date DATE NOT NULL,
+                Comment VARCHAR(250),
+                MultipleLOAs BOOLEAN NOT NULL,
+                StatesAuthorizationConfirmationDate DATE,
+                PRIMARY KEY (ProducerId)
+);
+
+ALTER TABLE ProducerLOAs MODIFY COLUMN MultipleLOAs BOOLEAN COMMENT 'There is more than 1 LOA, look on server';
+
+
+CREATE TABLE ProducerLOAAuthorizedStates (
+                ProducerId INT NOT NULL,
+                StatePostalAbbrev CHAR(2) NOT NULL,
+                PRIMARY KEY (ProducerId, StatePostalAbbrev)
+);
+
+ALTER TABLE ProducerLOAAuthorizedStates MODIFY COLUMN StatePostalAbbrev CHAR(2) COMMENT '2 character US State abbreviation';
+
+
 CREATE TABLE Wines (
                 WineId INT AUTO_INCREMENT NOT NULL,
                 COLA_TTB_ID VARCHAR(15) DEFAULT 'Pending' NOT NULL,
@@ -315,10 +336,8 @@ CREATE TABLE Wines (
                 TastingNotes TEXT(2000),
                 Vinification TEXT(2000),
                 TerroirVineyardPractices TEXT(2000),
-                PressParagraph TEXT(6000),
                 EndOfWine BOOLEAN DEFAULT FALSE NOT NULL,
                 PriceListSection VARCHAR(50),
-                PriceListNotes VARCHAR(160),
                 Created DATETIME NOT NULL,
                 CreatedBy VARCHAR(32) NOT NULL,
                 LastModified DATETIME NOT NULL,
@@ -353,6 +372,8 @@ CREATE TABLE WineItems (
                 UnitsPerCase SMALLINT NOT NULL,
                 CaseUnitId TINYINT NOT NULL,
                 BottleColor VARCHAR(15),
+                PressParagraph TEXT(6000),
+                PriceListNotes VARCHAR(160),
                 Active BOOLEAN NOT NULL,
                 Available BOOLEAN NOT NULL,
                 SoldOut BOOLEAN NOT NULL,
@@ -390,7 +411,6 @@ CREATE TABLE WinePricing (
                 FOB_MA DECIMAL(8,2),
                 FOB_ARB DECIMAL(8,2) DEFAULT FOBPrice,
                 ARB_Comment VARCHAR(250),
-                BoillotRetailDTC DECIMAL(8,2),
                 PriceNotes VARCHAR(250),
                 Specials VARCHAR(250),
                 NeedsReview BOOLEAN NOT NULL,
@@ -430,20 +450,30 @@ ALTER TABLE WineWholesaleCaseBreaks MODIFY COLUMN StatePostalAbbrev CHAR(2) COMM
 ALTER TABLE WineWholesaleCaseBreaks MODIFY COLUMN CaseQty TINYINT COMMENT 'Number of cases to purchase to get the case break price';
 
 
-CREATE TABLE NJ_Distribution (
+CREATE TABLE WineComplianceInfo (
                 WineId INT NOT NULL,
-                NJ_BrandRegNo VARCHAR(6) NOT NULL,
+                NJ_BrandRegNo VARCHAR(6),
                 NJ_AssignedUPC VARCHAR(13),
+                CT_BrandRegNo VARCHAR(12),
+                CT_BrandRegExpDate DATE,
+                BrandRegNotes VARCHAR(250),
+                Elysia_InternalId VARCHAR(7),
+                Elysia_WineName VARCHAR(120),
+                Elysia_UnitPack VARCHAR(50),
+                Elysia_AlcoholClass VARCHAR(13),
+                Elysia_AlcoholType VARCHAR(24),
+                Elysia_NY_Direct VARCHAR(37),
                 PRIMARY KEY (WineId)
 );
 
-ALTER TABLE NJ_Distribution COMMENT 'Information for distribution in NJ
-- Compliance info
+ALTER TABLE WineComplianceInfo COMMENT 'This news to be reworked but is all the various compliance
+info stored in the legacy wine master
+- Compliance info is state specific:
   - Brand registration
   - Price posting
-- pricing in NJ';
+';
 
-ALTER TABLE NJ_Distribution MODIFY COLUMN NJ_AssignedUPC VARCHAR(13) COMMENT 'NJ assigned UPC value if wine doesn''t have one';
+ALTER TABLE WineComplianceInfo MODIFY COLUMN NJ_AssignedUPC VARCHAR(13) COMMENT 'NJ assigned UPC value if wine doesn''t have one';
 
 
 CREATE TABLE Producers_LegacyWineMaster (
@@ -478,6 +508,12 @@ ALTER TABLE WinePurchases MODIFY COLUMN TariffDiscount DECIMAL(3, 2) COMMENT 'Di
 
 
 ALTER TABLE WineWholesalePricing ADD CONSTRAINT lookupusstates_winewholesalepricing_fk
+FOREIGN KEY (StatePostalAbbrev)
+REFERENCES LookupUSStates (StatePostalAbbrev)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE ProducerLOAAuthorizedStates ADD CONSTRAINT lookupusstates_producerloaauthorizedstates_fk
 FOREIGN KEY (StatePostalAbbrev)
 REFERENCES LookupUSStates (StatePostalAbbrev)
 ON DELETE NO ACTION
@@ -543,7 +579,19 @@ REFERENCES Producers (ProducerId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-ALTER TABLE NJ_Distribution ADD CONSTRAINT wines_nj_distribution_fk
+ALTER TABLE ProducerLOAs ADD CONSTRAINT producers_producerloas_fk
+FOREIGN KEY (ProducerId)
+REFERENCES Producers (ProducerId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE ProducerLOAAuthorizedStates ADD CONSTRAINT producerloas_producerloaauthorizedstates_fk
+FOREIGN KEY (ProducerId)
+REFERENCES ProducerLOAs (ProducerId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE WineComplianceInfo ADD CONSTRAINT wines_nj_distribution_fk
 FOREIGN KEY (WineId)
 REFERENCES Wines (WineId)
 ON DELETE NO ACTION
