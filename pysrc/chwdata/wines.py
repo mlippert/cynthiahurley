@@ -60,8 +60,8 @@ class Wines(CHW_DB):
 
     # Constants used to configure the Wine SQL statements
     DB_CNTR_DATADIR = '/tmp/data/infiles/'
-    LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_08-06-xform.csv'
-    LEGACY_WINE_TABLE_SUFFIX = '_0806'
+    LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_08-24-xform.csv'
+    LEGACY_WINE_TABLE_SUFFIX = '_0824'
 
     def __init__(self, **kwargs):
         """
@@ -75,8 +75,8 @@ class Wines(CHW_DB):
 
     def load_legacy_table_from_csv(self):
         """
-        Load the LegacyWineMaster_1106 table from the
-        WineMasterTable_11-06-xform.csv csv file mapped into
+        Load the LegacyWineMaster_1124 table from the
+        WineMasterTable_11-24-xform.csv csv file mapped into
         the mariadb container's /tmp/data/infiles/ directory
         """
         sql = CHW_SQL.get_legacy_wine_master_load_data({'suffix':  Wines.LEGACY_WINE_TABLE_SUFFIX,
