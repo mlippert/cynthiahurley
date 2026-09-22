@@ -102,23 +102,29 @@ class Wines(CHW_DB):
 
     def create_producers_from_legacy(self):
         """
+        Note: As of Aug 2026 all LegacyWineMaster records have been given a producer code
+              that identifies the wine producer. The other producer fields may still differ
+              from one wine record to the next.
+
         Create producers from LegacyWineMaster
-        - Find all unique ProducerNames
-        For each ProducerName
-          - find all WineMaster records with that ProducerName sorted by LastUpdated ascending
-          - use the ProducerName, ProducerDescription, ProducerCode and YearEstablished from the last
-          - WineMaster record to create a new Producer record.
+        - Find all unique ProducerCodes
+        For each ProducerCode
+          - find all WineMaster records with that ProducerCode sorted by LastUpdated descending
+            use the ProducerName, ProducerDescription, ProducerCode, YearEstablished and Exporter
+            from the first (ie most recently updated) WineMaster record to create a new Producer record.
         - INSERT Producer record using values from the
+          from the first WineMaster record to create a new Producer record.
         - INSERT a Producers_LegacyWineMaster record for EVERY LegacyWineMaster record which
-          has that unique ProducerName. Add a conversion note if the description, code or
+          has that unique ProducerCode. Add a conversion note if the name, description, or
           year established changed from the previous record.
         """
         # Column indices
         WineId              = 0
-        ProducerName        = 1
-        ProducerDescription = 2
-        ProducerCode        = 3
+        ProducerCode        = 1
+        ProducerName        = 2
+        ProducerDescription = 3
         YearEstablished     = 4
+        Exporter            = 5
 
         re_year = re.compile(r'\d{4}$')
         re_decade = re.compile(r'\d{4}s$')
@@ -133,21 +139,23 @@ class Wines(CHW_DB):
             producers_added = 0
             producer_note_cnt = 0
             legacy_wines_by_producer_cursor.execute(legacy_wines_by_producer_sql)
-            last_producer_name = ''
+            last_producer_code = ''
             last_producer_id = -1
+            prev_producer_name = ''
             prev_producer_description = ''
 
             for producer_wine_row in legacy_wines_by_producer_cursor:
                 # When the producer changes, process the new producer
-                producer_name = producer_wine_row[ProducerName]
+                producer_code = producer_wine_row[ProducerCode]
                 wine_id = producer_wine_row[WineId]
+                producer_name = producer_wine_row[ProducerName]
                 producer_description = producer_wine_row[ProducerDescription]
-                conversion_notes = None
+                conversion_notes = []
 
-                if producer_name != last_producer_name:
+                if producer_code != last_producer_code:
                     # Insert new Producer record
-                    producer_code = producer_wine_row[ProducerCode]
                     year_established = producer_wine_row[YearEstablished].strip()
+                    exporter = producer_wine_row[Exporter].strip()
 
                     if re_year.match(year_established) is not None:
                         year_established = int(year_established)
@@ -155,12 +163,13 @@ class Wines(CHW_DB):
                         year_established = None
                     elif re_decade.match(year_established) is not None:
                         year_established = int(year_established[:4])
-                        conversion_notes = 'year established is decade'
+                        conversion_notes = ['year established is decade']
 
-                    new_producer = (producer_name,
+                    new_producer = (producer_code,
+                                    producer_name,
                                     producer_description,
-                                    None if producer_code == '' else producer_code,
                                     year_established,
+                                    None if exporter == '' else exporter,
                                    )
 
                     try:
@@ -174,18 +183,23 @@ class Wines(CHW_DB):
                         raise e from None
 
                     last_producer_id = insert_producer_cursor.lastrowid
-                    last_producer_name = producer_name
+                    last_producer_code = producer_code
+                    prev_producer_name = producer_name
                     prev_producer_description = producer_description
 
-                if producer_description != prev_producer_description:
-                    conversion_notes = 'Description changed'
+                if producer_name != prev_producer_name:
+                    conversion_notes += ['Producer name changed']
 
-                if conversion_notes is not None:
+                if producer_description != prev_producer_description:
+                    conversion_notes += ['Description changed']
+
+                if conversion_notes:
                     producer_note_cnt += 1
 
-                producer_legacywine = (last_producer_id, wine_id, conversion_notes)
+                producer_legacywine = (last_producer_id, wine_id, ', '.join(conversion_notes) if conversion_notes else None)
                 insert_producer_legacywine_cursor.execute(CHW_SQL.insert_producer_legacywine_sql,
                                                           producer_legacywine)
+                prev_producer_name = producer_name
                 prev_producer_description = producer_description
 
             exectime = time.process_time() - starttime

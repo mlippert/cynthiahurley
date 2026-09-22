@@ -760,23 +760,25 @@ PricingChangeAnnounce=if(@PricingChangeAnnounce = '', FALSE, @PricingChangeAnnou
     # Select statement to retrieve producer's wines ordered by producer then descending dates
     _legacy_wines_by_producer_sql_fmt = """
 SELECT WineId
+     , ProducerCode
      , ProducerName
      , ProducerDescription
-     , ProducerCode
      , YearEstablished
+     , Exporter
   FROM chw.LegacyWineMaster{suffix}
- ORDER BY ProducerName ASC, LastUpdated DESC
+ ORDER BY ProducerCode ASC, LastUpdated DESC
 """
 
     # Insert statement to create Producer record
     insert_producer_sql = """
 INSERT INTO chw.Producers
-    ( Name
+    ( ProducerCode
+    , Name
     , Description
-    , ProducerCode
     , YearEstablished
+    , Exporter
     )
- VALUES (?, ?, ?, ?)
+ VALUES (?, ?, ?, ?, ?)
 """
 
     # Insert statement to create Producers_LegacyWineMaster record
