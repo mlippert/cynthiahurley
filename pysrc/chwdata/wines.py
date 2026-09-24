@@ -63,6 +63,10 @@ class Wines(CHW_DB):
     LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_08-24-xform.csv'
     LEGACY_WINE_TABLE_SUFFIX = '_0824'
 
+    # Regular expressions for parsing values in the legacy wine columns
+    re_year = re.compile(r'\d{4}$')
+    re_decade = re.compile(r'\d{4}s$')
+
     def __init__(self, **kwargs):
         """
         Initialize the Wines class, setting initial values for all instance variables
@@ -72,6 +76,15 @@ class Wines(CHW_DB):
         """
         super().__init__(**kwargs)
         self.logger = logging.getLogger('CynthiaHurleyDB.Wines')
+
+        # Cursors for _init_producers_from_legacy_cursors()
+        # DevNote: pylint was giving me an error when I tried to put these in a dict
+        #          E1133: Non-iterable value is used in an iterating context (not-an-iterable)
+        self._legacy_wines_by_producer_cursor = None
+        self._insert_producer_cursor = None
+        self._insert_producer_loa_cursor = None
+        self._insert_producer_loa_authorized_state_cursor = None
+        self._insert_producer_legacywine_cursor = None
 
     def load_legacy_table_from_csv(self):
         """
@@ -118,74 +131,44 @@ class Wines(CHW_DB):
           has that unique ProducerCode. Add a conversion note if the name, description, or
           year established changed from the previous record.
         """
-        # Column indices
-        WineId              = 0
-        ProducerCode        = 1
-        ProducerName        = 2
-        ProducerDescription = 3
-        YearEstablished     = 4
-        Exporter            = 5
-
-        re_year = re.compile(r'\d{4}$')
-        re_decade = re.compile(r'\d{4}s$')
+        # Alias column indices enum for clarity
+        Col = CHW_SQL.Col_legacy_wines_by_producer
 
         legacy_wines_by_producer_sql = CHW_SQL.get_legacy_wines_by_producer_sql({'suffix':  Wines.LEGACY_WINE_TABLE_SUFFIX})
 
-        with (self._connection.cursor() as legacy_wines_by_producer_cursor,
-              self._connection.cursor(prepared=True) as insert_producer_cursor,
-              self._connection.cursor(prepared=True) as insert_producer_legacywine_cursor):
+        try:
+            self._init_producers_from_legacy_cursors()
 
             starttime = time.process_time()
             producers_added = 0
             producer_note_cnt = 0
-            legacy_wines_by_producer_cursor.execute(legacy_wines_by_producer_sql)
+            self._legacy_wines_by_producer_cursor.execute(legacy_wines_by_producer_sql)
             last_producer_code = ''
             last_producer_id = -1
             prev_producer_name = ''
             prev_producer_description = ''
 
-            for producer_wine_row in legacy_wines_by_producer_cursor:
+            for producer_wine_row in self._legacy_wines_by_producer_cursor:
                 # When the producer changes, process the new producer
-                producer_code = producer_wine_row[ProducerCode]
-                wine_id = producer_wine_row[WineId]
-                producer_name = producer_wine_row[ProducerName]
-                producer_description = producer_wine_row[ProducerDescription]
+                producer_code = producer_wine_row[Col.ProducerCode]
+                wine_id = producer_wine_row[Col.WineId]
+                producer_name = producer_wine_row[Col.ProducerName]
+                producer_description = producer_wine_row[Col.ProducerDescription]
                 conversion_notes = []
 
                 if producer_code != last_producer_code:
                     # Insert new Producer record
-                    year_established = producer_wine_row[YearEstablished].strip()
-                    exporter = producer_wine_row[Exporter].strip()
+                    last_producer_id = self._create_new_producer_from_legacy_row(producer_wine_row, conversion_notes)
+                    producers_added += 1
 
-                    if re_year.match(year_established) is not None:
-                        year_established = int(year_established)
-                    elif year_established == '':
-                        year_established = None
-                    elif re_decade.match(year_established) is not None:
-                        year_established = int(year_established[:4])
-                        conversion_notes = ['year established is decade']
-
-                    new_producer = (producer_code,
-                                    producer_name,
-                                    producer_description,
-                                    year_established,
-                                    None if exporter == '' else exporter,
-                                   )
-
-                    try:
-                        insert_producer_cursor.execute(CHW_SQL.insert_producer_sql, new_producer)
-                        producers_added += 1
-                    except mariadb.DataError as e:
-                        print(type(e))
-                        print(e.args)
-                        print(e)
-                        print(new_producer)
-                        raise e from None
-
-                    last_producer_id = insert_producer_cursor.lastrowid
+                    # last_ is last new producer record created, while prev_ is the previous legacy record
                     last_producer_code = producer_code
-                    prev_producer_name = producer_name
-                    prev_producer_description = producer_description
+
+                    # prev_ values are used for conversion notes to record when the producer name/description
+                    # changed from the previous legacy wine record for that producer. As this is
+                    # the 1st record for this producer, there is no change to note
+                    prev_producer_name = producer_wine_row[Col.ProducerName]
+                    prev_producer_description = producer_wine_row[Col.ProducerDescription]
 
                 if producer_name != prev_producer_name:
                     conversion_notes += ['Producer name changed']
@@ -196,16 +179,155 @@ class Wines(CHW_DB):
                 if conversion_notes:
                     producer_note_cnt += 1
 
-                producer_legacywine = (last_producer_id, wine_id, ', '.join(conversion_notes) if conversion_notes else None)
-                insert_producer_legacywine_cursor.execute(CHW_SQL.insert_producer_legacywine_sql,
-                                                          producer_legacywine)
+                producer_legacywine = (last_producer_id,
+                                       wine_id,
+                                       ', '.join(conversion_notes) if conversion_notes else None)
+                self._insert_producer_legacywine_cursor.execute(CHW_SQL.insert_producer_legacywine_sql,
+                                                                producer_legacywine)
                 prev_producer_name = producer_name
                 prev_producer_description = producer_description
 
             exectime = time.process_time() - starttime
-            print(f'Insert producers from legacy successful, {producers_added} rows affected, {producer_note_cnt} notes ({exectime:.3f} secs)')
+            print(('Insert producers from legacy successful, '
+                   f'{producers_added} rows affected, {producer_note_cnt} notes ({exectime:.3f} secs)'))
+
+        finally:
+            self._close_producers_from_legacy_cursors()
 
         self._connection.commit()
+
+    def _init_producers_from_legacy_cursors(self):
+        """
+        Initialize all instance cursors used while creating producer records
+        from the legacy wine master
+        """
+        self._legacy_wines_by_producer_cursor = self._connection.cursor()
+        self._insert_producer_cursor = self._connection.cursor(binary=True)
+        self._insert_producer_loa_cursor = self._connection.cursor(binary=True)
+        self._insert_producer_loa_authorized_state_cursor = self._connection.cursor(binary=True)
+        self._insert_producer_legacywine_cursor = self._connection.cursor(binary=True)
+
+    def _close_producers_from_legacy_cursors(self):
+        """
+        Close all instance cursors initialized by _init_producers_from_legacy_cursors
+        """
+        self._legacy_wines_by_producer_cursor.close()
+        self._legacy_wines_by_producer_cursor = None
+        self._insert_producer_cursor.close()
+        self._insert_producer_cursor = None
+        self._insert_producer_loa_cursor.close()
+        self._insert_producer_loa_cursor = None
+        self._insert_producer_loa_authorized_state_cursor.close()
+        self._insert_producer_loa_authorized_state_cursor = None
+        self._insert_producer_legacywine_cursor.close()
+        self._insert_producer_legacywine_cursor = None
+
+    def _create_new_producer_from_legacy_row(self, producer_wine_row, conversion_notes):
+        """
+        Insert new Producer record using values from the given producer_wine_row
+
+        Note: _init_producers_from_legacy_cursors() must have been called before this method
+
+        :param producer_wine_row: The row from the _legacy_wines_by_producer_cursor with the
+                                  values for creating the new Producer record.
+        :type producer_wine_row: tuple[int, str, str, str, str, str, date, str, bool, str, date]
+
+        :param conversion_notes: List of conversion notes, that may have new notes appended to it.
+        :type conversion_notes: list[str]
+
+        :return: the producer_id of the created Producer record
+        """
+        # Alias column indices enum for clarity
+        Col = CHW_SQL.Col_legacy_wines_by_producer
+
+        producer_code = producer_wine_row[Col.ProducerCode]
+        producer_name = producer_wine_row[Col.ProducerName]
+        producer_description = producer_wine_row[Col.ProducerDescription]
+        year_established = producer_wine_row[Col.YearEstablished].strip()
+        exporter = producer_wine_row[Col.Exporter].strip()
+
+        if Wines.re_year.match(year_established) is not None:
+            year_established = int(year_established)
+        elif year_established == '':
+            year_established = None
+        elif Wines.re_decade.match(year_established) is not None:
+            year_established = int(year_established[:4])
+            conversion_notes += ['year established is decade']
+
+        new_producer = (producer_code,
+                        producer_name,
+                        producer_description,
+                        year_established,
+                        None if exporter == '' else exporter,
+                       )
+
+        try:
+            self._insert_producer_cursor.execute(CHW_SQL.insert_producer_sql, new_producer)
+        except mariadb.DataError as e:
+            print(type(e))
+            print(e.args)
+            print(e)
+            print(new_producer)
+            raise e from None
+
+        producer_id = self._insert_producer_cursor.lastrowid
+        self._create_new_producer_loa_from_legacy_row(producer_id, producer_wine_row)
+        return producer_id
+
+    def _create_new_producer_loa_from_legacy_row(self, producer_id, producer_wine_row):
+        """
+        Insert new ProducerLOA record for the given producer_id using values from
+        the given producer_wine_row
+
+        Note: _init_producers_from_legacy_cursors() must have been called before this method
+
+        :param producer_id: The producer Id of the Producer record that the LOA record(s) are
+                            related to.
+        :type producer_id: int
+
+        :param producer_wine_row: The row from the _legacy_wines_by_producer_cursor with the
+                                  values for creating the new Producer record.
+        :type producer_wine_row: tuple[int, str, str, str, str, str, date, str, bool, str, date]
+        """
+        # Alias column indices enum for clarity
+        Col = CHW_SQL.Col_legacy_wines_by_producer
+
+        loa_date = producer_wine_row[Col.LOA_Date]
+        if loa_date is None:
+            return
+
+        loa_comment = producer_wine_row[Col.LOA_Comment]
+        multiple_loas = producer_wine_row[Col.Multiple_LOAs]
+        states_authorized = producer_wine_row[Col.StatesAuthorized]
+        state_authorization_confirmation_date = producer_wine_row[Col.StatesAuthConfirmationDate]
+
+        new_producer_loa = (producer_id,
+                            loa_date,
+                            loa_comment,
+                            multiple_loas,
+                            state_authorization_confirmation_date,
+                           )
+
+        try:
+            self._insert_producer_loa_cursor.execute(CHW_SQL.insert_producer_loa_sql, new_producer_loa)
+        except mariadb.DataError as e:
+            print(type(e))
+            print(e.args)
+            print(e)
+            print(new_producer_loa)
+            raise e from None
+
+        for state_postal_abbrev in states_authorized.split():
+            try:
+                self._insert_producer_loa_authorized_state_cursor.execute(
+                    CHW_SQL.insert_producer_loa_authorized_state_sql,
+                    (producer_id, state_postal_abbrev))
+            except mariadb.DataError as e:
+                print(type(e))
+                print(e.args)
+                print(e)
+                print(new_producer_loa)
+                raise e from None
 
     def setup_lookup_table_records(self):
         """
@@ -263,7 +385,8 @@ class Wines(CHW_DB):
 
                 rows_affected = insert_wines_from_legacy_cursor.rowcount
                 warnings = insert_wines_from_legacy_cursor.warnings
-                print(f'Insert wines from legacy successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
+                print(('Insert wines from legacy successful, '
+                       f'{rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)'))
                 if show_warnings and warnings > 0:
                     self.print_cursor_warnings(insert_wines_from_legacy_cursor)
 
@@ -293,7 +416,8 @@ class Wines(CHW_DB):
 
                 rows_affected = insert_winepricing_from_legacy_cursor.rowcount
                 warnings = insert_winepricing_from_legacy_cursor.warnings
-                print(f'Insert winepricing from legacy successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
+                print(('Insert winepricing from legacy successful, '
+                       f'{rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)'))
                 if show_warnings and warnings > 0:
                     self.print_cursor_warnings(insert_winepricing_from_legacy_cursor)
 
@@ -323,7 +447,8 @@ class Wines(CHW_DB):
 
                 rows_affected = insert_winepurchases_from_legacy_cursor.rowcount
                 warnings = insert_winepurchases_from_legacy_cursor.warnings
-                print(f'Insert winepurchases from legacy successful, {rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)')
+                print(('Insert winepurchases from legacy successful, '
+                       f'{rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)'))
                 if show_warnings and warnings > 0:
                     self.print_cursor_warnings(insert_winepurchases_from_legacy_cursor)
 

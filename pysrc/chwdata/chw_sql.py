@@ -19,6 +19,7 @@ Copyright       (c) 2025-present Michael Jay Lippert
 """
 
 # Standard library imports
+from enum import IntEnum, auto
 
 # Third party imports
 
@@ -758,6 +759,20 @@ PricingChangeAnnounce=if(@PricingChangeAnnounce = '', FALSE, @PricingChangeAnnou
 """
 
     # Select statement to retrieve producer's wines ordered by producer then descending dates
+    # Note: LastUpdated is not useful now as it is changed by the automated updating of Western Inventory
+    class Col_legacy_wines_by_producer(IntEnum):
+        WineId                     = 0
+        ProducerCode               = auto()
+        ProducerName               = auto()
+        ProducerDescription        = auto()
+        YearEstablished            = auto()
+        Exporter                   = auto()
+        LOA_Date                   = auto()
+        LOA_Comment                = auto()
+        Multiple_LOAs              = auto()
+        StatesAuthorized           = auto()
+        StatesAuthConfirmationDate = auto()
+
     _legacy_wines_by_producer_sql_fmt = """
 SELECT WineId
      , ProducerCode
@@ -765,8 +780,13 @@ SELECT WineId
      , ProducerDescription
      , YearEstablished
      , Exporter
+     , LOA_Date
+     , LOA_Comment
+     , Multiple_LOAs
+     , StatesAuthorized
+     , StatesAuthConfirmationDate
   FROM chw.LegacyWineMaster{suffix}
- ORDER BY ProducerCode ASC, LastUpdated DESC
+ ORDER BY ProducerCode ASC, DateCreated DESC, LastUpdated DESC
 """
 
     # Insert statement to create Producer record
@@ -779,6 +799,27 @@ INSERT INTO chw.Producers
     , Exporter
     )
  VALUES (?, ?, ?, ?, ?)
+"""
+
+    # Insert statement to create ProducerLOA record
+    insert_producer_loa_sql = """
+INSERT INTO chw.ProducerLOAs
+    ( ProducerId
+    , LOA_Date
+    , Comment
+    , MultipleLOAs
+    , StatesAuthorizationConfirmationDate
+    )
+ VALUES (?, ?, ?, ?, ?)
+"""
+
+    # Insert statement to create ProducerLOAAuthorizedState record
+    insert_producer_loa_authorized_state_sql = """
+INSERT INTO chw.ProducerLOAAuthorizedStates
+    ( ProducerId
+    , StatePostalAbbrev
+    )
+ VALUES (?, ?)
 """
 
     # Insert statement to create Producers_LegacyWineMaster record
