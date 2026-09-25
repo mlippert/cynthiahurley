@@ -223,6 +223,14 @@ ALTER TABLE LegacyWineMaster_0824 MODIFY COLUMN Exclude_NJ BOOLEAN COMMENT 'Wine
 ALTER TABLE LegacyWineMaster_0824 MODIFY COLUMN AE_Record_Id INTEGER COMMENT 'Account Edge record Id';
 
 
+CREATE INDEX legacywinemaster_winecode_idx
+ ON LegacyWineMaster_0824
+ ( WineCode ASC );
+
+CREATE INDEX legacywinemaster_producercode_idx
+ ON LegacyWineMaster_0824
+ ( ProducerCode ASC );
+
 CREATE TABLE LookupWineSubregions (
                 WineSubregionId TINYINT AUTO_INCREMENT NOT NULL,
                 SubregionName VARCHAR(30) NOT NULL,
