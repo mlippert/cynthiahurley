@@ -3,10 +3,14 @@ CHW Notes for Importing the Legacy WineMaster table from FilemakerPro
 
 ## Export the Master table to an Excel spreadsheet
 
+**NOTE:** As of August 2026, I've given the WineMaster table a custom order, which is also the
+order that the existing table layout, `t.WineMaster-MJL`, follows.
+
 1. Create a table layout (or update the existing `t.WineMaster-MJL`) with all of the columns from the
 `Cynthia Hurley French Wines Product Database MASTER` table.
 
 2. Uncheck the following columns so they don't appear in the layout:
+    - Boillot_Retail_DTC
     - Case Card
     - Shelf Talker
     - MA Bottle Price
@@ -109,6 +113,25 @@ gawk -f ../bin/transform-for-infile.awk WineMasterTable_08-06.csv > WineMasterTa
 
 ## Create a MariaDB database for importing the legacy table and normalizing it
 
+### Replace chw database with clean database
+
+If you have an existing chw database and you want to wipe it out and start fresh here's how:
+
+The SQL command [SHOW CREATE DATABASE](https://mariadb.com/docs/server/reference/sql-statements/administrative-sql-statements/show/show-create-database)
+will show you the command to create the named database with any special options.
+Currently there aren't any special options.
+
+```console
+$ make up
+$ bin/chwdb-cli.sh
+MariaDB [chw]> SHOW CREATE DATABASE chw;
+MariaDB [chw]> DROP DATABASE chw;
+MariaDB [chw]> CREATE DATABASE chw;
+MariaDB [chw]> exit
+$
+```
+
+### Setting up an empty chw mariadb database
 **These instructions are still a WIP**
 
 The Makefile has targets for bringing up a Mariadb container (by default using podman).
@@ -123,8 +146,38 @@ There is also a script that makes it easy to start the mariadb cli inside the ru
 `bin/chwdb-cli.sh`. Currently you need to run this and then execute SQL commands found in
 `CHW_Wine-only-MySQL-DDL.sql` to create the tables defined in the schema.
 
+**NOTE**: While under development I've found it better to NOT create the FOREIGN KEY constraints
+that are in the DDL script.
+
+**NOTE**: Currently there are 3 CHECK constraints that are not in the DDL file that enforce values
+in some columns. The SQL defining these constraints is in the snippets file: `snippets_WineMaster-tables.sql`.
+
 Once those tables are created, you can exit the mariadb cli and use `./chw-action` to load the
 csv file from `data/infiles` and also to populate the Lookup tables.
+
+#### Import the legacy CSV file into LegacyWineMaster table
+
+This command will load the `{datadir}{csvfile}` file into the mariaDB table `LegacyWineMaster{suffix}`
+
+Remember that when a new csv is used and/or the columns in/name of the LegacyWineMaster table changes
+the values of {csvfile} and {suffix} come from `class Wines` constants defined in `pysrc/chwdata/wines.py`.
+
+i.e. `{datadir}{csvfile}` might resolve to `{datadir}{csvfile}` `data/infiles/WineMasterTable_08-24-xform.csv`.
+     and `LegacyWineMaster{suffix}` might resolve to `LegacyWineMaster_0824`
+
+```console
+$ ./chw-action load-legacy-wine-master-from-csv
+Load Data successful, 2154 rows affected, 316 warnings (0.000 secs)
+Connection closed.
+$
+```
+
+##### examples of possible errors
+_Incorrect datetime value: '08/18/2026 16:49:13' for column \`chw\`.\`LegacyWineMaster_0824\`.\`LastUpdated\` at row 1_  
+Date and Timestamp columns must be formatted as ISO 8601 'YYYY-MM-DD' and 'YYYY-MM-DD"T"HH:MM:SS'
+
+_Incorrect date value: 'May 25, 2026' for column `chw`.`LegacyWineMaster_0824`.`EstArrival` at row 1992_  
+Check that Date column data contains dates not strings
 
 #### Populate the wine lookup tables
 
