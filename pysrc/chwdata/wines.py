@@ -29,6 +29,8 @@ import re
 # Local application imports
 from .chw_db import CHW_DB, mariadb
 from .chw_sql import CHW_SQL
+from .new_wine import NewWine
+from .new_wineitem import NewWineItem
 
 
 default_update_user = 'Gillian'
@@ -85,6 +87,9 @@ class Wines(CHW_DB):
         self._insert_producer_loa_cursor = None
         self._insert_producer_loa_authorized_state_cursor = None
         self._insert_producer_legacywine_cursor = None
+
+        # Trying a different method to init these, the top level method sets and unsets them
+        self._insert_wine_cursor = None
 
     def load_legacy_table_from_csv(self):
         """
@@ -361,7 +366,7 @@ class Wines(CHW_DB):
                 warnings = init_lookup_table_cursor.warnings
                 print(f'Init table {table_name} successful, {rows_affected} rows affected, {warnings} warnings')
                 if show_warnings and warnings > 0:
-                    self.print_cursor_warnings(init_lookup_table_cursor)
+                    CHW_SQL.print_cursor_warnings(init_lookup_table_cursor)
 
                 init_lookup_table_cursor.connection.commit()
 
@@ -369,105 +374,55 @@ class Wines(CHW_DB):
         """
         Create wine records in the Wines table from the LegacyWineMaster
 
-        Producer records must have already been created and lookup tables
+        Also adds a record to the association table XXX to track exactly which
+        Legacy record was used to create the new Wines table record.
+        """
+        with NewWine(self._connection) as new_wine:
+            t = time.process_time()
+            rows_added = 0
+            for legacy_wine_row in new_wine.legacy_wines({'suffix': Wines.LEGACY_WINE_TABLE_SUFFIX}):
+                new_wine.insert_wine_from_legacy(legacy_wine_row)
+                rows_added += 1
+
+            exectime = time.process_time() - t
+
+            print(('Insert wines from legacy successful, '
+                   f'{rows_added} rows added ({exectime:.3f} secs)'))
+
+            new_wine.insert_matching_complianceinfo_from_legacy({'suffix': Wines.LEGACY_WINE_TABLE_SUFFIX})
+
+        self._connection.commit()
+
+    def create_wineitems_from_legacy(self):
+        """
+        Create wineitem records in the WineItems table from the LegacyWineMaster
+
+        Producer & Wine records must have already been created and lookup tables
         populated.
         """
-        # TODO: set this flag from a parameter
-        show_warnings = True
-
-        sql = CHW_SQL.get_insert_wines_from_legacy_sql({'suffix':  Wines.LEGACY_WINE_TABLE_SUFFIX})
-
         try:
-            with (self._connection.cursor() as insert_wines_from_legacy_cursor):
-                t = time.process_time()
-                insert_wines_from_legacy_cursor.execute(sql)
-                exectime = time.process_time() - t
-
-                rows_affected = insert_wines_from_legacy_cursor.rowcount
-                warnings = insert_wines_from_legacy_cursor.warnings
-                print(('Insert wines from legacy successful, '
-                       f'{rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)'))
-                if show_warnings and warnings > 0:
-                    self.print_cursor_warnings(insert_wines_from_legacy_cursor)
-
-            self._connection.commit()
-        except mariadb.Error as e:
-            print(type(e))
-            print(e.args)
-            print(e)
-            print(sql)
-            # We don't need the stacktrace output, so don't reraise the exception
-            # raise e from None
+            with NewWineItem(self._connection) as new_wineitem:
+                new_wineitem.insert_wineitems_from_legacy({'suffix': Wines.LEGACY_WINE_TABLE_SUFFIX})
+                new_wineitem.insert_westerninventory_from_legacy({'suffix': Wines.LEGACY_WINE_TABLE_SUFFIX})
+                new_wineitem.insert_winepurchases_from_legacy({'suffix': Wines.LEGACY_WINE_TABLE_SUFFIX})
+        except mariadb.Error:
+            # The new_wineitem will print diagnostic info about the mariadb error and
+            # we don't need the stacktrace output, so we just suppress the exception and return
+            pass
 
     def create_winepricing_from_legacy(self):
         """
-        Create wine records in the WinePricing table from the LegacyWineMaster
+        Create wine records in the WinePricing, WineWholesalePricing and WineWholesaleCaseBreaks
+        tables from the LegacyWineMaster
         """
-        # TODO: set this flag from a parameter
-        show_warnings = True
-
-        sql = CHW_SQL.get_insert_winepricing_from_legacy_sql({'suffix':  Wines.LEGACY_WINE_TABLE_SUFFIX})
-
         try:
-            with (self._connection.cursor() as insert_winepricing_from_legacy_cursor):
-                t = time.process_time()
-                insert_winepricing_from_legacy_cursor.execute(sql)
-                exectime = time.process_time() - t
-
-                rows_affected = insert_winepricing_from_legacy_cursor.rowcount
-                warnings = insert_winepricing_from_legacy_cursor.warnings
-                print(('Insert winepricing from legacy successful, '
-                       f'{rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)'))
-                if show_warnings and warnings > 0:
-                    self.print_cursor_warnings(insert_winepricing_from_legacy_cursor)
-
-            self._connection.commit()
-        except mariadb.Error as e:
-            print(type(e))
-            print(e.args)
-            print(e)
-            print(sql)
-            # We don't need the stacktrace output, so don't reraise the exception
-            # raise e from None
-
-    def create_winepurchases_from_legacy(self):
-        """
-        Create wine records in the WinePurchases table from the LegacyWineMaster
-        """
-        # TODO: set this flag from a parameter
-        show_warnings = True
-
-        sql = CHW_SQL.get_insert_winepurchases_from_legacy_sql({'suffix':  Wines.LEGACY_WINE_TABLE_SUFFIX})
-
-        try:
-            with (self._connection.cursor() as insert_winepurchases_from_legacy_cursor):
-                t = time.process_time()
-                insert_winepurchases_from_legacy_cursor.execute(sql)
-                exectime = time.process_time() - t
-
-                rows_affected = insert_winepurchases_from_legacy_cursor.rowcount
-                warnings = insert_winepurchases_from_legacy_cursor.warnings
-                print(('Insert winepurchases from legacy successful, '
-                       f'{rows_affected} rows affected, {warnings} warnings ({exectime:.3f} secs)'))
-                if show_warnings and warnings > 0:
-                    self.print_cursor_warnings(insert_winepurchases_from_legacy_cursor)
-
-            self._connection.commit()
-        except mariadb.Error as e:
-            print(type(e))
-            print(e.args)
-            print(e)
-            print(sql)
-            # We don't need the stacktrace output, so don't reraise the exception
-            # raise e from None
-
-    @staticmethod
-    def print_cursor_warnings(cursor):
-        """
-        Print the warnings from the last execution of the given cursor
-        """
-        for severity, code, msg in cursor.connection.show_warnings():
-            print(severity, code, msg)
+            with NewWineItem(self._connection) as new_wineitem:
+                new_wineitem.insert_winepricing_from_legacy({'suffix': Wines.LEGACY_WINE_TABLE_SUFFIX})
+                new_wineitem.insert_winewholesalepricing_from_legacy({'suffix': Wines.LEGACY_WINE_TABLE_SUFFIX})
+        except mariadb.Error:
+            # The new_wineitem will print diagnostic info about the mariadb error and
+            # we don't need the stacktrace output, so we just suppress the exception and return
+            pass
 
 
 # Public action functions to be called by the CLI
@@ -493,14 +448,14 @@ def do_create_wines_from_legacy():
     wines.create_wines_from_legacy()
 
 
+def do_create_wineitems_from_legacy():
+    wines = Wines()
+    wines.create_wineitems_from_legacy()
+
+
 def do_create_winepricing_from_legacy():
     wines = Wines()
     wines.create_winepricing_from_legacy()
-
-
-def do_create_winepurchases_from_legacy():
-    wines = Wines()
-    wines.create_winepurchases_from_legacy()
 
 
 def _test():

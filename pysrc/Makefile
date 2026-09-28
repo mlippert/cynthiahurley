@@ -20,6 +20,10 @@ TEST_LOG := ../logs/test.log
 PYSOURCES = \
 	chwdata/chw_db.py                   \
 	chwdata/chw_sql.py                  \
+	chwdata/chw_sql_email.py            \
+	chwdata/chw_sql_wine.py             \
+	chwdata/new_wine.py                 \
+	chwdata/new_wineitem.py             \
 	chwdata/retail_orders.py            \
 	chwdata/wines.py                    \
 	visualize/meetings.py               \
