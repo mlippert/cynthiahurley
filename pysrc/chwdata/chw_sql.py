@@ -293,7 +293,7 @@ VALUES (-1,'Unknown',          'unknown', 'ml',      0.0,    0, '--'),
 
     insert_lookup_wine_countries_sql = """
 INSERT IGNORE INTO LookupWineCountries
-VALUES (1, 'France'), (2, 'Germany'), (3, 'Italy'), (4, 'Spain')
+VALUES (1, 'France'), (2, 'Germany'), (3, 'Greece'), (4, 'Italy'), (5, 'Spain'), (6, 'USA')
 """
 
     insert_lookup_wine_regions_sql = """
@@ -918,6 +918,54 @@ LEFT JOIN LookupWineAppellations LkupWA
   ON LWM.Appellation = LkupWA.AppellationName
 LEFT JOIN Producers WP
   ON LWM.ProducerName = WP.Name
+"""
+
+	# WIP Format string for getting Wines from LegacyWineMaster
+	# sorted by WineCode and then date created.
+    _select_wines_from_legacy_sql_fmt = """
+SELECT
+    LWM.WineId WineItemId,
+    LWM.WineCode,
+    if(LWM.COLA_TTB_ID = '', 'Pending', LWM.COLA_TTB_ID) AS COLA_TTB_ID,
+    if(LWM.UPC = '', NULL, LWM.UPC) AS UPC,
+    LWM.WineName,
+    LkupWClr.WineColorId,
+    LkupWT.WineTypeId,
+    if(CertifiedOrganic = 'certified organic', TRUE, FALSE) AS CertifiedOrganic,
+    LWM.Varietals,
+    LkupWCntry.WineCountryId,
+    LkupWR.WineRegionId,
+    LkupWSR.WineSubregionId,
+    LkupWA.WineAppellationId,
+    WP.ProducerId,
+    LWM.ShelfTalkerText,
+    LWM.TastingNotes,
+    LWM.Vinification,
+    LWM.TerroirVineyardPractices,
+    LWM.EndOfWine,
+    LWM.PriceListSection,
+    if(LWM.DateCreated IS NULL, DATE(LWM.LastUpdated), LWM.DateCreated) AS DateCreated,
+    'Legacy',
+    LWM.LastUpdated,
+    'Legacy'
+FROM LegacyWineMaster{suffix} LWM
+INNER JOIN LookupWineTypes LkupWT
+  ON LWM.StillSparklingFortified = LkupWT.WineType
+INNER JOIN LookupWineColors LkupWClr
+  ON LWM.Color = LkupWClr.WineColor
+INNER JOIN LookupWineCountries LkupWCntry
+  ON LWM.Country = LkupWCntry.CountryName
+INNER JOIN LookupCaseUnits LkupCsU
+  ON LWM.BottleSize = LkupCsU.LegacyBottleSize
+LEFT JOIN LookupWineRegions LkupWR
+  ON LWM.Region = LkupWR.RegionName
+LEFT JOIN LookupWineSubregions LkupWSR
+  ON LWM.Subregion = LkupWSR.SubregionName
+LEFT JOIN LookupWineAppellations LkupWA
+  ON LWM.Appellation = LkupWA.AppellationName
+LEFT JOIN Producers WP
+  ON LWM.ProducerCode = WP.ProducerCode
+ORDER BY LWM.WineCode ASC, LWM.DateCreated DESC, LWM.LastUpdated DESC
 """
 
     # Format string to create insert statement to create WinePricing records
