@@ -339,9 +339,9 @@ ALTER TABLE ProducerLOAAuthorizedStates MODIFY COLUMN StatePostalAbbrev CHAR(2) 
 
 CREATE TABLE Wines (
                 WineId INT AUTO_INCREMENT NOT NULL,
+                WineCode CHAR(5) NOT NULL,
                 COLA_TTB_ID VARCHAR(15) DEFAULT 'Pending' NOT NULL,
                 UPC VARCHAR(13),
-                WineCode CHAR(5) NOT NULL,
                 WineName VARCHAR(150) NOT NULL,
                 WineColorId TINYINT NOT NULL,
                 WineTypeId TINYINT NOT NULL,
@@ -365,9 +365,9 @@ CREATE TABLE Wines (
                 PRIMARY KEY (WineId)
 );
 
-ALTER TABLE Wines MODIFY COLUMN COLA_TTB_ID VARCHAR(15) COMMENT 'Either the TTB ID or ''Pending''';
-
 ALTER TABLE Wines MODIFY COLUMN WineCode CHAR(5) COMMENT 'Unique alternate key, 3 char producer code + 2 char to specify wine';
+
+ALTER TABLE Wines MODIFY COLUMN COLA_TTB_ID VARCHAR(15) COMMENT 'Either the TTB ID or ''Pending''';
 
 ALTER TABLE Wines MODIFY COLUMN Varietals VARCHAR(100) COMMENT 'Comma separated list of the grape varietals in the wine';
 
@@ -381,6 +381,17 @@ ALTER TABLE Wines MODIFY COLUMN LastModifiedBy VARCHAR(32) COMMENT 'User who las
 CREATE UNIQUE INDEX akwinecode
  ON Wines
  ( WineCode );
+
+CREATE INDEX wines_producerid_idx
+ ON Wines
+ ( ProducerId );
+
+CREATE TABLE Wines_LegacyWineMaster (
+                WineId INT NOT NULL,
+                LegacyWineId INT NOT NULL,
+                PRIMARY KEY (WineId, LegacyWineId)
+);
+
 
 CREATE TABLE WineItems (
                 WineItemId INT AUTO_INCREMENT NOT NULL,
@@ -402,6 +413,10 @@ CREATE TABLE WineItems (
                 Closeout BOOLEAN NOT NULL,
                 EndOfVintage BOOLEAN DEFAULT FALSE NOT NULL,
                 AE_Record_Id INT,
+                Created DATETIME NOT NULL,
+                CreatedBy VARCHAR(32) NOT NULL,
+                LastModified DATETIME NOT NULL,
+                LastModifiedBy VARCHAR(32) NOT NULL,
                 PRIMARY KEY (WineItemId)
 );
 
@@ -425,13 +440,35 @@ ALTER TABLE WineItems MODIFY COLUMN EndOfVintage BOOLEAN COMMENT 'Additional Win
 ALTER TABLE WineItems MODIFY COLUMN AE_Record_Id INTEGER COMMENT 'AccountEdge record Id for this wine sku';
 
 
+CREATE INDEX wineitems_wineid_idx
+ ON WineItems
+ ( WineId );
+
+CREATE UNIQUE INDEX akaccountingitemno
+ ON WineItems
+ ( AccountingItemNo );
+
+CREATE TABLE WesternInventory (
+                WineItemId INT NOT NULL,
+                Cases SMALLINT DEFAULT 0 NOT NULL,
+                Bottles TINYINT DEFAULT 0 NOT NULL,
+                SyncTimestamp DATETIME NOT NULL,
+                UpdatedTimestamp DATETIME NOT NULL,
+                PRIMARY KEY (WineItemId)
+);
+
+ALTER TABLE WesternInventory MODIFY COLUMN SyncTimestamp TIMESTAMP COMMENT 'TS when the western cases/bottles was last synced with Western API';
+
+ALTER TABLE WesternInventory MODIFY COLUMN UpdatedTimestamp TIMESTAMP COMMENT 'TS when the sync w/ Western changed the # of bottles/cases';
+
+
 CREATE TABLE WinePricing (
                 WineItemId INT NOT NULL,
                 FOBPrice DECIMAL(8,2),
                 FOB_MA DECIMAL(8,2),
                 FOB_ARB DECIMAL(8,2) DEFAULT FOBPrice,
                 ARB_Comment VARCHAR(250),
-                PriceNotes VARCHAR(250),
+                PriceNotes TEXT(2000),
                 Specials VARCHAR(250),
                 NeedsReview BOOLEAN NOT NULL,
                 ChangeAnnounce BOOLEAN NOT NULL,
@@ -565,6 +602,12 @@ REFERENCES LegacyWineMaster_0824 (WineId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
+ALTER TABLE Wines_LegacyWineMaster ADD CONSTRAINT legacywinemaster_0824_wines_legacywinemaster_fk1
+FOREIGN KEY (LegacyWineId)
+REFERENCES LegacyWineMaster_0824 (WineId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
 ALTER TABLE Wines ADD CONSTRAINT lookupwinesubregions_wines_fk
 FOREIGN KEY (WineSubregionId)
 REFERENCES LookupWineSubregions (WineSubregionId)
@@ -631,6 +674,12 @@ REFERENCES Wines (WineId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
+ALTER TABLE Wines_LegacyWineMaster ADD CONSTRAINT wines_wines_legacywinemaster_fk
+FOREIGN KEY (WineId)
+REFERENCES Wines (WineId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
 ALTER TABLE WinePurchases ADD CONSTRAINT wineitems_winepurchases_fk
 FOREIGN KEY (WineItemId)
 REFERENCES WineItems (WineItemId)
@@ -638,6 +687,12 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE WinePricing ADD CONSTRAINT wineitems_winepricing_fk
+FOREIGN KEY (WineItemId)
+REFERENCES WineItems (WineItemId)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
+ALTER TABLE WesternInventory ADD CONSTRAINT wineitems_westerninventory_fk
 FOREIGN KEY (WineItemId)
 REFERENCES WineItems (WineItemId)
 ON DELETE NO ACTION
