@@ -220,12 +220,38 @@ Run this command from the cynthiahurley repository root directory:
 
 The lookup tables should be populated and producer records created before running this step.
 
-Identifying unique wines from the legacy wine master is done by...
-- A WineCode identifies a unique wine.
-- For wines without a WineCode...
+The `WineCode` column Identifies unique wines from the legacy wine master so all records MUST
+have a WineCode.
 
 Run this command from the cynthiahurley repository root directory:
 
-```sh
-./chw-action create-wines-from-legacy
+```console
+$ ./chw-action create-wines-from-legacy
+Insert wines from legacy successful, 552 rows added (0.217 secs)
+Insert wine compliance info from legacy successful, 552 rows affected, 0 warnings (0.000 secs)
+Connection closed.
+$
+```
+
+The WineId in the legacy table is used as the WineItemId in the new WineItems table.
+
+```console
+$ ./chw-action create-wineitems-from-legacy
+Insert wineitems from legacy successful, 2154 rows affected, 0 warnings (0.000 secs)
+Insert western inventory from legacy successful, 2154 rows affected, 0 warnings (0.000 secs)
+Insert wine purchases from legacy successful, 299 rows affected, 0 warnings (0.000 secs)
+Connection closed.
+$
+```
+
+Because wine pricing is in multiple related tables, there is a separate chw-action command
+to create records in those tables after the wineitems records have been created.
+
+```console
+$ ./chw-action create-winepricing-from-legacy
+Insert wine pricing from legacy successful, 2154 rows affected, 0 warnings (0.000 secs)
+Insert wholesale pricing from legacy successful (0.082 secs)
+         - 928 pricing rows added, 803 case break rows added
+Connection closed.
+$
 ```
