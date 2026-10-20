@@ -423,6 +423,7 @@ PurchaseType,
 @SoldOut,
 @OnOrder,
 @ComingSoon,
+@ETA_Available,
 @Closeout,
 @WesternInventory_Cases,
 @WesternInventory_Bottles,
@@ -521,6 +522,7 @@ FOB_Change=if(@FOB_Change = '', FALSE, @FOB_Change),
 EndOfVintage=if(@EndOfVintage = '', FALSE, @EndOfVintage),
 EndOfWine=if(@EndOfWine = '', FALSE, @EndOfWine),
 ComingSoon=if(@ComingSoon = '', FALSE, @ComingSoon),
+ETA_Available=if(@ETA_Available = '', FALSE, @ETA_Available),
 Closeout=if(@Closeout = '', FALSE, @Closeout),
 Multiple_LOAs=if(@Multiple_LOAs = '', FALSE, @Multiple_LOAs),
 PricingNeedsReview=if(@PricingNeedsReview = '', FALSE, @PricingNeedsReview),
@@ -789,6 +791,7 @@ INNER JOIN Wines W
         SoldOut          = auto()
         OnOrder          = auto()
         ComingSoon       = auto()
+        ETA_Available    = auto()
         Closeout         = auto()
         EndOfVintage     = auto()
         AE_Record_Id     = auto()
@@ -813,6 +816,7 @@ SELECT
     LWM.SoldOut,
     LWM.OnOrder,
     LWM.ComingSoon,
+    LWM.ETA_Available,
     LWM.Closeout,
     LWM.EndOfVintage,
     LWM.AE_Record_Id,
@@ -845,6 +849,7 @@ INSERT INTO chw.WineItems
     , SoldOut
     , OnOrder
     , ComingSoon
+    , ETA_Available
     , Closeout
     , EndOfVintage
     , AE_Record_Id
@@ -853,7 +858,7 @@ INSERT INTO chw.WineItems
     , LastModified
     , LastModifiedBy
     )
- VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Legacy', ?, 'Legacy')
+ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Legacy', ?, 'Legacy')
 """
 
     # Format string to create insert statement to create Wines records
@@ -878,6 +883,7 @@ INSERT INTO WineItems
     , SoldOut
     , OnOrder
     , ComingSoon
+    , ETA_Available
     , Closeout
     , EndOfVintage
     , AE_Record_Id
@@ -903,6 +909,7 @@ SELECT
     LWM.SoldOut,
     LWM.OnOrder,
     LWM.ComingSoon,
+    LWM.ETA_Available,
     LWM.Closeout,
     LWM.EndOfVintage,
     LWM.AE_Record_Id,

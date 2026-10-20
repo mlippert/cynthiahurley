@@ -62,8 +62,8 @@ class Wines(CHW_DB):
 
     # Constants used to configure the Wine SQL statements
     DB_CNTR_DATADIR = '/tmp/data/infiles/'
-    LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_08-24-xform.csv'
-    LEGACY_WINE_TABLE_SUFFIX = '_0824'
+    LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_10-16-xform.csv'
+    LEGACY_WINE_TABLE_SUFFIX = '_1016'
 
     # Regular expressions for parsing values in the legacy wine columns
     re_year = re.compile(r'\d{4}$')
