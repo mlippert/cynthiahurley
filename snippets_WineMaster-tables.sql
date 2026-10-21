@@ -97,9 +97,12 @@ TariffDiscount=if(@TariffDiscount = '', NULL, @TariffDiscount);
 INSERT INTO Producers ()
 
 /* Add a constraint on some Wines columns limiting them to specific values */
-ALTER TABLE WineItems ADD CONSTRAINT WineItems_ABV_chk CHECK (ABV IN (-1, 11.5, 12, 12.25, 12.5, 12.75, 13, 13.25, 13.5, 13.75, 13.8, 13.88, 14, 14.1, 14.2, 14.25, 14.5, 14.75, 15, 15.2, 15.25, 15.5, 16));
+ALTER TABLE WineItems ADD CONSTRAINT WineItems_ABV_chk CHECK (ABV IN (-1, 11.5, 12, 12.25, 12.5, 12.75, 13, 13.25, 13.5, 13.75, 13.8, 14, 14.1, 14.2, 14.25, 14.5, 14.75, 15, 15.2, 15.25, 15.5, 16));
 ALTER TABLE WineItems ADD CONSTRAINT WineItems_BottleColor_chk CHECK (BottleColor IS NULL OR BottleColor IN ('Brown', 'Green', 'Clear', 'CAN')); /* NULL allowed */
 ALTER TABLE WineItems ADD CONSTRAINT WineItems_UnitsPerCase_chk CHECK (UnitsPerCase IN (1, 3, 6, 12, 24, 48));
+
+/* view the current appellations from the WineMaster records along w/ a count */
+SELECT Appellation, COUNT( Appellation ) FROM chw.LegacyWineMaster_1016 GROUP BY Appellation ORDER BY Appellation ASC
 
 /* TODO
 python code to set CaseUnitId?
