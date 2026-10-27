@@ -92,8 +92,7 @@ VALUES (1, 'Abruzzo'),
        (24, 'Santa Cruz Mountains'),
        (25, 'Southwest'),
        (26, 'Savoie'),
-       (27, 'multiple'),
-       (28, 'Castile-Léon')
+       (27, 'multiple')
 """
 
     insert_lookup_wine_subregions_sql = """
@@ -116,10 +115,7 @@ VALUES (1, 'Barolo'),
        (16, 'Rueda'),
        (17, 'Sauternes'),
        (18, 'Southern Rhône'),
-       (19, 'Val do Salnes'),
-       (20, 'Beaujolais Cru'),
-       (21, 'Cote Chalonnaise'),
-       (22, 'Cote de Beaune')
+       (19, 'Val do Salnes')
 """
 
     insert_lookup_wine_appellations_sql = """
@@ -357,6 +353,58 @@ VALUES ('AL', 'Alabama', 'Ala.'),
        ('VI', 'Virgin Islands', 'V.I.')
 """
 
+    insert_lookup_price_list_sections_sql = """
+INSERT IGNORE INTO LookupPriceListSections
+VALUES (1, 'France: Alsace',                     1),
+       (2, 'France: Bordeaux Blanc',             1),
+       (3, 'France: Bordeaux Rouge',             1),
+       (4, 'France: Bordeaux Sauternes',         1),
+       (5, 'France: Burgundy Beaujolais',        1),
+       (6, 'France: Burgundy Chablis',           1),
+       (7, 'France: Burgundy Cote Chalonnaise',  1),
+       (8, 'France: Burgundy Cote de Beaune',    1),
+       (9, 'France: Burgundy Cote de Nuits',     1),
+       (10, 'France: Burgundy Macon',            1),
+       (11, 'France: Burgundy Library - Whites', 1),
+       (12, 'France: Burgundy Library - Reds',   1),
+       (13, 'France: Corsica',                   1),
+       (14, 'France: Grower Champagne',          1),
+       (15, 'France: Languedoc',                 1),
+       (16, 'France: Loire',                     1),
+       (17, 'France: Northern Rhone',            1),
+       (18, 'France: Provence',                  1),
+       (19, 'France: Savoie',                    1),
+       (20, 'France: Southern Rhone',            1),
+       (21, 'France: Southwest',                 1),
+
+       (22, 'Spain: Bierzo',                     2),
+       (23, 'Spain: Castilla y Leon',            2),
+       (24, 'Spain: Penedes',                    2),
+       (25, 'Spain: Priorat',                    2),
+       (26, 'Spain: Rias Baixas ',               2),
+       (27, 'Spain: Ribera del Duero',           2),
+       (28, 'Spain: Ribeira Sacra',              2),
+       (29, 'Spain: Rioja',                      2),
+       (30, 'Spain: Rueda',                      2),
+
+       (31, 'Italy: Barbaresco',                 3),
+       (32, 'Italy: Barbera',                    3),
+       (33, 'Italy: Barolo',                     3),
+       (34, 'Italy: Nebbiolo',                   3),
+       (35, 'Italy: Piedmont',                   3),
+
+       (36, 'Greece',                            4),
+
+       (37, 'Germany: Rhein',                    5),
+
+       (38, 'USA: Napa Valley',                  6),
+
+       (40, 'End of Bin',                        99),
+       (41, 'Closeouts',                         99),
+       (42, 'Fine & Rare',                       99),
+       (43, 'Odds & Ends',                       99)
+"""
+
     # Format string to create a Sql Load Data statement to load the legacy wine master table
     # where parameters datadir, csvfile, suffix must be supplied.
     # used by get_legacy_wine_master_load_data method
@@ -470,6 +518,7 @@ ARB_Comment,
 @Exclude_NY,
 @Exclude_NJ,
 PriceNotes,
+@BoillotRetailDTC,
 PricingSpecials,
 @PricingNeedsReview,
 @PricingChangeAnnounce,
@@ -495,6 +544,7 @@ LastPurchaseDate_PO=if(@LastPurchaseDate_PO = '', NULL, @LastPurchaseDate_PO),
 LastPurchasePrice_AE=if(@LastPurchasePrice_AE = '', NULL, @LastPurchasePrice_AE),
 LastPurchase_AE_ImportDate=if(@LastPurchase_AE_ImportDate = '', NULL, @LastPurchase_AE_ImportDate),
 EstArrival=if(@EstArrival = '', NULL, @EstArrival),
+BoillotRetailDTC=if(@BoillotRetailDTC = '', NULL, @BoillotRetailDTC),
 WesternInventory_Cases=if(@WesternInventory_Cases = '', NULL, @WesternInventory_Cases),
 WesternInventory_Bottles=if(@WesternInventory_Bottles = '', NULL, @WesternInventory_Bottles),
 WesternInventory_SyncTimestamp=if(@WesternInventory_SyncTimestamp = '', NULL, @WesternInventory_SyncTimestamp),
@@ -643,7 +693,7 @@ INSERT INTO chw.Producers_LegacyWineMaster
         Vinification             = auto()
         TerroirVineyardPractices = auto()
         EndOfWine                = auto()
-        PriceListSection         = auto()
+        PriceListSectionId       = auto()
         Created                  = auto()
         LastModified             = auto()
 
@@ -669,7 +719,7 @@ SELECT
     LWM.Vinification,
     LWM.TerroirVineyardPractices,
     LWM.EndOfWine,
-    LWM.PriceListSection,
+    LkupPLS.PriceListSectionId,
     if(LWM.DateCreated IS NULL, DATE(LWM.LastUpdated), LWM.DateCreated) AS Created,
     LWM.LastUpdated
 FROM LegacyWineMaster{suffix} LWM
@@ -681,6 +731,8 @@ INNER JOIN LookupWineCountries LkupWCntry
   ON LWM.Country = LkupWCntry.CountryName
 INNER JOIN LookupCaseUnits LkupCsU
   ON LWM.BottleSize = LkupCsU.LegacyBottleSize
+INNER JOIN LookupPriceListSections LkupPLS
+  ON LWM.PriceListSection = LkupPLS.PriceListSectionName
 LEFT JOIN LookupWineRegions LkupWR
   ON LWM.Region = LkupWR.RegionName
 LEFT JOIN LookupWineSubregions LkupWSR
@@ -1002,6 +1054,7 @@ INSERT INTO WinePricing
     FOB_ARB,
     ARB_Comment,
     PriceNotes,
+    AllocationDTC,
     Specials,
     NeedsReview,
     ChangeAnnounce
@@ -1013,6 +1066,7 @@ SELECT
     LWM.FOB_ARB,
     LWM.ARB_Comment,
     LWM.PriceNotes,
+    LWM.BoillotRetailDTC,
     LWM.PricingSpecials,
     LWM.PricingNeedsReview,
     LWM.PricingChangeAnnounce

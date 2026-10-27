@@ -210,7 +210,7 @@ class NewWine:
                     legacy_wine_row[Col.Vinification],
                     legacy_wine_row[Col.TerroirVineyardPractices],
                     legacy_wine_row[Col.EndOfWine],
-                    legacy_wine_row[Col.PriceListSection],
+                    legacy_wine_row[Col.PriceListSectionId],
                     legacy_wine_row[Col.Created],
                     legacy_wine_row[Col.LastModified],
                    )

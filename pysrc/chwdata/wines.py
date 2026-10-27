@@ -62,8 +62,8 @@ class Wines(CHW_DB):
 
     # Constants used to configure the Wine SQL statements
     DB_CNTR_DATADIR = '/tmp/data/infiles/'
-    LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_10-16-xform.csv'
-    LEGACY_WINE_TABLE_SUFFIX = '_1016'
+    LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_10-23-xform.csv'
+    LEGACY_WINE_TABLE_SUFFIX = '_1023'
 
     # Regular expressions for parsing values in the legacy wine columns
     re_year = re.compile(r'\d{4}$')
@@ -345,6 +345,7 @@ class Wines(CHW_DB):
         - LookupWineSubregions
         - LookupWineAppellations
         - LookupUSStates
+        - LookupPriceListSections
         """
         # TODO: set this flag from a parameter
         show_warnings = False
@@ -356,6 +357,7 @@ class Wines(CHW_DB):
                                    ('LookupWineSubregions', CHW_SQL.insert_lookup_wine_subregions_sql),
                                    ('LookupWineAppellations', CHW_SQL.insert_lookup_wine_appellations_sql),
                                    ('LookupUSStates', CHW_SQL.insert_lookup_us_states_sql),
+                                   ('LookupPriceListSections', CHW_SQL.insert_lookup_price_list_sections_sql),
                                   )
 
         with (self._connection.cursor() as init_lookup_table_cursor):
