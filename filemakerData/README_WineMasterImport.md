@@ -167,7 +167,7 @@ i.e. `{datadir}{csvfile}` might resolve to `{datadir}{csvfile}` `data/infiles/Wi
 
 ```console
 $ ./chw-action load-legacy-wine-master-from-csv
-Load Data successful, 2154 rows affected, 316 warnings (0.000 secs)
+Load Data successful, 2216 rows affected, 312 warnings (0.000 secs)
 Connection closed.
 $
 ```
@@ -194,8 +194,18 @@ Populate the following lookup tables (should be all of them):
 
 Run this command from the cynthiahurley repository root directory:
 
-```sh
-./chw-action setup-wine-lookup-tables
+```console
+$ ./chw-action setup-wine-lookup-tables
+Init table LookupWineColors successful, 4 rows affected, 0 warnings
+Init table LookupWineTypes successful, 4 rows affected, 0 warnings
+Init table LookupCaseUnits successful, 8 rows affected, 0 warnings
+Init table LookupWineCountries successful, 6 rows affected, 0 warnings
+Init table LookupWineRegions successful, 27 rows affected, 0 warnings
+Init table LookupWineSubregions successful, 19 rows affected, 0 warnings
+Init table LookupWineAppellations successful, 171 rows affected, 0 warnings
+Init table LookupUSStates successful, 56 rows affected, 0 warnings
+Init table LookupPriceListSections successful, 42 rows affected, 0 warnings
+Connection closed.
 ```
 
 #### Create producer records from the data in the legacy wine master table
@@ -212,8 +222,9 @@ wine master record, and also if the year established represented a decade rather
 
 Run this command from the cynthiahurley repository root directory:
 
-```sh
-./chw-action import-legacy-producers
+```console
+$ ./chw-action import-legacy-producers
+Insert producers from legacy successful, 184 rows affected, 633 notes (0.183 secs)
 ```
 
 #### Create wine records AND wine item records from the data in the legacy wine master table
@@ -227,8 +238,8 @@ Run this command from the cynthiahurley repository root directory:
 
 ```console
 $ ./chw-action create-wines-from-legacy
-Insert wines from legacy successful, 552 rows added (0.217 secs)
-Insert wine compliance info from legacy successful, 552 rows affected, 0 warnings (0.000 secs)
+Insert wines from legacy successful, 567 rows added (0.179 secs)
+Insert wine compliance info from legacy successful, 567 rows affected, 0 warnings (0.000 secs)
 Connection closed.
 $
 ```
@@ -237,9 +248,9 @@ The WineId in the legacy table is used as the WineItemId in the new WineItems ta
 
 ```console
 $ ./chw-action create-wineitems-from-legacy
-Insert wineitems from legacy successful, 2154 rows affected, 0 warnings (0.000 secs)
-Insert western inventory from legacy successful, 2154 rows affected, 0 warnings (0.000 secs)
-Insert wine purchases from legacy successful, 299 rows affected, 0 warnings (0.000 secs)
+Insert wineitems from legacy successful, 2216 rows affected, 0 warnings (0.000 secs)
+Insert western inventory from legacy successful, 2216 rows affected, 0 warnings (0.000 secs)
+Insert wine purchases from legacy successful, 342 rows affected, 0 warnings (0.000 secs)
 Connection closed.
 $
 ```
@@ -249,9 +260,9 @@ to create records in those tables after the wineitems records have been created.
 
 ```console
 $ ./chw-action create-winepricing-from-legacy
-Insert wine pricing from legacy successful, 2154 rows affected, 0 warnings (0.000 secs)
-Insert wholesale pricing from legacy successful (0.082 secs)
-         - 928 pricing rows added, 803 case break rows added
+Insert wine pricing from legacy successful, 2216 rows affected, 0 warnings (0.000 secs)
+Insert wholesale pricing from legacy successful (0.170 secs)
+         - 945 pricing rows added, 986 case break rows added
 Connection closed.
 $
 ```
