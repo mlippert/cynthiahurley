@@ -379,30 +379,28 @@ VALUES (1, 'France: Alsace',                     1),
 
        (22, 'Spain: Bierzo',                     2),
        (23, 'Spain: Castilla y Leon',            2),
-       (24, 'Spain: Penedes',                    2),
-       (25, 'Spain: Priorat',                    2),
-       (26, 'Spain: Rias Baixas ',               2),
-       (27, 'Spain: Ribera del Duero',           2),
-       (28, 'Spain: Ribeira Sacra',              2),
-       (29, 'Spain: Rioja',                      2),
-       (30, 'Spain: Rueda',                      2),
+       (24, 'Spain: Catalonia',                  2),
+       (25, 'Spain: Galicia',                    2),
+       (26, 'Spain: Penedes',                    2),
+       (27, 'Spain: Priorat',                    2),
+       (28, 'Spain: Rias Baixas',                2),
+       (29, 'Spain: Ribera del Duero',           2),
+       (30, 'Spain: Ribeira Sacra',              2),
+       (31, 'Spain: Rioja',                      2),
+       (32, 'Spain: Rueda',                      2),
 
-       (31, 'Italy: Barbaresco',                 3),
-       (32, 'Italy: Barbera',                    3),
-       (33, 'Italy: Barolo',                     3),
-       (34, 'Italy: Nebbiolo',                   3),
-       (35, 'Italy: Piedmont',                   3),
+       (33, 'Italy: Piedmont',                   3),
 
-       (36, 'Greece',                            4),
+       (34, 'Greece',                            4),
 
-       (37, 'Germany: Rhein',                    5),
+       (35, 'Germany: Rhein',                    5),
 
-       (38, 'USA: Napa Valley',                  6),
+       (36, 'USA: Napa Valley',                  6),
 
-       (40, 'End of Bin',                        99),
-       (41, 'Closeouts',                         99),
-       (42, 'Fine & Rare',                       99),
-       (43, 'Odds & Ends',                       99)
+       (37, 'End of Bin',                        99),
+       (38, 'Closeouts',                         99),
+       (39, 'Fine & Rare',                       99),
+       (40, 'Odds & Ends',                       99)
 """
 
     # Format string to create a Sql Load Data statement to load the legacy wine master table
