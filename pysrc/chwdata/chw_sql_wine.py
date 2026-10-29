@@ -765,7 +765,7 @@ INSERT INTO chw.Wines
     , Vinification
     , TerroirVineyardPractices
     , EndOfWine
-    , PriceListSection
+    , PriceListSectionId
     , Created
     , CreatedBy
     , LastModified

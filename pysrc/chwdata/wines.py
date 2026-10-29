@@ -62,7 +62,7 @@ class Wines(CHW_DB):
 
     # Constants used to configure the Wine SQL statements
     DB_CNTR_DATADIR = '/tmp/data/infiles/'
-    LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_10-23-xform.csv'
+    LEGACY_WINE_CSV_FILENAME = 'WineMasterTable_10-28-xform.csv'
     LEGACY_WINE_TABLE_SUFFIX = '_1023'
 
     # Regular expressions for parsing values in the legacy wine columns
